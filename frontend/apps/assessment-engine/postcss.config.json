@@ -1,0 +1,3 @@
+{
+    "extends": "@repo/ui/postcss.config.json"
+}

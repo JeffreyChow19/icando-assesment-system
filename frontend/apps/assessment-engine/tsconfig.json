@@ -1,9 +1,17 @@
 {
-    "extends": "@repo/typescript-config/react-library.json",
+    "extends": "@repo/typescript-config/base.json",
     "include": [
       "**/*.ts",
       "**/*.tsx"
     ],
+    "compilerOptions": {
+      "paths": {
+        "@ui/*": ["../../packages/ui/src/*"]
+      },
+      "noEmit": true,
+      "allowImportingTsExtensions": true,
+      "jsx": "react-jsx",
+    },
     "exclude": ["node_modules"]
 }
   
