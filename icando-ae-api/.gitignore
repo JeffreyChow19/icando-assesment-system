@@ -1,0 +1,7 @@
+## ENVIRONMENT VARIABLES
+.env
+
+## IDEs
+/.idea
+
+db-data/

@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  database:
+    container_name: icando-ae-db
+    ports:
+      - "8005:5432"
+    image: postgres:14
+    networks:
+      - icando
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    env_file: .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME} -h ${DB_HOST} -p 5432" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+# to do
+#  backend:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "3000:3000"
+#    env_file: .env
+#    depends_on:
+#      database:
+#        condition: service_healthy
+#    networks:
+#      - icando
+
+networks:
+  icando:
