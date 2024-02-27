@@ -1,6 +1,6 @@
-import { setToken } from "../utils/local-storage";
-import { User } from "../interfaces/user";
-import { api } from "../utils/api";
+import { setToken } from "../utils/local-storage.ts";
+import { User } from "../interfaces/user.ts";
+import { api } from "../utils/api.ts";
 
 export interface ChangePasswordPayload {
   oldPassword: string;

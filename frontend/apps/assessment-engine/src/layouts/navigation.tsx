@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { removeToken } from "../utils/local-storage";
-import { useUser } from "../context/user-context";
+import { removeToken } from "../utils/local-storage.ts";
+import { useUser } from "../context/user-context.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -61,7 +61,7 @@ const UserDropdown = () => {
 const NavMenus = () => {
   const location = useLocation();
   const pathname = location.pathname;
-  const { user } = useUser();
+  // const { user } = useUser();
 
   return (
     <div className="p-2 lg:p-6 flex flex-col gap-2">

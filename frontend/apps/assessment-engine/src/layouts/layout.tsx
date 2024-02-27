@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
-import { Navigation, SideBar } from "../layouts/navigation";
+import { Navigation, SideBar } from "../layouts/navigation.tsx";
 import { Helmet } from "react-helmet-async";
-import { ProtectedRoute } from "../components/protected-route";
+import { ProtectedRoute } from "../components/protected-route.tsx";
 
 export const Layout = ({
   children,

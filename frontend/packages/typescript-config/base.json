@@ -12,9 +12,9 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "module": "ES2022",
+    "module": "NodeNext",
     "moduleDetection": "force",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "NodeNext",
     "noUncheckedIndexedAccess": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,

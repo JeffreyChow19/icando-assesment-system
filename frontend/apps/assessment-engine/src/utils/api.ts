@@ -1,6 +1,6 @@
 import axios from "axios";
-import { VITE_API_URL } from "./config";
-import { getToken } from "./local-storage";
+import { VITE_API_URL } from "./config.ts";
+import { getToken } from "./local-storage.ts";
 
 export const api = axios.create({
   baseURL: VITE_API_URL,

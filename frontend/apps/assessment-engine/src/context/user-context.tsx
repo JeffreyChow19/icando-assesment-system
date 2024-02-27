@@ -6,10 +6,10 @@ import React, {
   useState,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "../interfaces/user";
+import { User } from "../interfaces/user.tsx";
 import { AxiosError } from "axios";
-import { removeToken } from "../utils/local-storage";
-import { checkAuth } from "../services/auth";
+import { removeToken } from "../utils/local-storage.ts";
+import { checkAuth } from "../services/auth.ts";
 
 interface UserContextValue {
   user: User | undefined;
