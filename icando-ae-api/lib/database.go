@@ -11,6 +11,10 @@ type Database struct {
 	DB *gorm.DB
 }
 
+type TestDatabase struct {
+	DB *gorm.DB
+}
+
 func NewDatabase(config *Config) (*Database, error) {
 	host := config.DatabaseHost
 	port := config.DatabasePort
@@ -27,7 +31,7 @@ func NewDatabase(config *Config) (*Database, error) {
 	}, nil
 }
 
-func NewTestDatabase(config *Config) (*Database, error) {
+func NewTestDatabase(config *Config) (*TestDatabase, error) {
 	host := config.TestDatabaseHost
 	port := config.TestDatabasePort
 	username := config.TestDatabaseUsername
@@ -38,7 +42,8 @@ func NewTestDatabase(config *Config) (*Database, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "Failed to connect to Test DB")
 	}
-	return &Database{
+
+	return &TestDatabase{
 		DB: db,
 	}, nil
 }

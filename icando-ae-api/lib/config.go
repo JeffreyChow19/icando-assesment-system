@@ -40,7 +40,6 @@ func NewConfig() (*Config, error) {
 	var config Config
 
 	filename := os.Getenv("CONFIG_FILE")
-
 	if filename == "" {
 		filename = ".env"
 	}

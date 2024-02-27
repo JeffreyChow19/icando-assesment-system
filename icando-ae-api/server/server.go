@@ -23,9 +23,9 @@ import (
 var Module = fx.Module("server", fx.Provide(NewServer))
 
 type Server struct {
-	engine *gin.Engine
-	port   int
-	routes *route.Routes
+	Engine *gin.Engine
+	Port   int
+	Routes *route.Routes
 }
 
 func NewServer(routes *route.Routes, config *lib.Config) *Server {
@@ -47,9 +47,9 @@ func NewServer(routes *route.Routes, config *lib.Config) *Server {
 	)
 	routes.Setup(engine)
 	return &Server{
-		engine: engine,
-		port:   config.ServicePort,
-		routes: routes,
+		Engine: engine,
+		Port:   config.ServicePort,
+		Routes: routes,
 	}
 }
 
@@ -59,11 +59,11 @@ func (s *Server) Run() {
 		logger.Log.Error("Error loading .env file")
 	}
 
-	address := fmt.Sprintf(":%d", s.port)
+	address := fmt.Sprintf(":%d", s.Port)
 
 	server := &http.Server{
 		Addr:    address,
-		Handler: s.engine,
+		Handler: s.Engine,
 	}
 
 	go func() {
@@ -88,10 +88,29 @@ func (s *Server) Run() {
 		logger.Log.Info("Timeout 2s")
 	}
 	logger.Log.Info("Server exiting...")
+}
 
+func (s *Server) RunForTest() {
+	err := godotenv.Load()
+	if err != nil {
+		logger.Log.Error("Error loading .env file")
+	}
+
+	address := fmt.Sprintf(":%d", s.Port)
+
+	server := &http.Server{
+		Addr:    address,
+		Handler: s.Engine,
+	}
+
+	go func() {
+		if err := s.startServer(server); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
 }
 
 func (s *Server) startServer(server *http.Server) error {
-	logger.Log.Info(fmt.Sprintf("Server started on port %d", s.port))
+	logger.Log.Info(fmt.Sprintf("Server started on port %d", s.Port))
 	return server.ListenAndServe()
 }

@@ -20,7 +20,23 @@ services:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-
+  test_database:
+    container_name: icando-ae-test-db
+    ports:
+      - "8006:5432"
+    image: postgres:14
+    networks:
+      - icando
+    env_file: .env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_NAME} -h ${DB_HOST} -p 5432" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    environment:
+      POSTGRES_DB: ${TEST_DB_NAME}
+      POSTGRES_USER: ${TEST_DB_USERNAME}
+      POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
 # to do
 #  backend:
 #    build:
