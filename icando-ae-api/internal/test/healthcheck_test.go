@@ -2,6 +2,7 @@ package test
 
 import (
 	"github.com/stretchr/testify/require"
+	"icando/lib"
 	"icando/server"
 	"net/http"
 	"net/http/httptest"
@@ -10,7 +11,7 @@ import (
 
 func TestHealthcheck_BestCase(t *testing.T) {
 	testRunner(
-		t, func(server *server.Server) {
+		t, func(server *server.Server, db *lib.TestDatabase) {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(
 				"GET",
