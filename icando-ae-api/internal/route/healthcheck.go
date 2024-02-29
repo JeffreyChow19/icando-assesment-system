@@ -10,8 +10,8 @@ type HealthcheckRoute struct {
 	//authMiddleware     middleware.AuthMiddleware
 }
 
-func (r HealthcheckRoute) Setup(engine *gin.Engine) {
-	engine.GET("/", r.healthcheckHandler.Healthcheck)
+func (r HealthcheckRoute) Setup(group *gin.RouterGroup) {
+	group.GET("/", r.healthcheckHandler.Healthcheck)
 	//engine.GET("/protected", r.authMiddleware.Handler(model.ROLE_CUSTOMER), r.healthcheckHandler.HealthcheckProtected)
 }
 

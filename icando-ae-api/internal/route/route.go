@@ -5,7 +5,12 @@ import (
 	"go.uber.org/fx"
 )
 
-type Routes []Route
+type Routes struct {
+	student  []Route
+	teacher  []Route
+	designer []Route
+	public   []Route
+}
 
 var Module = fx.Options(
 	fx.Provide(NewRoutes),
@@ -14,21 +19,34 @@ var Module = fx.Options(
 )
 
 type Route interface {
-	Setup(engine *gin.Engine)
+	Setup(engine *gin.RouterGroup)
 }
 
 func NewRoutes(
 	//fileRoute *FileRoute,
 	healthcheckRoute *HealthcheckRoute,
 ) *Routes {
+	publicRoutes := []Route{healthcheckRoute}
 	return &Routes{
-		//fileRoute,
-		healthcheckRoute,
+		public: publicRoutes,
 	}
 }
 
 func (r Routes) Setup(engine *gin.Engine) {
-	for _, route := range r {
-		route.Setup(engine)
+	public := engine.Group("")
+	student := engine.Group("/student")
+	teacher := engine.Group("/teacher")
+	designer := engine.Group("/designer")
+	for _, route := range r.public {
+		route.Setup(public)
+	}
+	for _, route := range r.student {
+		route.Setup(student)
+	}
+	for _, route := range r.teacher {
+		route.Setup(teacher)
+	}
+	for _, route := range r.designer {
+		route.Setup(designer)
 	}
 }
