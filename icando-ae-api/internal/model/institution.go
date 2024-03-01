@@ -5,8 +5,8 @@ import (
 )
 
 type Institution struct {
-	ID        uuid.UUID `gorm:"primarykey"`
-	Name 	string   
-	Nis 	string    
-	Slug 	string    	
+	ID   uuid.UUID `gorm:"primarykey"`
+	Name string
+	Nis  string
+	Slug string
 }

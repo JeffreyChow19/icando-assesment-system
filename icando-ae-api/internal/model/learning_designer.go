@@ -5,11 +5,11 @@ import (
 )
 
 type LearningDesiner struct {
-	ID        uuid.UUID `gorm:"primarykey"`
-	FirstName 	string
-	LastName 	string
-	Email 	string
-	Password 	string
-	InstitutionID 	uuid.UUID
-	Institution 	*Institution
+	ID            uuid.UUID `gorm:"primarykey"`
+	FirstName     string
+	LastName      string
+	Email         string
+	Password      string
+	InstitutionID uuid.UUID
+	Institution   *Institution
 }
