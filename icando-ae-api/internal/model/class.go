@@ -10,6 +10,7 @@ type Class struct {
 	Grade        string
 	InstituionID uuid.UUID
 	TeacherID    uuid.UUID
-	Teachers     *Teacher
+	Teacher      *Teacher
 	Institution  *Institution
+	Students     []Student
 }
