@@ -23,10 +23,11 @@ be-build:
     paths:
       - ./icando-ae-api/main
   only:
-    - main
-    - merge_requests
-  changes:
-    - icando-ae-api/**/*
+    refs:
+      - main
+      - merge_requests
+    changes:
+      - icando-ae-api/**/*
 
 be-test:
   stage: be-test
@@ -36,7 +37,8 @@ be-test:
   script:
     - go test -v ./...
   only:
-    - main
-    - merge_requests
-  changes:
-    - icando-ae-api/**/*
+    refs:
+      - main
+      - merge_requests
+    changes:
+      - icando-ae-api/**/*
