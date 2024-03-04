@@ -1,0 +1,29 @@
+image: golang:latest
+
+stages:
+  - build
+  - test
+
+variables:
+  GO_PROJECT: gitlab.informatika.org/if3250-k01-g07/assesment-system/icando-ae-api
+
+before_script:
+  - mkdir -p $GOPATH/src/$(dirname $GO_PROJECT)
+  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
+  - cd $GOPATH/src/$GO_PROJECT/icando-ae-api
+
+build:
+  stage: build
+  script:
+    - go build -o ./main ./cmd/server/server.go
+  artifacts:
+    paths:
+      - ./main
+
+test:
+  stage: test
+  before_script:
+    - export CONFIG_FILE="../../.env"
+  script:
+    - cd icando-ae-api
+    - go test -v ./...
