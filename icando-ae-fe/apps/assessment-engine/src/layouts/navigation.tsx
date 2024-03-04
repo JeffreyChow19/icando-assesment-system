@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import {BookOpenCheck, LogOut, MenuIcon, NotebookText, School, UserRound, UsersRound} from "lucide-react";
+import {BookOpenCheck, LogOut, MenuIcon, NotebookText, UserRound, UsersRound} from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -26,11 +26,6 @@ interface NavItemLink {
 const iconClassName = "w-4 h-4";
 
 const navItems: NavItemLink[] = [
-  {
-    icon: <School className={iconClassName}/>,
-    title: "Classes",
-    link: "/classes",
-  },
   {
     icon: <UsersRound className={iconClassName}/>,
     title: "Students",
