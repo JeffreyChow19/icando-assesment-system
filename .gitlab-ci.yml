@@ -15,11 +15,6 @@ before_script:
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
   - cd $GOPATH/src/$GO_PROJECT/icando-ae-api
 
-default:
-  only:
-    - main
-    - merge_requests
-
 be-build:
   stage: be-build
   script:
@@ -29,6 +24,9 @@ be-build:
       - ./icando-ae-api/main
   changes:
     - icando-ae-api/**/*
+  only:
+    - main
+    - merge_requests
 
 be-test:
   stage: be-test
@@ -39,3 +37,6 @@ be-test:
     - go test -v ./...
   changes:
     - icando-ae-api/**/*
+  only:
+    - main
+    - merge_requests
