@@ -22,11 +22,11 @@ be-build:
   artifacts:
     paths:
       - ./icando-ae-api/main
-  changes:
-    - icando-ae-api/**/*
   only:
     - main
     - merge_requests
+    changes:
+    - icando-ae-api/**/*
 
 be-test:
   stage: be-test
@@ -35,8 +35,8 @@ be-test:
       alias: test_database
   script:
     - go test -v ./...
-  changes:
-    - icando-ae-api/**/*
   only:
     - main
     - merge_requests
+    changes:
+    - icando-ae-api/**/*
