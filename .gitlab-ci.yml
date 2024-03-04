@@ -18,12 +18,13 @@ build:
     - go build -o ./main ./cmd/server/server.go
   artifacts:
     paths:
-      - ./main
+      - $GOPATH/src/$GO_PROJECT/icando-ae-api/main
 
 test:
   stage: test
   before_script:
-    - export CONFIG_FILE="../../.env"
+    - cd icando-ae-api
+    - source ../../.env
   script:
     - cd icando-ae-api
     - go test -v ./...
