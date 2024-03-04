@@ -26,7 +26,7 @@ be-build:
     - main
     - merge_requests
     changes:
-    - icando-ae-api/**/*
+      - icando-ae-api/**/*
 
 be-test:
   stage: be-test
@@ -39,4 +39,4 @@ be-test:
     - main
     - merge_requests
     changes:
-    - icando-ae-api/**/*
+      - icando-ae-api/**/*
