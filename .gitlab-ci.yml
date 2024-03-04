@@ -22,6 +22,9 @@ build:
   artifacts:
     paths:
       - ./icando-ae-api/main
+  only:
+    - main
+    - merge_requests
 
 test:
   stage: test
@@ -30,3 +33,6 @@ test:
       alias: test_database
   script:
     - go test -v ./...
+  only:
+    - main
+    - merge_requests
