@@ -1,8 +1,8 @@
 image: golang:latest
 
 stages:
-  - build
-  - test
+  - be-build
+  - be-test
 
 variables:
   GO_PROJECT: gitlab.informatika.org/if3250-k01-g07/assesment-system/icando-ae-api
@@ -15,24 +15,27 @@ before_script:
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
   - cd $GOPATH/src/$GO_PROJECT/icando-ae-api
 
-build:
-  stage: build
+default:
+  only:
+    - main
+    - merge_requests
+
+be-build:
+  stage: be-build
   script:
     - go build -o ./main ./cmd/server/server.go
   artifacts:
     paths:
       - ./icando-ae-api/main
-  only:
-    - main
-    - merge_requests
+  changes:
+    - icando-ae-api/**/*
 
-test:
-  stage: test
+be-test:
+  stage: be-test
   services:
     - name: postgres:14
       alias: test_database
   script:
     - go test -v ./...
-  only:
-    - main
-    - merge_requests
+  changes:
+    - icando-ae-api/**/*
