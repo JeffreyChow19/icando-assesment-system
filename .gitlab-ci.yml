@@ -24,7 +24,7 @@ test:
   stage: test
   before_script:
     - cd icando-ae-api
-    - source ../../.env
+    - source .env
   script:
     - cd icando-ae-api
     - go test -v ./...
