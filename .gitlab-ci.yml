@@ -18,7 +18,7 @@ build:
     - go build -o ./main ./cmd/server/server.go
   artifacts:
     paths:
-      - $GOPATH/src/$GO_PROJECT/icando-ae-api/main
+      - ./icando-ae-api/main
 
 test:
   stage: test
