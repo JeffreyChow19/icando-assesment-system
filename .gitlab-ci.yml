@@ -10,10 +10,6 @@ variables:
   POSTGRES_USER: ${TEST_DB_USERNAME}
   POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
 
-services:
-  - name: postgres:14
-    alias: test_database
-
 before_script:
   - mkdir -p $GOPATH/src/$(dirname $GO_PROJECT)
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
@@ -29,5 +25,8 @@ build:
 
 test:
   stage: test
+  services:
+    - name: postgres:14
+      alias: test_database
   script:
     - go test -v ./...
