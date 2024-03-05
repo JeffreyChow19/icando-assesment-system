@@ -17,6 +17,7 @@ import (
 )
 
 type AuthService interface {
+	RegisterUser(registerDto *dto.RegisterDto) (*dao.AuthDao, *httperror.HttpError)
 	Login(loginDro dto.LoginDto) (*dao.AuthDao, error)
 	ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto) *httperror.HttpError
 }
@@ -24,6 +25,36 @@ type AuthService interface {
 type AuthServiceImpl struct {
 	learningDesignerRepository repository.LearningDesignerRepository
 	config                     *lib.Config
+}
+
+func (s *AuthServiceImpl) RegisterUser(registerDto *dto.RegisterDto) (*dao.AuthDao, *httperror.HttpError) {
+	if _, err := s.learningDesignerRepository.FindUserByEmail(registerDto.Email); err != nil {
+		if !errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, httperror.InternalServerError
+		}
+	} else {
+		return nil, EmailConflictErr
+	}
+
+	hashedPassword := s.hashPassword(registerDto.Password)
+	user := model.LearningDesigner{
+		FirstName: registerDto.FirstName,
+		LastName:  registerDto.LastName,
+		Password:  hashedPassword,
+		Email:     registerDto.Email,
+	}
+	user.ID = uuid.New()
+
+	err := s.learningDesignerRepository.AddUser(&user)
+	if err != nil {
+		return nil, httperror.InternalServerError
+	}
+	authDao, err := s.buildAuthDao(&user)
+	if err != nil {
+		return nil, httperror.InternalServerError
+	}
+
+	return authDao, nil
 }
 
 func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRepository, config *lib.Config) *AuthServiceImpl {
@@ -75,7 +106,7 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto
 	return nil
 }
 
-func (s *AuthServiceImpl) buildAuthDao(user *model.LearningDesiner) (*dao.AuthDao, error) {
+func (s *AuthServiceImpl) buildAuthDao(user *model.LearningDesigner) (*dao.AuthDao, error) {
 	token, err := s.generateToken(user)
 	if err != nil {
 		return nil, err
@@ -94,8 +125,7 @@ func (s *AuthServiceImpl) buildAuthDao(user *model.LearningDesiner) (*dao.AuthDa
 	return &authDao, nil
 }
 
-
-func (s *AuthServiceImpl) generateToken(user *model.LearningDesiner) (string, error) {
+func (s *AuthServiceImpl) generateToken(user *model.LearningDesigner) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256, jwt.MapClaims{
 			"id":  user.ID,
@@ -119,4 +149,8 @@ func (s *AuthServiceImpl) checkPassword(password, hash string) bool {
 var UserNotFoundErr = &httperror.HttpError{
 	StatusCode: http.StatusNotFound,
 	Err:        errors.New("User not found"),
+}
+var EmailConflictErr = &httperror.HttpError{
+	StatusCode: http.StatusConflict,
+	Err:        errors.New("User with that email already exists"),
 }
