@@ -26,10 +26,10 @@ type Route interface {
 func NewRoutes(
 	//fileRoute *FileRoute,
 	healthcheckRoute *HealthcheckRoute,
-	classRoute *StudentRoute,
+	studentRoute *StudentRoute,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
-	designerRoute := []Route{classRoute}
+	designerRoute := []Route{studentRoute}
 	return &Routes{
 		public:   publicRoutes,
 		designer: designerRoute,
