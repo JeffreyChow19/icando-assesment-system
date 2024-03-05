@@ -16,6 +16,7 @@ var Module = fx.Options(
 	fx.Provide(NewRoutes),
 	//fx.Provide(NewFileRoute),
 	fx.Provide(NewHealthcheckRoute),
+	fx.Provide(NewAuthRoute),
 )
 
 type Route interface {
@@ -25,6 +26,7 @@ type Route interface {
 func NewRoutes(
 	//fileRoute *FileRoute,
 	healthcheckRoute *HealthcheckRoute,
+	authRoute *AuthRoute,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
 	return &Routes{
@@ -37,6 +39,7 @@ func (r Routes) Setup(engine *gin.Engine) {
 	student := engine.Group("/student")
 	teacher := engine.Group("/teacher")
 	designer := engine.Group("/designer")
+	auth := engine.Group("/auth")
 	for _, route := range r.public {
 		route.Setup(public)
 	}
@@ -48,5 +51,8 @@ func (r Routes) Setup(engine *gin.Engine) {
 	}
 	for _, route := range r.designer {
 		route.Setup(designer)
+	}
+	for _, route := range r.public {
+		route.Setup(auth)
 	}
 }
