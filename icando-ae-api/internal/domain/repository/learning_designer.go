@@ -17,24 +17,28 @@ func NewLearningDesignerRepository(db *lib.Database) LearningDesignerRepository 
 	}
 }
 
-func (r *LearningDesignerRepository) FindUserById(id uuid.UUID) (*model.LearningDesiner, error) {
-	var user model.LearningDesiner
-	err := r.db.Preload("Learning_Designer").Where("id = ?", id).First(&user).Error
+func (r *LearningDesignerRepository) AddUser(user *model.LearningDesigner) error {
+	return r.db.Create(&user).Error
+}
+
+func (r *LearningDesignerRepository) FindUserById(id uuid.UUID) (*model.LearningDesigner, error) {
+	var user model.LearningDesigner
+	err := r.db.Where("id = ?", id).First(&user).Error
 	return &user, err
 }
 
-func (r *LearningDesignerRepository) FindUserByEmail(email string) (*model.LearningDesiner, error) {
-	var user model.LearningDesiner
-	err := r.db.Preload("Learning_Designer").Where("email = ?", email).First(&user).Error
+func (r *LearningDesignerRepository) FindUserByEmail(email string) (*model.LearningDesigner, error) {
+	var user model.LearningDesigner
+	err := r.db.Where("email = ?", email).First(&user).Error
 	return &user, err
 }
 
-func (r *LearningDesignerRepository) FindUserByName(firstName string, lastName string) (*model.LearningDesiner, error) {
-	var user model.LearningDesiner
-	err := r.db.Preload("Learning_Designer").Where("first_name = ? AND last_name = ?", firstName, lastName).First(&user).Error
+func (r *LearningDesignerRepository) FindUserByName(firstName string, lastName string) (*model.LearningDesigner, error) {
+	var user model.LearningDesigner
+	err := r.db.Where("first_name = ? AND last_name = ?", firstName, lastName).First(&user).Error
 	return &user, err
 }
 
-func (r *LearningDesignerRepository) UpdateUserInfo(user *model.LearningDesiner) error {
+func (r *LearningDesignerRepository) UpdateUserInfo(user *model.LearningDesigner) error {
 	return r.db.Save(&user).Error
 }
