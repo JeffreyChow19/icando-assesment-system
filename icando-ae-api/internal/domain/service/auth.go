@@ -117,7 +117,7 @@ func (s *AuthServiceImpl) buildAuthDao(user *model.LearningDesigner) (*dao.AuthD
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
 			Email:     user.Email,
-			// Role:        "Learning Designer",
+			Role:      "Learning Designer",
 		},
 		Token: token,
 	}
