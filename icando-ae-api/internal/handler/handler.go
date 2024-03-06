@@ -8,5 +8,8 @@ var Module = fx.Module(
 		fx.Provide(
 			fx.Annotate(NewHealthcheckHandlerImpl, fx.As(new(HealthcheckHandler))),
 		),
+		fx.Provide(
+			fx.Annotate(NewCompetencyHandlerImpl, fx.As(new(CompetencyHandler))),
+		),
 	),
 )
