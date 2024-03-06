@@ -12,3 +12,19 @@ run-reset-local:
 
 build:
 	go build -o ./main ./cmd/server/server.go
+
+run-database:
+	docker-compose up -d database
+
+run-server:
+	go run cmd/server/server.go
+
+run: run-database run-server
+
+run-test-database:
+	docker-compose up -d test_database
+
+run-test:
+	go test ./...
+
+test: run-test-database run-test
