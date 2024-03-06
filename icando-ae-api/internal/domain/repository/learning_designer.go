@@ -17,7 +17,7 @@ func NewLearningDesignerRepository(db *lib.Database) LearningDesignerRepository 
 	}
 }
 
-func (r *LearningDesignerRepository) AddUser(user *model.LearningDesigner) error {
+func (r *LearningDesignerRepository) Create(user *model.LearningDesigner) error {
 	return r.db.Create(&user).Error
 }
 

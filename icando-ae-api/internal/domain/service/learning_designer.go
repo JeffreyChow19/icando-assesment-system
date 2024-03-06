@@ -33,7 +33,7 @@ func (s *LearningDesignerServiceImpl) FindUserById(id uuid.UUID) (*dao.LearningD
 	user, err := s.learningDesignerRepository.FindUserById(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, UserNotFoundErr
+			return nil, ErrLearningDesignerNotFound
 		}
 		return nil, httperror.InternalServerError
 	}
@@ -52,7 +52,7 @@ func (s *LearningDesignerServiceImpl) PutUserInfo(id uuid.UUID, dto dto.PutUserI
 	user, err := s.learningDesignerRepository.FindUserById(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, UserNotFoundErr
+			return nil, ErrLearningDesignerNotFound
 		}
 		return nil, httperror.InternalServerError
 	}

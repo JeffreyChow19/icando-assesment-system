@@ -17,8 +17,7 @@ import (
 )
 
 type AuthService interface {
-	RegisterUser(registerDto *dto.RegisterDto) (*dao.AuthDao, *httperror.HttpError)
-	Login(loginDro dto.LoginDto) (*dao.AuthDao, error)
+	Login(loginDto dto.LoginDto, role model.Role) (*dao.AuthDao, error)
 	ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto) *httperror.HttpError
 }
 
@@ -27,35 +26,6 @@ type AuthServiceImpl struct {
 	config                     *lib.Config
 }
 
-func (s *AuthServiceImpl) RegisterUser(registerDto *dto.RegisterDto) (*dao.AuthDao, *httperror.HttpError) {
-	if _, err := s.learningDesignerRepository.FindUserByEmail(registerDto.Email); err != nil {
-		if !errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, httperror.InternalServerError
-		}
-	} else {
-		return nil, EmailConflictErr
-	}
-
-	hashedPassword := s.hashPassword(registerDto.Password)
-	user := model.LearningDesigner{
-		FirstName: registerDto.FirstName,
-		LastName:  registerDto.LastName,
-		Password:  hashedPassword,
-		Email:     registerDto.Email,
-	}
-	user.ID = uuid.New()
-
-	err := s.learningDesignerRepository.AddUser(&user)
-	if err != nil {
-		return nil, httperror.InternalServerError
-	}
-	authDao, err := s.buildAuthDao(&user)
-	if err != nil {
-		return nil, httperror.InternalServerError
-	}
-
-	return authDao, nil
-}
 
 func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRepository, config *lib.Config) *AuthServiceImpl {
 	return &AuthServiceImpl{
@@ -64,24 +34,27 @@ func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRe
 	}
 }
 
-func (s *AuthServiceImpl) Login(loginDto dto.LoginDto) (*dao.AuthDao, error) {
-	user, err := s.learningDesignerRepository.FindUserByEmail(loginDto.Email)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, UserNotFoundErr
+func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.AuthDao, error) {
+	var authDao *dao.AuthDao 
+	if role == model.ROLE_LEARNING_DESIGNER{
+		learningDesigner, err := s.learningDesignerRepository.FindUserByEmail(loginDto.Email)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil, ErrLearningDesignerNotFound
+			}
+			return nil, httperror.InternalServerError
 		}
-		return nil, httperror.InternalServerError
-	}
 
-	if !s.checkPassword(loginDto.Password, user.Password) {
-		return nil, httperror.UnauthorizedError
-	}
+		if !s.checkPassword(loginDto.Password, learningDesigner.Password) {
+			return nil, httperror.UnauthorizedError
+		}
 
-	authDao, err := s.buildAuthDao(user)
-	if err != nil {
-		return nil, httperror.InternalServerError
+		authDao, err := s.buildAuthDao(learningDesigner)
+		if err != nil {
+			return nil, httperror.InternalServerError
+		}
+		return authDao, nil
 	}
-
 	return authDao, nil
 }
 
@@ -89,7 +62,7 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto
 	user, err := s.learningDesignerRepository.FindUserById(id)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return UserNotFoundErr
+			return ErrLearningDesignerNotFound
 		}
 		return httperror.InternalServerError
 	}
@@ -106,18 +79,18 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto
 	return nil
 }
 
-func (s *AuthServiceImpl) buildAuthDao(user *model.LearningDesigner) (*dao.AuthDao, error) {
-	token, err := s.generateToken(user)
+// Learning Designer Auth Dao
+func (s *AuthServiceImpl) buildAuthDao(learningDesigner *model.LearningDesigner) (*dao.AuthDao, error) {
+	token, err := s.generateToken(learningDesigner)
 	if err != nil {
 		return nil, err
 	}
 	authDao := dao.AuthDao{
 		User: dao.LearningDesignerDao{
-			ID:        user.ID,
-			FirstName: user.FirstName,
-			LastName:  user.LastName,
-			Email:     user.Email,
-			Role:      "Learning Designer",
+			ID:        learningDesigner.ID,
+			FirstName: learningDesigner.FirstName,
+			LastName:  learningDesigner.LastName,
+			Email:     learningDesigner.Email,
 		},
 		Token: token,
 	}
@@ -146,7 +119,7 @@ func (s *AuthServiceImpl) checkPassword(password, hash string) bool {
 	return err == nil
 }
 
-var UserNotFoundErr = &httperror.HttpError{
+var ErrLearningDesignerNotFound = &httperror.HttpError{
 	StatusCode: http.StatusNotFound,
 	Err:        errors.New("User not found"),
 }
