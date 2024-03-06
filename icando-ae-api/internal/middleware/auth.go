@@ -14,15 +14,15 @@ import (
 	"github.com/pkg/errors"
 )
 
-type AuthMiddleware struct{
+type AuthMiddleware struct {
 	service service.LearningDesignerService
-	config *lib.Config
+	config  *lib.Config
 }
 
-func NewAuthMiddleware(service service.LearningDesignerService, config *lib.Config) *AuthMiddleware{
+func NewAuthMiddleware(service service.LearningDesignerService, config *lib.Config) *AuthMiddleware {
 	return &AuthMiddleware{
 		service: service,
-		config: config,
+		config:  config,
 	}
 }
 
@@ -42,25 +42,24 @@ func (m *AuthMiddleware) Handler(role string) gin.HandlerFunc {
 				c.AbortWithStatusJSON(httpError.StatusCode, gin.H{"error": httpError.Err.Error()})
 				return
 			}
-			
-			if user.Role == role  {
+			if user.Role == role {
 				c.Set("user", user)
 				c.Next()
 				return
-			}			
+			}
 		}
 
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 	}
 }
 
-func (m *AuthMiddleware) authorize(tokenString string) (*uuid.UUID, error){
+func (m *AuthMiddleware) authorize(tokenString string) (*uuid.UUID, error) {
 	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error){
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(m.config.JwtSecret), nil
-	},)
+	})
 
-	if(!token.Valid || err != nil){
+	if !token.Valid || err != nil {
 		return nil, errors.New("token is invalid")
 	}
 	exp := claims["exp"].(float64)

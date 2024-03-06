@@ -14,7 +14,7 @@ type AuthRoute struct {
 
 func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 	group := engine.Group("/auth")
-	group.POST("/login", r.authMiddleware.Handler("Learning Designer"), r.authHandler.Login)
+	group.POST("/login", r.authHandler.Login)
 }
 
 func NewAuthRoute(authHandler handler.AuthHandler) *AuthRoute {
