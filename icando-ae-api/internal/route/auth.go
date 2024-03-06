@@ -3,7 +3,7 @@ package route
 import (
 	"icando/internal/handler"
 	"icando/internal/middleware"
-	// "icando/internal/model"
+	"icando/internal/model"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,7 +14,9 @@ type AuthRoute struct {
 
 func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 	group := engine.Group("/auth")
-	group.POST("/login", r.authHandler.Login)
+	group.POST("/designer/login", func(c *gin.Context) {
+		r.authHandler.Login(c, model.ROLE_LEARNING_DESIGNER)
+	})
 }
 
 func NewAuthRoute(authHandler handler.AuthHandler) *AuthRoute {

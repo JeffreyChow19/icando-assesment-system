@@ -2,14 +2,18 @@ package handler
 
 import (
 	"icando/internal/domain/service"
-	"icando/internal/model/dto"
+	"icando/internal/model"
 	"icando/internal/model/dao"
-	"github.com/gin-gonic/gin"
+	"icando/internal/model/dto"
+	"icando/utils/response"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AuthHandler interface {
-	Login(c *gin.Context)
+	Login(c *gin.Context, role model.Role)
+	GetAuth(c *gin.Context)
 	ChangePassword(c *gin.Context)
 }
 
@@ -23,14 +27,14 @@ func NewAuthHandlerImpl(authService service.AuthService) *AuthHandlerImpl {
 	}
 }
 
-func (h *AuthHandlerImpl) Login(c *gin.Context) {
+func (h *AuthHandlerImpl) Login(c *gin.Context, role model.Role) {
 	var loginDto dto.LoginDto
 	if err := c.ShouldBindJSON(&loginDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	authDao, err := h.service.Login(loginDto)
+	authDao, err := h.service.Login(loginDto, role)
 	if err != nil {
 		// status error
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -55,4 +59,9 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, nil)
+}
+
+func (h *AuthHandlerImpl) GetAuth(c *gin.Context) {
+	user, _ := c.Get("user")
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, user))
 }
