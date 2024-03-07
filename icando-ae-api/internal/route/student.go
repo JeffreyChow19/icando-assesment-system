@@ -13,6 +13,9 @@ type StudentRoute struct {
 func (r StudentRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/student")
 	group.POST("", r.studentHandler.Post)
+	group.GET("/:id", r.studentHandler.Get)
+	group.PATCH("/:id", r.studentHandler.Patch)
+	group.DELETE("/:id", r.studentHandler.Delete)
 	//engine.GET("/protected", r.authMiddleware.Handler(model.ROLE_CUSTOMER), r.healthcheckHandler.StudentProtected)
 }
 

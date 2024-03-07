@@ -6,7 +6,7 @@ import (
 )
 
 type Student struct {
-	ID            uuid.UUID `gorm:"primarykey"`
+	Model
 	FirstName     string
 	LastName      string
 	Nisn          string

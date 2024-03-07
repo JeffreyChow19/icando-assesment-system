@@ -58,6 +58,26 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 	return students, &meta, err
 }
 
+func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student, error) {
+	query := r.db
+	if filter.IncludeInstitution {
+		query.Preload("Institution")
+	}
+	if filter.IncludeClass {
+		query.Preload("Class")
+	}
+	if filter.Nisn != nil {
+		query.Where("nisn = ?", filter.Nisn)
+	}
+	if filter.ID != nil {
+		query.Where("id = ?", filter.ID)
+	}
+
+	var student model.Student
+	err := query.Session(&gorm.Session{}).First(&student).Error
+	return &student, err
+}
+
 func (r *StudentRepository) Create(student model.Student) error {
 	return r.db.Create(&student).Error
 }
