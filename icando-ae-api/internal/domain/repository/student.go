@@ -74,7 +74,7 @@ func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student,
 	}
 
 	var student model.Student
-	err := query.Session(&gorm.Session{}).First(&student).Error
+	err := query.First(&student).Error
 	return &student, err
 }
 
