@@ -16,6 +16,7 @@ var Module = fx.Options(
 	fx.Provide(NewRoutes),
 	//fx.Provide(NewFileRoute),
 	fx.Provide(NewHealthcheckRoute),
+	fx.Provide(NewStudentRoute),
 	fx.Provide(NewAuthRoute),
 )
 
@@ -27,10 +28,14 @@ func NewRoutes(
 	//fileRoute *FileRoute,
 	healthcheckRoute *HealthcheckRoute,
 	authRoute *AuthRoute,
+	studentRoute *StudentRoute,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute, authRoute}
+	designerRoute := []Route{studentRoute}
+
 	return &Routes{
-		public: publicRoutes,
+		public:   publicRoutes,
+		designer: designerRoute,
 	}
 }
 
