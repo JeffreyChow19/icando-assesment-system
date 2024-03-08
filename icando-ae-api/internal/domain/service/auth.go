@@ -7,9 +7,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"icando/internal/domain/repository"
-	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 )
 
 type AuthService interface {
-	Login(loginDto dto.LoginDto, role model.Role) (*dao.AuthDao, error)
+	Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, error)
 	ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto) *httperror.HttpError
 	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
 	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
@@ -46,8 +46,8 @@ func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRe
 	}
 }
 
-func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.AuthDao, error) {
-	if role == model.ROLE_LEARNING_DESIGNER {
+func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, error) {
+	if role == enum.ROLE_LEARNING_DESIGNER {
 		learningDesigner, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{Email: &loginDto.Email})
 
 		if err != nil {
@@ -63,7 +63,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 
 		claim := dao.TokenClaim{
 			ID:   learningDesigner.ID,
-			Role: model.ROLE_LEARNING_DESIGNER,
+			Role: enum.ROLE_LEARNING_DESIGNER,
 		}
 
 		authDao, err := s.buildAuthDao(claim)
@@ -73,7 +73,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 		}
 
 		return authDao, nil
-	} else if role == model.ROLE_STUDENT {
+	} else if role == enum.ROLE_STUDENT {
 		// todo student token should have different expire date (1 week or manually configurable)
 		student, err := s.studentRepository.GetOne(dto.GetStudentFilter{Email: &loginDto.Email})
 
@@ -86,7 +86,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 
 		claim := dao.TokenClaim{
 			ID:   student.ID,
-			Role: model.ROLE_STUDENT,
+			Role: enum.ROLE_STUDENT,
 		}
 
 		authDao, err := s.buildAuthDao(claim)
@@ -96,7 +96,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 		}
 
 		return authDao, nil
-	} else if role == model.ROLE_TEACHER {
+	} else if role == enum.ROLE_TEACHER {
 		teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{Email: &loginDto.Email})
 
 		if err != nil {
@@ -112,7 +112,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 
 		claim := dao.TokenClaim{
 			ID:   teacher.ID,
-			Role: model.ROLE_TEACHER,
+			Role: enum.ROLE_TEACHER,
 		}
 
 		authDao, err := s.buildAuthDao(claim)
@@ -127,8 +127,8 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role model.Role) (*dao.Au
 	return nil, errors.New("Unhandled data")
 }
 
-func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role model.Role, changePasswordDto dto.ChangePasswordDto) *httperror.HttpError {
-	if role == model.ROLE_LEARNING_DESIGNER {
+func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role enum.Role, changePasswordDto dto.ChangePasswordDto) *httperror.HttpError {
+	if role == enum.ROLE_LEARNING_DESIGNER {
 		user, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &id})
 
 		if err != nil {
@@ -147,7 +147,7 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role model.Role, changePa
 		if err != nil {
 			return httperror.InternalServerError
 		}
-	} else if role == model.ROLE_TEACHER {
+	} else if role == enum.ROLE_TEACHER {
 		user, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &id})
 
 		if err != nil {

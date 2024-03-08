@@ -3,9 +3,9 @@ package middleware
 import (
 	"fmt"
 	"icando/internal/domain/repository"
-	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/lib"
 	"net/http"
 	"strings"
@@ -38,7 +38,7 @@ func NewAuthMiddleware(
 	}
 }
 
-func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
+func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.Request.Header.Get("Authorization")
 
@@ -53,7 +53,7 @@ func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
 				return
 			}
 
-			if authorized.Role == model.ROLE_TEACHER {
+			if authorized.Role == enum.ROLE_TEACHER {
 				teacher, err := m.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &authorized.ID})
 
 				if err != nil {
@@ -62,14 +62,14 @@ func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
 				}
 
 				c.Set("InstitutionID", teacher.InstitutionID)
-			} else if authorized.Role == model.ROLE_STUDENT {
+			} else if authorized.Role == enum.ROLE_STUDENT {
 				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &authorized.ID})
 
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Student not found")})
 					return
 				}
-			} else if authorized.Role == model.ROLE_LEARNING_DESIGNER {
+			} else if authorized.Role == enum.ROLE_LEARNING_DESIGNER {
 				learningDesigner, err := m.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &authorized.ID})
 
 				if err != nil {
@@ -80,7 +80,7 @@ func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
 				c.Set("InstitutionID", learningDesigner.InstitutionID)
 			}
 
-			if authorized.Role == role || role == model.ROLE_ALL {
+			if authorized.Role == role || role == enum.ROLE_ALL {
 				c.Set("user", authorized)
 				c.Next()
 				return
@@ -117,14 +117,14 @@ func (m *AuthMiddleware) authorize(tokenString string) (*dao.TokenClaim, error) 
 		return nil, errors.New("Cannot parse uuid")
 	}
 
-	var parsedRole model.Role
+	var parsedRole enum.Role
 
-	if role == model.ROLE_LEARNING_DESIGNER {
-		parsedRole = model.ROLE_LEARNING_DESIGNER
-	} else if role == model.ROLE_STUDENT {
-		parsedRole = model.ROLE_STUDENT
-	} else if role == model.ROLE_TEACHER {
-		parsedRole = model.ROLE_TEACHER
+	if role == enum.ROLE_LEARNING_DESIGNER {
+		parsedRole = enum.ROLE_LEARNING_DESIGNER
+	} else if role == enum.ROLE_STUDENT {
+		parsedRole = enum.ROLE_STUDENT
+	} else if role == enum.ROLE_TEACHER {
+		parsedRole = enum.ROLE_TEACHER
 	}
 
 	return &dao.TokenClaim{

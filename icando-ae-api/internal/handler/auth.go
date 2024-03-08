@@ -2,9 +2,9 @@ package handler
 
 import (
 	"icando/internal/domain/service"
-	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/response"
 	"net/http"
 
@@ -12,7 +12,7 @@ import (
 )
 
 type AuthHandler interface {
-	Login(c *gin.Context, role model.Role)
+	Login(c *gin.Context, role enum.Role)
 	GetTeacherProfile(c *gin.Context)
 	GetLearningDesignerProfile(c *gin.Context)
 	GetStudentProfile(c *gin.Context)
@@ -29,7 +29,7 @@ func NewAuthHandlerImpl(authService service.AuthService) *AuthHandlerImpl {
 	}
 }
 
-func (h *AuthHandlerImpl) Login(c *gin.Context, role model.Role) {
+func (h *AuthHandlerImpl) Login(c *gin.Context, role enum.Role) {
 	var loginDto dto.LoginDto
 	if err := c.ShouldBindJSON(&loginDto); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
