@@ -29,8 +29,9 @@ func NewLearningDesignerServiceImpl(learningDesignerRepository repository.Learni
 	}
 
 }
+
 func (s *LearningDesignerServiceImpl) FindUserById(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError) {
-	user, err := s.learningDesignerRepository.FindUserById(id)
+	user, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &id})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrLearningDesignerNotFound
@@ -48,17 +49,17 @@ func (s *LearningDesignerServiceImpl) FindUserById(id uuid.UUID) (*dao.LearningD
 	return &userDao, nil
 }
 
-func (s *LearningDesignerServiceImpl) PutUserInfo(id uuid.UUID, dto dto.PutUserInfoDto) (*dao.LearningDesignerDao, *httperror.HttpError) {
-	user, err := s.learningDesignerRepository.FindUserById(id)
+func (s *LearningDesignerServiceImpl) PutUserInfo(id uuid.UUID, putUserInfoDto dto.PutUserInfoDto) (*dao.LearningDesignerDao, *httperror.HttpError) {
+	user, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &id})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrLearningDesignerNotFound
 		}
 		return nil, httperror.InternalServerError
 	}
-	user.FirstName = dto.FirstName
-	user.LastName = dto.LastName
-	user.Email = dto.Email
+	user.FirstName = putUserInfoDto.FirstName
+	user.LastName = putUserInfoDto.LastName
+	user.Email = putUserInfoDto.Email
 	err = s.learningDesignerRepository.UpdateUserInfo(user)
 	if err != nil {
 		return nil, httperror.InternalServerError

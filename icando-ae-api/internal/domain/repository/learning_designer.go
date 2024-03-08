@@ -1,10 +1,11 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"icando/internal/model"
-	"icando/lib"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"icando/internal/model"
+	"icando/internal/model/dto"
+	"icando/lib"
 )
 
 type LearningDesignerRepository struct {
@@ -21,22 +22,22 @@ func (r *LearningDesignerRepository) Create(user *model.LearningDesigner) error 
 	return r.db.Create(&user).Error
 }
 
-func (r *LearningDesignerRepository) FindUserById(id uuid.UUID) (*model.LearningDesigner, error) {
+func (r *LearningDesignerRepository) FindLearningDesigner(filter dto.GetLearningDesignerFilter) (*model.LearningDesigner, error) {
 	var user model.LearningDesigner
-	err := r.db.Where("id = ?", id).First(&user).Error
-	return &user, err
-}
 
-func (r *LearningDesignerRepository) FindUserByEmail(email string) (*model.LearningDesigner, error) {
-	var user model.LearningDesigner
-	err := r.db.Where("email = ?", email).First(&user).Error
-	return &user, err
-}
+	if filter.ID != nil {
+		if err := r.db.Where("id = ?", filter.ID.String()).First(&user).Error; err != nil {
+			return nil, err
+		}
+	} else if filter.Email != nil {
+		if err := r.db.Where("email = ?", *filter.Email).First(&user).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, errors.New("Invalid filter")
+	}
 
-func (r *LearningDesignerRepository) FindUserByName(firstName string, lastName string) (*model.LearningDesigner, error) {
-	var user model.LearningDesigner
-	err := r.db.Where("first_name = ? AND last_name = ?", firstName, lastName).First(&user).Error
-	return &user, err
+	return &user, nil
 }
 
 func (r *LearningDesignerRepository) UpdateUserInfo(user *model.LearningDesigner) error {

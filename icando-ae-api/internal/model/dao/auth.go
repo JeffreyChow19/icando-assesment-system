@@ -1,13 +1,17 @@
 package dao
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"icando/internal/model"
+)
 
 type AuthDao struct {
-	User  LearningDesignerDao `json:"user"`
-	Token string  `json:"token"`
+	User  TokenClaim `json:"user"`
+	Token string     `json:"token"`
 }
 
 type TokenClaim struct {
-	UserID uuid.UUID `json:"userId"`
-	Role   string    `json:"role"`
+	ID   uuid.UUID  `json:"id"`
+	Role model.Role `json:"role"`
+	Exp  int64      `json:"exp"`
 }
