@@ -32,7 +32,7 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["user"],
     queryFn: () => checkAuth(),
-    retry: false,
+    retry: true,
   });
 
   useEffect(() => {

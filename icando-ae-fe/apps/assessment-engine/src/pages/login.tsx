@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { cn } from "@ui/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +15,7 @@ import { Input } from "@ui/components/ui/input";
 import { Button } from "@ui/components/ui/button";
 import { AxiosError } from "axios";
 import { useUser } from "../context/user-context";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "@ui/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
 import { login } from "../services/auth";
@@ -30,8 +30,7 @@ const formSchema = z.object({
 export function LoginPage({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
-  const { refresh } = useUser();
-
+  const { user, refresh } = useUser();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,6 +40,12 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
       password: "",
     },
   });
+
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -53,10 +58,8 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
       refresh();
 
       toast({
-        description: "Login success",
+        description: "Login berhasil",
       });
-
-      navigate("/");
     } catch (e) {
       if (e instanceof AxiosError) {
         setIsLoading(false);
@@ -137,13 +140,6 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
                 </form>
               </Form>
             </div>
-
-            <p className={"mt-2 text-gray-700"}>
-              Registrasi{" "}
-              <Link to={"/register"} className={"font-semibold"}>
-                di sini
-              </Link>
-            </p>
           </div>
         </div>
       </main>
