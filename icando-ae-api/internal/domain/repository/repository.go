@@ -9,5 +9,6 @@ var Module = fx.Module(
 		fx.Provide(NewStudentRepository),
 		fx.Provide(NewLearningDesignerRepository),
 		fx.Provide(NewTeacherRepository),
+		fx.Provide(NewClassRepository),
 	),
 )
