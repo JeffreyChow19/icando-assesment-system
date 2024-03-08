@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type LearningDesiner struct {
+type LearningDesigner struct {
 	ID            uuid.UUID `gorm:"primarykey"`
 	FirstName     string
 	LastName      string
