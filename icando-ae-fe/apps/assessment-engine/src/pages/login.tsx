@@ -19,13 +19,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@ui/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
 import { login } from "../services/auth";
-// import { client } from "@/lib/client.ts";
-// import { ApiValidationSingleError } from "@/lib/Api.ts";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const formSchema = z.object({
-  username: z.string().min(5).max(20),
+  email: z.string().min(5).max(320),
   password: z.string().min(8).max(127),
 });
 
@@ -39,7 +37,7 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
   });
@@ -49,7 +47,7 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
 
     try {
       await login({
-        username: values.username,
+        email: values.email,
         password: values.password,
       });
       refresh();
@@ -70,6 +68,15 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
             setFieldError(message);
           }
         }
+
+        if (e.response) {
+          const message = e.response.data.error;
+          if (message) {
+            toast({
+              description: message,
+            });
+          }
+        }
       }
     }
   }
@@ -88,12 +95,12 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <FormField
                     control={form.control}
-                    name={"username"}
+                    name={"email"}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Username</FormLabel>
+                        <FormLabel>Email</FormLabel>
                         <FormControl>
-                          <Input placeholder={"Username"} {...field} />
+                          <Input placeholder={"Email"} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
