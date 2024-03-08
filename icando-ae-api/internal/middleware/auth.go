@@ -56,12 +56,12 @@ func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
 			if authorized.Role == model.ROLE_TEACHER {
 				teacher, err := m.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &authorized.ID})
 
-				c.Set("InstitutionID", teacher.InstitutionID)
-
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Teacher not found")})
 					return
 				}
+
+				c.Set("InstitutionID", teacher.InstitutionID)
 			} else if authorized.Role == model.ROLE_STUDENT {
 				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &authorized.ID})
 
@@ -70,12 +70,14 @@ func (m *AuthMiddleware) Handler(role model.Role) gin.HandlerFunc {
 					return
 				}
 			} else if authorized.Role == model.ROLE_LEARNING_DESIGNER {
-				_, err := m.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &authorized.ID})
+				learningDesigner, err := m.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &authorized.ID})
 
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Learning designer not found")})
 					return
 				}
+
+				c.Set("InstitutionID", learningDesigner.InstitutionID)
 			}
 
 			if authorized.Role == role || role == model.ROLE_ALL {
