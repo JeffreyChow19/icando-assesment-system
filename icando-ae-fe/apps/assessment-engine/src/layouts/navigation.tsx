@@ -1,20 +1,27 @@
-import {Link, useLocation, useNavigate} from "react-router-dom";
-import {removeToken} from "../utils/local-storage.ts";
-import {useUser} from "../context/user-context.tsx";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { removeToken } from "../utils/local-storage.ts";
+import { useUser } from "../context/user-context.tsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@repo/ui/components/ui/dropdown-menu";
-import {BookOpenCheck, LogOut, MenuIcon, NotebookText, UserRound, UsersRound} from "lucide-react";
+import {
+  BookOpenCheck,
+  LogOut,
+  MenuIcon,
+  NotebookText,
+  UserRound,
+  UsersRound,
+} from "lucide-react";
 import {
   Sheet,
   SheetContent,
   SheetTrigger,
 } from "@repo/ui/components/ui/sheet";
-import {Button} from "@repo/ui/components/ui/button";
-import {cn} from "@repo/ui/lib/utils";
+import { Button } from "@repo/ui/components/ui/button";
+import { cn } from "@repo/ui/lib/utils";
 import React from "react";
 
 interface NavItemLink {
@@ -27,17 +34,17 @@ const iconClassName = "w-4 h-4";
 
 const navItems: NavItemLink[] = [
   {
-    icon: <UsersRound className={iconClassName}/>,
+    icon: <UsersRound className={iconClassName} />,
     title: "Students",
     link: "/students",
   },
   {
-    icon: <NotebookText className={iconClassName}/>,
+    icon: <NotebookText className={iconClassName} />,
     title: "Competencies",
     link: "/competencies",
   },
   {
-    icon: <BookOpenCheck className={iconClassName}/>,
+    icon: <BookOpenCheck className={iconClassName} />,
     title: "Quiz",
     link: "/quiz",
   },
@@ -45,23 +52,23 @@ const navItems: NavItemLink[] = [
 
 const UserDropdown = () => {
   const navigate = useNavigate();
-  const {user, setUser} = useUser();
+  const { user, setUser, refresh } = useUser();
   const logout = () => {
     removeToken();
     setUser(undefined);
+    refresh();
     navigate("/login");
   };
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-primary-foreground font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary-foreground/20 hover:text-primary-foreground h-10 px-4 py-2">
-        <p className={"mr-2"}>Hello, {user?.name}</p>
-        <UserRound className="h-4 w-4"/>
+      <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm text-primary-foreground font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary-foreground/20 hover:text-primary-foreground h-10 px-4 py-2">
+        <p className={"mr-2"}>Hello, {user?.firstName}</p>
+        <UserRound className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuItem onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4"/>
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Logout</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -99,16 +106,15 @@ const NavMenus = () => {
 export const SideBar = () => {
   return (
     <div className="sticky top-0 left-0 min-h-full bg-primary-foreground hidden lg:block shadow-lg">
-      <img src={"/logo.png"} alt={"logo"} className="w-48 m-auto pt-4"/>
-      <NavMenus/>
+      <img src={"/logo.png"} alt={"logo"} className="w-48 m-auto pt-4" />
+      <NavMenus />
     </div>
   );
 };
 
 export const Navigation = () => {
   return (
-    <header
-      className="flex flex-row sticky top-0 bg-primary backdrop-blur justify-between lg:justify-end px-2 lg:px-6 py-2 z-20 items-center">
+    <header className="flex flex-row sticky top-0 bg-primary backdrop-blur justify-between lg:justify-end px-2 lg:px-6 py-2 z-20 items-center">
       <div className="lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
@@ -116,15 +122,15 @@ export const Navigation = () => {
               variant="ghost"
               className="hover:bg-primary-foreground/20 hover:text-primary-foreground"
             >
-              <MenuIcon className="h-4 w-4 text-foreground"/>
+              <MenuIcon className="h-4 w-4 text-foreground" />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="flex flex-col gap-4">
-            <NavMenus/>
+            <NavMenus />
           </SheetContent>
         </Sheet>
       </div>
-      <UserDropdown/>
+      <UserDropdown />
     </header>
   );
 };
