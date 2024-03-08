@@ -17,11 +17,12 @@ func NewInstutionRepository(db *lib.Database) InstitutionRepository {
 	}
 }
 
-// TO DO: ADD PAGINATION
+// TO DO: ADD PAGINATION AND FILTER
+// BUT THIS IS PROLLY NOT NEEDED
 func (r *InstitutionRepository) GetAllInstitution() ([]model.Institution, error) {
-	instutions := []model.Institution{}
-	err := r.db.Find(&instutions).Error
-	return instutions, err
+	institutions := []model.Institution{}
+	err := r.db.Find(&institutions).Error
+	return institutions, err
 }
 
 func (r *InstitutionRepository) GetInstitution(filter dto.GetOneInstitutionFilter) (*model.Institution, error) {
