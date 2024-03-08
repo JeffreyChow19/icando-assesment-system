@@ -42,6 +42,10 @@ type HttpError struct {
 	Err        error
 }
 
+func (h HttpError) Error() string {
+	return h.Err.Error()
+}
+
 var InternalServerError = &HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Internal Server Error"),
