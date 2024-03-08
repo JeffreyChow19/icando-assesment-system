@@ -13,7 +13,7 @@ import (
 )
 
 type LearningDesignerService interface {
-	FindUserById(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
+	FindLearningDesignerById(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
 	PutUserInfo(id uuid.UUID, dto dto.PutUserInfoDto) (*dao.LearningDesignerDao, *httperror.HttpError)
 }
 
@@ -30,7 +30,7 @@ func NewLearningDesignerServiceImpl(learningDesignerRepository repository.Learni
 
 }
 
-func (s *LearningDesignerServiceImpl) FindUserById(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError) {
+func (s *LearningDesignerServiceImpl) FindLearningDesignerById(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError) {
 	user, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &id})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -43,7 +43,6 @@ func (s *LearningDesignerServiceImpl) FindUserById(id uuid.UUID) (*dao.LearningD
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
-		Role:      "Learning Designer",
 	}
 
 	return &userDao, nil
@@ -69,7 +68,6 @@ func (s *LearningDesignerServiceImpl) PutUserInfo(id uuid.UUID, putUserInfoDto d
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Email:     user.Email,
-		Role:      "Learning Designer",
 	}
 	return &userDao, nil
 }

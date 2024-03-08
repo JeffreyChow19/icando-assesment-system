@@ -19,24 +19,30 @@ import (
 type AuthService interface {
 	Login(loginDto dto.LoginDto, role model.Role) (*dao.AuthDao, error)
 	ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto) *httperror.HttpError
+	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
+	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
+	ProfileLearningDesigner(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
 }
 
 type AuthServiceImpl struct {
 	learningDesignerRepository repository.LearningDesignerRepository
 	studentRepository          repository.StudentRepository
 	teacherRepository          repository.TeacherRepository
+	learningDesignerService    LearningDesignerService
 	config                     *lib.Config
 }
 
 func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRepository,
 	studentRepository repository.StudentRepository,
 	teacherRepository repository.TeacherRepository,
+	learningDesignerService LearningDesignerService,
 	config *lib.Config) *AuthServiceImpl {
 	return &AuthServiceImpl{
 		learningDesignerRepository: learningDesignerRepository,
 		studentRepository:          studentRepository,
 		teacherRepository:          teacherRepository,
 		config:                     config,
+		learningDesignerService:    learningDesignerService,
 	}
 }
 
@@ -163,6 +169,45 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role model.Role, changePa
 	}
 
 	return nil
+}
+
+func (s *AuthServiceImpl) ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError) {
+	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &id})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrStudentNotFound
+		}
+		return nil, ErrCreateStudent
+	}
+
+	studentDao := student.ToDao()
+
+	return &studentDao, nil
+}
+
+func (s *AuthServiceImpl) ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError) {
+	teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &id})
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrTeacherNotFound
+		}
+		return nil, httperror.InternalServerError
+	}
+
+	teacherDao := teacher.ToDao()
+
+	return &teacherDao, nil
+}
+
+func (s *AuthServiceImpl) ProfileLearningDesigner(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError) {
+	learningDesignerDao, err := s.learningDesignerService.FindLearningDesignerById(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return learningDesignerDao, nil
 }
 
 func (s *AuthServiceImpl) buildAuthDao(claim dao.TokenClaim) (*dao.AuthDao, error) {

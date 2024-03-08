@@ -1,4 +1,4 @@
-package teacher
+package student
 
 import (
 	"github.com/gin-gonic/gin"
@@ -15,11 +15,7 @@ type AuthRoute struct {
 func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 	group := engine.Group("/auth")
 
-	group.POST("/login", func(c *gin.Context) {
-		r.authHandler.Login(c, model.ROLE_TEACHER)
-	})
-
-	group.GET("/profile", r.authMiddleware.Handler(model.ROLE_TEACHER), r.authHandler.GetTeacherProfile)
+	group.GET("/profile", r.authMiddleware.Handler(model.ROLE_STUDENT), r.authHandler.GetStudentProfile)
 }
 
 func NewAuthRoute(authHandler handler.AuthHandler) *AuthRoute {

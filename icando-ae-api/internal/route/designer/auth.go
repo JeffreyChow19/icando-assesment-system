@@ -17,6 +17,7 @@ func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 	group.POST("/login", func(c *gin.Context) {
 		r.authHandler.Login(c, model.ROLE_LEARNING_DESIGNER)
 	})
+	group.GET("/profile", r.authMiddleware.Handler(model.ROLE_LEARNING_DESIGNER), r.authHandler.GetLearningDesignerProfile)
 }
 
 func NewAuthRoute(authHandler handler.AuthHandler, authMiddleware middleware.AuthMiddleware) *AuthRoute {

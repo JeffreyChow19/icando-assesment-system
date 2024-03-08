@@ -13,7 +13,9 @@ import (
 
 type AuthHandler interface {
 	Login(c *gin.Context, role model.Role)
-	GetAuth(c *gin.Context)
+	GetTeacherProfile(c *gin.Context)
+	GetLearningDesignerProfile(c *gin.Context)
+	GetStudentProfile(c *gin.Context)
 	ChangePassword(c *gin.Context)
 }
 
@@ -61,7 +63,43 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 	c.JSON(http.StatusOK, nil)
 }
 
-func (h *AuthHandlerImpl) GetAuth(c *gin.Context) {
+func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
 	user, _ := c.Get("user")
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, user))
+	claim := user.(*dao.TokenClaim)
+
+	data, err := h.service.ProfileTeacher(claim.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
+}
+
+func (h *AuthHandlerImpl) GetLearningDesignerProfile(c *gin.Context) {
+	user, _ := c.Get("user")
+	claim := user.(*dao.TokenClaim)
+
+	data, err := h.service.ProfileLearningDesigner(claim.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
+}
+func (h *AuthHandlerImpl) GetStudentProfile(c *gin.Context) {
+	user, _ := c.Get("user")
+	claim := user.(*dao.TokenClaim)
+
+	data, err := h.service.ProfileStudent(claim.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
 }

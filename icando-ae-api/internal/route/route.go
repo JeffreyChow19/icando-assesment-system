@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"icando/internal/route/designer"
+	"icando/internal/route/student"
 	"icando/internal/route/teacher"
 )
 
@@ -21,6 +22,7 @@ var Module = fx.Options(
 	fx.Provide(designer.NewStudentRoute),
 	fx.Provide(designer.NewAuthRoute),
 	fx.Provide(teacher.NewAuthRoute),
+	fx.Provide(student.NewAuthRoute),
 )
 
 type Route interface {
@@ -32,16 +34,19 @@ func NewRoutes(
 	healthcheckRoute *HealthcheckRoute,
 	designerAuth *designer.AuthRoute,
 	teacherAuth *teacher.AuthRoute,
+	studentAuth *student.AuthRoute,
 	studentRoute *designer.StudentRoute,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
 	designerRoute := []Route{studentRoute, designerAuth}
-	teacherRoute := []Route{teacherAuth}
+	teacherRoutes := []Route{teacherAuth}
+	studentRoutes := []Route{studentAuth}
 
 	return &Routes{
 		public:   publicRoutes,
 		designer: designerRoute,
-		teacher:  teacherRoute,
+		teacher:  teacherRoutes,
+		student:  studentRoutes,
 	}
 }
 
