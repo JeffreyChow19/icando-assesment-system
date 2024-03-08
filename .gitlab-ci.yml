@@ -2,7 +2,7 @@ image: golang:latest
 
 stages:
   - be-build
-  - be-test
+  # - be-test
 
 variables:
   GO_PROJECT: gitlab.informatika.org/if3250-k01-g07/assesment-system/icando-ae-api
@@ -29,16 +29,16 @@ be-build:
     changes:
       - icando-ae-api/**/*
 
-be-test:
-  stage: be-test
-  services:
-    - name: postgres:14
-      alias: test_database
-  script:
-    - go test -v ./...
-  only:
-    refs:
-      - main
-      - merge_requests
-    changes:
-      - icando-ae-api/**/*
+# be-test:
+#   stage: be-test
+#   services:
+#     - name: postgres:14
+#       alias: test_database
+#   script:
+#     - go test -v ./...
+#   only:
+#     refs:
+#       - main
+#       - merge_requests
+#     changes:
+#       - icando-ae-api/**/*

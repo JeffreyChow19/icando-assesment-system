@@ -14,9 +14,9 @@ type Config struct {
 	ServiceState int    `envconfig:"SERVICE_STATE" required:"true" default:"0"`
 	ServiceName  string `envconfig:"SERVICE_NAME" required:"true"`
 	ClientHost   string `envconfig:"CLIENT_HOST" required:"true"`
-	Cors         string `envconfig:"CORS" required:"true" default:"https://2timestoo.com"`
+	Cors         string `envconfig:"CORS" required:"true" default:"https://localhost:5173"`
 	// environment is either 'dev' or 'prod'
-	Environment string `envconfig:"ENVIRONMENT"required:"true" default:"dev"`
+	Environment string `envconfig:"ENVIRONMENT" required:"true" default:"dev"`
 
 	ServicePort int    `envconfig:"SERVICE_PORT" default:"8000" required:"true"`
 	LogLevel    string `envconfig:"LOG_LEVEL" default:"INFO"`
