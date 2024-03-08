@@ -10,6 +10,7 @@ import { Hello } from "./pages/hello.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { TestPage } from "./pages/test.tsx";
+import { LoginPage } from "./pages/login.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -25,6 +26,10 @@ function App() {
     {
       path: "/",
       element: <TestPage />,
+    },
+    {
+      path: "/login",
+      element: <LoginPage />,
     },
   ]);
   return (
