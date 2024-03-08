@@ -18,7 +18,7 @@ import (
 
 type AuthService interface {
 	Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, error)
-	ChangePassword(id uuid.UUID, dto dto.ChangePasswordDto) *httperror.HttpError
+	ChangePassword(id uuid.UUID, role enum.Role, dto dto.ChangePasswordDto) *httperror.HttpError
 	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
 	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
 	ProfileLearningDesigner(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)

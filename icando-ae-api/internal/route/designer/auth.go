@@ -20,9 +20,9 @@ func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 	group.GET("/profile", r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER), r.authHandler.GetLearningDesignerProfile)
 }
 
-func NewAuthRoute(authHandler handler.AuthHandler, authMiddleware middleware.AuthMiddleware) *AuthRoute {
+func NewAuthRoute(authHandler handler.AuthHandler, authMiddleware *middleware.AuthMiddleware) *AuthRoute {
 	return &AuthRoute{
 		authHandler:    authHandler,
-		authMiddleware: authMiddleware,
+		authMiddleware: *authMiddleware,
 	}
 }

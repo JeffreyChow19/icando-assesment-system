@@ -22,10 +22,10 @@ func (r StudentRoute) Setup(group *gin.RouterGroup) {
 
 func NewStudentRoute(
 	handler handler.StudentHandler,
-	authMiddleware middleware.AuthMiddleware,
+	authMiddleware *middleware.AuthMiddleware,
 ) *StudentRoute {
 	return &StudentRoute{
 		studentHandler: handler,
-		authMiddleware: authMiddleware,
+		authMiddleware: *authMiddleware,
 	}
 }

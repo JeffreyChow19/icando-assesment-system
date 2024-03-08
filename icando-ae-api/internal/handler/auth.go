@@ -55,7 +55,7 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	httpErr := h.service.ChangePassword(userModel.ID, changePasswordDto)
+	httpErr := h.service.ChangePassword(userModel.ID, enum.ROLE_LEARNING_DESIGNER, changePasswordDto)
 	if httpErr != nil {
 		c.AbortWithStatusJSON(httpErr.StatusCode, gin.H{"error": httpErr.Err.Error()})
 		return
