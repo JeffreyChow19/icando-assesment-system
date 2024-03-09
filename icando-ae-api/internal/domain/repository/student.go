@@ -26,7 +26,7 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 		query.Preload("Institution")
 	}
 	if filter.IncludeClass {
-		query.Preload("Class")
+		query.Preload("ClassDao")
 	}
 	if filter.InstitutionID != nil {
 		query.Where("institution_id = ?", filter.InstitutionID)
@@ -64,7 +64,7 @@ func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student,
 		query.Preload("Institution")
 	}
 	if filter.IncludeClass {
-		query.Preload("Class")
+		query.Preload("ClassDao")
 	}
 	if filter.Nisn != nil {
 		query.Where("nisn = ?", filter.Nisn)
