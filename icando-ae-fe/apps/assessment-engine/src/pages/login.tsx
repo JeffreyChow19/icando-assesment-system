@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { cn } from "@ui/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "@ui/components/ui/use-toast";
 import { Helmet } from "react-helmet-async";
 import { login } from "../services/auth";
+import { useMutation } from "@tanstack/react-query";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
 
@@ -28,9 +29,8 @@ const formSchema = z.object({
 });
 
 export function LoginPage({ className, ...props }: UserAuthFormProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [fieldError, setFieldError] = useState<string | null>(null);
-  const { user, refresh } = useUser();
+  const { refresh } = useUser();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -41,29 +41,19 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
     },
   });
 
-  useEffect(() => {
-    if (user) {
-      navigate("/");
-    }
-  }, [user, navigate]);
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true);
-
-    try {
-      await login({
-        email: values.email,
-        password: values.password,
-      });
+  const mutation = useMutation({
+    mutationFn: async (payload: z.infer<typeof formSchema>) => {
+      await login(payload);
+    },
+    onSuccess: () => {
       refresh();
-
       toast({
         description: "Login berhasil",
       });
-    } catch (e) {
+      navigate("/");
+    },
+    onError: (e: Error) => {
       if (e instanceof AxiosError) {
-        setIsLoading(false);
-
         if (e.response && e.response.status === 400) {
           const message = e.response.data.message;
 
@@ -80,9 +70,14 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
             });
           }
         }
+      } else {
+        toast({
+          variant: "destructive",
+          description: e.message,
+        });
       }
-    }
-  }
+    },
+  });
 
   return (
     <>
@@ -95,7 +90,11 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
             </h1>
             <div className={cn("grid gap-6", className)} {...props}>
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)}>
+                <form
+                  onSubmit={form.handleSubmit((values) =>
+                    mutation.mutate(values),
+                  )}
+                >
                   <FormField
                     control={form.control}
                     name={"email"}
@@ -132,7 +131,7 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
                   <Button
                     variant={"default"}
                     type={"submit"}
-                    disabled={isLoading}
+                    disabled={mutation.isPending}
                     className={"mt-6 w-full"}
                   >
                     Login

@@ -37,9 +37,10 @@ func (h *AuthHandlerImpl) Login(c *gin.Context, role enum.Role) {
 	}
 
 	authDao, err := h.service.Login(loginDto, role)
+
 	if err != nil {
 		// status error
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(err.StatusCode, gin.H{"error": err.Err.Error()})
 		return
 	}
 
