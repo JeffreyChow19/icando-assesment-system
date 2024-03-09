@@ -39,7 +39,7 @@ func (s *CompetencyServiceImpl) GetAllCompetencies(filter dto.GetAllCompetencies
 		return nil, nil, ErrGetAllCompetencies
 	}
 
-	var competenciesDao []dao.CompetencyDao
+	competenciesDao := []dao.CompetencyDao{}
 	for _, competency := range competencies {
 		competenciesDao = append(competenciesDao, competency.ToDao())
 	}
