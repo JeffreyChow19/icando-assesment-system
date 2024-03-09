@@ -21,7 +21,7 @@ var Module = fx.Module(
 			fx.Annotate(designer.NewClassHandlerImpl, fx.As(new(designer.ClassHandler))),
 		),
 		fx.Provide(
-			fx.Annotate(NewCompetencyHandlerImpl, fx.As(new(CompetencyHandler))),
+			fx.Annotate(designer.NewCompetencyHandlerImpl, fx.As(new(designer.CompetencyHandler))),
 		),
 	),
 )
