@@ -28,3 +28,6 @@ run-test:
 	go test ./...
 
 test: run-test-database run-test
+
+seed:
+	go run cmd/seeder/seeder.go

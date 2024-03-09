@@ -24,3 +24,8 @@ goose create MIGRATION_NAME sql
 ### Migrate up
 - Restart db container to auto migrate up `make run-local`
 
+## Seeder
+- Run the server and database `make run`
+- Usually the server will error on the first try because the database hasn't been initialized successfully. Don't panic! Just re-run the server `make run-server`
+- After the server and database successfully started, run the seeder `make seed`. It is recommended to seed on an empty database.
+
