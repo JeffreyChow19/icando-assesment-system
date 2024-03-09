@@ -1,11 +1,13 @@
-package handler
+package designer
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"icando/internal/domain/service"
-	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/utils/httperror"
 	"net/http"
 )
 
@@ -33,7 +35,16 @@ func (h *CompetencyHandlerImpl) GetAllCompetencies(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindQuery(&filter); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid query"})
 		return
 	}
 
@@ -41,10 +52,6 @@ func (h *CompetencyHandlerImpl) GetAllCompetencies(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
 		return
-	}
-
-	if competencies == nil {
-		competencies = []dao.CompetencyDao{}
 	}
 
 	competenciesResponse := &dto.GetAllCompetenciesResponse{
@@ -59,7 +66,16 @@ func (h *CompetencyHandlerImpl) CreateCompetency(c *gin.Context) {
 	var competency dto.CreateCompetencyDto
 
 	if err := c.ShouldBindJSON(&competency); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
 		return
 	}
 
@@ -76,7 +92,16 @@ func (h *CompetencyHandlerImpl) UpdateCompetency(c *gin.Context) {
 	var competency dto.UpdateCompetencyDto
 
 	if err := c.ShouldBindJSON(&competency); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
 		return
 	}
 
