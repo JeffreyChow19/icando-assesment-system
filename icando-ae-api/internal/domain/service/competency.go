@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -58,8 +59,10 @@ var ErrCreateCompetency = &httperror.HttpError{
 }
 
 func (s *CompetencyServiceImpl) CreateCompetency(competencyDto dto.CreateCompetencyDto) (*dao.CompetencyDao, *httperror.HttpError) {
-	existing, err := s.competencyRepository.GetCompetencyByNumbering(competencyDto.Numbering)
-	if err != nil {
+	existing, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
+		Numbering: &competencyDto.Numbering,
+	})
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, ErrCreateCompetency
 	}
 	if existing != nil {
@@ -72,7 +75,7 @@ func (s *CompetencyServiceImpl) CreateCompetency(competencyDto dto.CreateCompete
 		Description: competencyDto.Description,
 	}
 
-	err = s.competencyRepository.CreateCompetency(competency)
+	competency, err = s.competencyRepository.CreateCompetency(competency)
 	if err != nil {
 		return nil, ErrCreateCompetency
 	}
@@ -94,8 +97,10 @@ var ErrUpdateCompetency = &httperror.HttpError{
 
 func (s *CompetencyServiceImpl) UpdateCompetency(competencyDto dto.UpdateCompetencyDto) (*dao.CompetencyDao, *httperror.HttpError) {
 	if competencyDto.Numbering != nil {
-		existing, err := s.competencyRepository.GetCompetencyByNumbering(*competencyDto.Numbering)
-		if err != nil {
+		existing, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
+			Numbering: competencyDto.Numbering,
+		})
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUpdateCompetency
 		}
 		if existing != nil {
@@ -103,9 +108,11 @@ func (s *CompetencyServiceImpl) UpdateCompetency(competencyDto dto.UpdateCompete
 		}
 	}
 
-	competency, err := s.competencyRepository.GetCompetencyById(competencyDto.ID)
+	competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
+		Id: competencyDto.ID,
+	})
 	if err != nil {
-		if errors.Is(err, repository.ErrCompetencyNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrCompetencyNotFound
 		}
 		return nil, ErrUpdateCompetency
@@ -137,9 +144,11 @@ var ErrDeleteCompetency = &httperror.HttpError{
 }
 
 func (s *CompetencyServiceImpl) DeleteCompetency(competencyId uuid.UUID) (*dao.CompetencyDao, *httperror.HttpError) {
-	competency, err := s.competencyRepository.GetCompetencyById(competencyId)
+	competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
+		Id: competencyId,
+	})
 	if err != nil {
-		if errors.Is(err, repository.ErrCompetencyNotFound) {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrCompetencyNotFound
 		}
 		return nil, ErrDeleteCompetency
