@@ -13,7 +13,7 @@ func Paginate(query *gorm.DB, page int, limit int) {
 		limit = 10
 	}
 	offset := (page - 1) * limit
-	query.Offset(offset)
+	query.Offset(offset).Limit(limit)
 }
 
 func Sort(query *gorm.DB, asc bool, sortBy string) {
