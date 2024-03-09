@@ -5,11 +5,16 @@ import (
 	"icando/internal/model/dao"
 )
 
-type GetAllCompetenciesFilter struct {
+type GetOneCompetencyFilter struct {
+	Id        uuid.UUID
 	Numbering *string
-	Name      *string
-	Page      int
-	Limit     int
+}
+
+type GetAllCompetenciesFilter struct {
+	Numbering *string `form:"numbering"`
+	Name      *string `form:"name"`
+	Page      int     `form:"page"`
+	Limit     int     `form:"limit"`
 }
 
 type GetAllCompetenciesResponse struct {
