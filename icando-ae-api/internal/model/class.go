@@ -7,14 +7,14 @@ import (
 )
 
 type Class struct {
-	ID           uuid.UUID `gorm:"primarykey"`
-	Name         string
-	Grade        string
-	InstituionID uuid.UUID
-	TeacherID    uuid.UUID
-	Teacher      *Teacher
-	Institution  *Institution
-	Students     []Student
+	ID            uuid.UUID `gorm:"primarykey"`
+	Name          string
+	Grade         string
+	InstitutionID uuid.UUID
+	TeacherID     uuid.UUID
+	Teacher       *Teacher
+	Institution   *Institution
+	Students      []Student
 }
 
 func (s Class) ToDao(option dto.GetClassFitler) dao.ClassDao {
@@ -22,7 +22,7 @@ func (s Class) ToDao(option dto.GetClassFitler) dao.ClassDao {
 		ID:           s.ID,
 		Name:         s.Name,
 		Grade:        s.Grade,
-		InstituionID: s.InstituionID,
+		InstituionID: s.InstitutionID,
 		TeacherID:    s.TeacherID,
 	}
 

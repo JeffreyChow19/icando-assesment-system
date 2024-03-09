@@ -21,10 +21,10 @@ func NewClassRepository(db *lib.Database) ClassRepository {
 
 func (r *ClassRepository) CreateClass(dto dto.ClassDto) (*model.Class, error) {
 	class := model.Class{
-		Name:         dto.Name,
-		Grade:        dto.Grade,
-		InstituionID: dto.InstitutionID,
-		TeacherID:    dto.TeacherID,
+		Name:          dto.Name,
+		Grade:         dto.Grade,
+		InstitutionID: dto.InstitutionID,
+		TeacherID:     dto.TeacherID,
 	}
 
 	if err := r.db.Create(&class).Error; err != nil {
@@ -36,11 +36,11 @@ func (r *ClassRepository) CreateClass(dto dto.ClassDto) (*model.Class, error) {
 
 func (r *ClassRepository) UpdateClass(id uuid.UUID, dto dto.ClassDto) (*model.Class, error) {
 	class := model.Class{
-		ID:           id,
-		Name:         dto.Name,
-		Grade:        dto.Grade,
-		InstituionID: dto.InstitutionID,
-		TeacherID:    dto.TeacherID,
+		ID:            id,
+		Name:          dto.Name,
+		Grade:         dto.Grade,
+		InstitutionID: dto.InstitutionID,
+		TeacherID:     dto.TeacherID,
 	}
 
 	if err := r.db.Save(&class).Error; err != nil {
