@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -22,27 +21,23 @@ func NewCompetencyRepository(db *lib.Database) CompetencyRepository {
 	}
 }
 
-var ErrCompetencyNotFound = errors.New("competency not found")
+func (r *CompetencyRepository) GetOneCompetency(filter dto.GetOneCompetencyFilter) (*model.Competency, error) {
+	query := r.db.Model(&model.Competency{})
 
-func (r *CompetencyRepository) GetCompetencyById(id uuid.UUID) (*model.Competency, error) {
+	if filter.Id != uuid.Nil {
+		query.Where("id = ?", filter.Id)
+	}
+
+	if filter.Numbering != nil {
+		query.Where("numbering ILIKE ?", fmt.Sprintf("%s%%", *filter.Numbering))
+	}
+
 	var competency model.Competency
-	if err := r.db.Where("id = ?", id).First(&competency).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrCompetencyNotFound
-		}
+	err := query.First(&competency).Error
+	if err != nil {
 		return nil, err
 	}
-	return &competency, nil
-}
 
-func (r *CompetencyRepository) GetCompetencyByNumbering(numbering string) (*model.Competency, error) {
-	var competency model.Competency
-	if err := r.db.Where("numbering = ?", numbering).First(&competency).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
 	return &competency, nil
 }
 
@@ -50,11 +45,11 @@ func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesF
 	query := r.db.Model(&model.Competency{})
 
 	if filter.Numbering != nil {
-		query.Where("numbering ILIKE ?", fmt.Sprintf("%s%", filter.Numbering))
+		query.Where("numbering ILIKE ?", fmt.Sprintf("%s%%", *filter.Numbering))
 	}
 
 	if filter.Name != nil {
-		query.Where("name ILIKE ?", fmt.Sprintf("%s%", filter.Name))
+		query.Where("name ILIKE ?", fmt.Sprintf("%s%%", *filter.Name))
 	}
 
 	var totalItem int64
@@ -70,6 +65,7 @@ func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesF
 		TotalPage: int(math.Ceil(float64(totalItem) / float64(filter.Limit))),
 	}
 
+	Sort(query, true, "numbering")
 	Paginate(query, filter.Page, filter.Limit)
 
 	var competencies []model.Competency
@@ -78,8 +74,9 @@ func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesF
 	return competencies, &meta, nil
 }
 
-func (r *CompetencyRepository) CreateCompetency(competency model.Competency) error {
-	return r.db.Create(&competency).Error
+func (r *CompetencyRepository) CreateCompetency(competency model.Competency) (model.Competency, error) {
+	err := r.db.Create(&competency).Error
+	return competency, err
 }
 
 func (r *CompetencyRepository) UpdateCompetency(competency model.Competency) error {
