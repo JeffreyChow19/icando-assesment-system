@@ -8,14 +8,14 @@ export interface ChangePasswordPayload {
 }
 
 export interface LoginPayload {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterPayload {
   name: string;
   password: string;
-  username: string;
+  email: string;
 }
 
 export interface UpdateUserRolePayload {
@@ -32,7 +32,7 @@ interface CheckAuthResponse {
   token?: string;
 }
 
-const path = "/auth";
+const path = "/designer/auth";
 
 export const login = async (payload: LoginPayload): Promise<void> => {
   const { token } = (await api.post(`${path}/login`, payload))

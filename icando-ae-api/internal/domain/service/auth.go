@@ -17,7 +17,7 @@ import (
 )
 
 type AuthService interface {
-	Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, error)
+	Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, *httperror.HttpError)
 	ChangePassword(id uuid.UUID, role enum.Role, dto dto.ChangePasswordDto) *httperror.HttpError
 	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
 	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
@@ -46,7 +46,7 @@ func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRe
 	}
 }
 
-func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, error) {
+func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, *httperror.HttpError) {
 	if role == enum.ROLE_LEARNING_DESIGNER {
 		learningDesigner, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{Email: &loginDto.Email})
 
@@ -58,7 +58,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 		}
 
 		if !s.checkPassword(loginDto.Password, learningDesigner.Password) {
-			return nil, httperror.UnauthorizedError
+			return nil, InvalidCredentialsError
 		}
 
 		claim := dao.TokenClaim{
@@ -124,7 +124,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 		return authDao, nil
 	}
 
-	return nil, errors.New("Unhandled data")
+	return nil, httperror.InternalServerError
 }
 
 func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role enum.Role, changePasswordDto dto.ChangePasswordDto) *httperror.HttpError {
@@ -260,4 +260,9 @@ var ErrTeacherNotFound = &httperror.HttpError{
 var EmailConflictErr = &httperror.HttpError{
 	StatusCode: http.StatusConflict,
 	Err:        errors.New("User with that email already exists"),
+}
+
+var InvalidCredentialsError = &httperror.HttpError{
+	StatusCode: http.StatusUnauthorized,
+	Err:        errors.New("Invalid email or password credentials"),
 }
