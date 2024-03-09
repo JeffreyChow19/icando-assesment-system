@@ -1,12 +1,12 @@
-package route
+package designer
 
 import (
 	"github.com/gin-gonic/gin"
-	"icando/internal/handler"
+	"icando/internal/handler/designer"
 )
 
 type CompetencyRoute struct {
-	competencyHandler handler.CompetencyHandler
+	competencyHandler designer.CompetencyHandler
 }
 
 func (r CompetencyRoute) Setup(engine *gin.RouterGroup) {
@@ -17,7 +17,7 @@ func (r CompetencyRoute) Setup(engine *gin.RouterGroup) {
 	group.DELETE("/:id", r.competencyHandler.DeleteCompetency)
 }
 
-func NewCompetencyRoute(handler handler.CompetencyHandler) *CompetencyRoute {
+func NewCompetencyRoute(handler designer.CompetencyHandler) *CompetencyRoute {
 	return &CompetencyRoute{
 		competencyHandler: handler,
 	}
