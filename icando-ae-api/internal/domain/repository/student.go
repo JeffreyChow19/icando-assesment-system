@@ -61,16 +61,19 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student, error) {
 	query := r.db
 	if filter.IncludeInstitution {
-		query.Preload("Institution")
+		query = query.Preload("Institution")
 	}
 	if filter.IncludeClass {
-		query.Preload("ClassDao")
+		query = query.Preload("ClassDao")
 	}
 	if filter.Nisn != nil {
-		query.Where("nisn = ?", filter.Nisn)
+		query = query.Where("nisn = ?", filter.Nisn)
 	}
 	if filter.ID != nil {
-		query.Where("id = ?", filter.ID)
+		query = query.Where("id = ?", filter.ID)
+	}
+	if filter.Email != nil {
+		query = query.Where("email = ?", filter.Email)
 	}
 
 	var student model.Student
