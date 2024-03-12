@@ -11,10 +11,10 @@ import {
   BookOpenCheck,
   LogOut,
   MenuIcon,
-  NotebookText,
+  School,
   UserRound,
   UsersRound,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -39,9 +39,9 @@ const navItems: NavItemLink[] = [
     link: "/students",
   },
   {
-    icon: <NotebookText className={iconClassName} />,
-    title: "Competencies",
-    link: "/competencies",
+    icon: <School className={iconClassName} />,
+    title: "Classes",
+    link: "/classes",
   },
   {
     icon: <BookOpenCheck className={iconClassName} />,
@@ -81,7 +81,7 @@ const NavMenus = () => {
   const pathname = location.pathname;
 
   return (
-    <div className="p-2 lg:p-6 flex flex-col gap-2">
+    <div className="p-2 lg:p-4 flex flex-col gap-2">
       {navItems.map((item) => {
         return (
           <Link to={item.link} key={item.link}>
@@ -90,7 +90,7 @@ const NavMenus = () => {
                 pathname === item.link
                   ? "bg-primary text-primary-foreground"
                   : "hover:bg-transparent hover:underline hover:text-primary",
-                "flex flex-row gap-2 text-sm items-center pr-20 py-2 pl-2 rounded-md",
+                "flex flex-row gap-2 text-sm items-center pr-28 py-2 pl-4 rounded-md",
               )}
             >
               {item.icon}
@@ -122,10 +122,10 @@ export const Navigation = () => {
               variant="ghost"
               className="hover:bg-primary-foreground/20 hover:text-primary-foreground"
             >
-              <MenuIcon className="h-4 w-4 text-foreground" />
+              <MenuIcon className="h-4 w-4 text-background" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="flex flex-col gap-4">
+          <SheetContent side="left" className="flex flex-col gap-4 pt-10">
             <NavMenus />
           </SheetContent>
         </Sheet>
