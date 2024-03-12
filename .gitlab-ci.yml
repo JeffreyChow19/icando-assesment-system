@@ -2,6 +2,7 @@ image: golang:latest
 
 stages:
   - be-build
+  - fe-build
   # - be-test
 
 variables:
@@ -29,6 +30,20 @@ be-build:
     changes:
       - icando-ae-api/**/*
 
+fe-build:
+  image: node:latest
+  stage: fe-build
+  script:
+    - cd icando-ae-fe
+    - npm install -g pnpm
+    - pnpm instal
+    - pnpm run build
+  only:
+    refs:
+      - main
+      - merge_requests
+    changes:
+      - icando-ae-fe/**/*
 # be-test:
 #   stage: be-test
 #   services:
