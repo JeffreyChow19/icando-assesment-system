@@ -12,5 +12,5 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     return children;
   }
 
-  return <Navigate to={"/"} />;
+  return <Navigate to={"/login"} />;
 };
