@@ -1,8 +1,6 @@
-image: golang:latest
-
 stages:
   - be-build
-  # - be-test
+  - fe-build
 
 variables:
   GO_PROJECT: gitlab.informatika.org/if3250-k01-g07/assesment-system/icando-ae-api
@@ -10,14 +8,13 @@ variables:
   POSTGRES_USER: ${TEST_DB_USERNAME}
   POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
 
-before_script:
-  - mkdir -p $GOPATH/src/$(dirname $GO_PROJECT)
-  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
-  - cd $GOPATH/src/$GO_PROJECT/icando-ae-api
-
 be-build:
+  image: golang:latest
   stage: be-build
   script:
+    - mkdir -p $GOPATH/src/$(dirname $GO_PROJECT)
+    - ln -svf $CI_PROJECT_DIR $GOPATH/src/$GO_PROJECT
+    - cd $GOPATH/src/$GO_PROJECT/icando-ae-api
     - go build -o ./main ./cmd/server/server.go
   artifacts:
     paths:
@@ -29,6 +26,20 @@ be-build:
     changes:
       - icando-ae-api/**/*
 
+fe-build:
+  image: node:latest
+  stage: fe-build
+  script:
+    - cd icando-ae-fe
+    - npm install -g pnpm
+    - pnpm install
+    - pnpm run build
+  only:
+    refs:
+      - main
+      - merge_requests
+    changes:
+      - icando-ae-fe/**/*
 # be-test:
 #   stage: be-test
 #   services:
