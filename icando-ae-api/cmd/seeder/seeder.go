@@ -29,11 +29,11 @@ func main() {
 	tx := db.DB.Begin()
 
 	institutions := []model.Institution{
-		{ID: uuid.New(), Name: "SMAN 1 Kwangya", Nis: "23456781", Slug: "sman-1-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 2 Kwangya", Nis: "23456782", Slug: "sman-2-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 3 Kwangya", Nis: "23456783", Slug: "sman-3-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 4 Kwangya", Nis: "23456784", Slug: "sman-4-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 5 Kwangya", Nis: "23456785", Slug: "sman-5-kwangya"},
+		{Name: "SMAN 1 Kwangya", Nis: "23456781", Slug: "sman-1-kwangya"},
+		{Name: "SMAN 2 Kwangya", Nis: "23456782", Slug: "sman-2-kwangya"},
+		{Name: "SMAN 3 Kwangya", Nis: "23456783", Slug: "sman-3-kwangya"},
+		{Name: "SMAN 4 Kwangya", Nis: "23456784", Slug: "sman-4-kwangya"},
+		{Name: "SMAN 5 Kwangya", Nis: "23456785", Slug: "sman-5-kwangya"},
 	}
 
 	for _, institution := range institutions {
@@ -49,7 +49,6 @@ func main() {
 			firstName, lastName, email := generateAccount()
 
 			ld := model.Teacher{
-				ID:            uuid.New(),
 				FirstName:     firstName,
 				LastName:      lastName,
 				Email:         email,
@@ -69,7 +68,6 @@ func main() {
 			firstName, lastName, email := generateAccount()
 
 			teacher := model.Teacher{
-				ID:            uuid.New(),
 				FirstName:     firstName,
 				LastName:      lastName,
 				Email:         email,
@@ -89,7 +87,6 @@ func main() {
 			for _, grade := range grades {
 				for j := 1; j <= 3; j++ {
 					class := model.Class{
-						ID:            uuid.New(),
 						Name:          fmt.Sprintf("Class %d", j),
 						Grade:         grade,
 						InstitutionID: institution.ID,
