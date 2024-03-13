@@ -46,7 +46,7 @@ func (h *AuthHandlerImpl) Login(c *gin.Context, role enum.Role) {
 }
 
 func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	userModel := user.(*dao.LearningDesignerDao)
 	var changePasswordDto dto.ChangePasswordDto
 	err := c.ShouldBindJSON(&changePasswordDto)
@@ -63,7 +63,7 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 }
 
 func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	claim := user.(*dao.TokenClaim)
 
 	data, err := h.service.ProfileTeacher(claim.ID)
@@ -77,7 +77,7 @@ func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
 }
 
 func (h *AuthHandlerImpl) GetStudentProfile(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	claim := user.(*dao.TokenClaim)
 
 	data, err := h.service.ProfileStudent(claim.ID)

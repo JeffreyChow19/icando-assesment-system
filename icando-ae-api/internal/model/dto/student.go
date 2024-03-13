@@ -1,19 +1,21 @@
 package dto
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type GetAllStudentsFilter struct {
-	Name               *string
-	InstitutionID      *uuid.UUID
-	ClassID            *uuid.UUID
-	Page               int
-	Limit              int
+	Name               *string `form:"name"`
+	InstitutionID      *string `form:"institutionId"`
+	ClassID            *string `form:"classId"`
+	Page               int     `form:"page"`
+	Limit              int     `form:"limit"`
 	IncludeInstitution bool
 	IncludeClass       bool
 }
 
 type GetStudentFilter struct {
-	ID                 *uuid.UUID
+	ID                 *string
 	Nisn               *string
 	Email              *string
 	IncludeInstitution bool
@@ -29,7 +31,7 @@ type CreateStudentDto struct {
 }
 
 type UpdateStudentDto struct {
-	FirstName *string    `json:"firstName" binding:"required"`
-	LastName  *string    `json:"lastName" binding:"required"`
-	ClassID   *uuid.UUID `json:"classId" binding:"required"`
+	FirstName *string    `json:"firstName"`
+	LastName  *string    `json:"lastName"`
+	ClassID   *uuid.UUID `json:"classId"`
 }
