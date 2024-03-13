@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
@@ -19,6 +20,10 @@ type StudentService interface {
 		*dao.StudentDao, *httperror.HttpError,
 	)
 	DeleteStudent(institutionId uuid.UUID, id uuid.UUID) *httperror.HttpError
+	GetAllStudents(filter dto.GetAllStudentsFilter) (
+		[]dao.StudentDao,
+		*dao.MetaDao, *httperror.HttpError,
+	)
 }
 
 type StudentServiceImpl struct {
@@ -31,12 +36,27 @@ func NewStudentServiceImpl(studentRepository repository.StudentRepository) *Stud
 	}
 }
 
+func (s *StudentServiceImpl) GetAllStudents(filter dto.GetAllStudentsFilter) (
+	[]dao.StudentDao,
+	*dao.MetaDao, *httperror.HttpError,
+) {
+	students, meta, err := s.studentRepository.GetAllStudent(filter)
+	if err != nil {
+		log.Print(err)
+		return nil, nil, httperror.InternalServerError
+	}
+
+	studentsDao := []dao.StudentDao{}
+	for _, student := range students {
+		studentsDao = append(studentsDao, student.ToDao())
+	}
+
+	return studentsDao, meta, nil
+}
+
 func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.CreateStudentDto) (
 	*dao.StudentDao, *httperror.HttpError,
 ) {
-	// to do get class by id
-	// check if class s institution == institution id
-
 	httperr := s.checkStudentUniqueIdentifier(studentDto.Email, studentDto.Nisn)
 	if httperr != nil {
 		return nil, httperr
@@ -50,7 +70,7 @@ func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.
 		ClassID:       studentDto.ClassID,
 		InstitutionID: institutionId,
 	}
-	err := s.studentRepository.Create(student)
+	err := s.studentRepository.Create(&student)
 	if err != nil {
 		return nil, ErrCreateStudent
 	}
@@ -94,7 +114,8 @@ func (s *StudentServiceImpl) GetStudent(institutionId uuid.UUID, id uuid.UUID) (
 func (s *StudentServiceImpl) getStudentById(institutionId uuid.UUID, id uuid.UUID) (
 	*model.Student, *httperror.HttpError,
 ) {
-	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &id})
+	idString := id.String()
+	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrStudentNotFound
