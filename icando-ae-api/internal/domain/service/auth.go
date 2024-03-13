@@ -127,7 +127,8 @@ func (s *AuthServiceImpl) ChangePassword(
 }
 
 func (s *AuthServiceImpl) ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError) {
-	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &id})
+	idString := id.String()
+	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrStudentNotFound

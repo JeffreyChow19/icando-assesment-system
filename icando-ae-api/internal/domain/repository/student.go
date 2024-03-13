@@ -21,18 +21,18 @@ func NewStudentRepository(db *lib.Database) StudentRepository {
 }
 
 func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]model.Student, *dao.MetaDao, error) {
-	query := r.db
+	query := r.db.Table("students")
 	if filter.IncludeInstitution {
 		query.Preload("Institution")
 	}
 	if filter.IncludeClass {
-		query.Preload("ClassDao")
+		query.Preload("Class")
 	}
 	if filter.InstitutionID != nil {
 		query.Where("institution_id = ?", filter.InstitutionID)
 	}
 	if filter.Name != nil {
-		query.Where("concat(first_name, ' ', last_name) ilike ?", fmt.Sprintf("%s%", filter.Name))
+		query.Where("concat(first_name, ' ', last_name) ilike ?", fmt.Sprintf("%s%%", *filter.Name))
 	}
 	if filter.ClassID != nil {
 		query.Where("class_id = ?", filter.ClassID)
@@ -64,7 +64,7 @@ func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student,
 		query = query.Preload("Institution")
 	}
 	if filter.IncludeClass {
-		query = query.Preload("ClassDao")
+		query = query.Preload("Class")
 	}
 	if filter.Nisn != nil {
 		query = query.Where("nisn = ?", filter.Nisn)
@@ -81,7 +81,7 @@ func (r *StudentRepository) GetOne(filter dto.GetStudentFilter) (*model.Student,
 	return &student, err
 }
 
-func (r *StudentRepository) Create(student model.Student) error {
+func (r *StudentRepository) Create(student *model.Student) error {
 	return r.db.Create(&student).Error
 }
 

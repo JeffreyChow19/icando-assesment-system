@@ -10,7 +10,7 @@ type StudentDao struct {
 	FirstName string    `json:"firstName"`
 	LastName  string    `json:"lastName"`
 	Nisn      string    `json:"nisn"`
-	Email     *string   `json:"email,omitempty"`
+	Email     string    `json:"email,omitempty"`
 	ClassID   uuid.UUID `json:"classId"`
 	CreatedAt time.Time `json:"createdAt"`
 	UpdatedAt time.Time `json:"updatedAt"`
