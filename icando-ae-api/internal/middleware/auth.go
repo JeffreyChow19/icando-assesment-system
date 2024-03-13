@@ -63,9 +63,10 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 					return
 				}
 
-				c.Set("InstitutionID", teacher.InstitutionID)
+				c.Set(enum.INSTITUTION_ID_CONTEXT_KEY, teacher.InstitutionID)
 			} else if role == enum.ROLE_STUDENT {
-				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &authorized.ID})
+				idString := authorized.ID.String()
+				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
 
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Student not found")})
@@ -73,7 +74,7 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 				}
 			}
 
-			c.Set("user", authorized)
+			c.Set(enum.USER_CONTEXT_KEY, authorized)
 			c.Next()
 			return
 		}

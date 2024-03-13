@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"icando/internal/model/enum"
 	"icando/utils/response"
 	"net/http"
 )
@@ -21,7 +22,7 @@ func (h *HealthcheckHandlerImpl) Healthcheck(c *gin.Context) {
 
 func (h *HealthcheckHandlerImpl) HealthcheckProtected(c *gin.Context) {
 	msg := "🚀Protected🚀"
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	c.JSON(http.StatusOK, response.NewBaseResponse(&msg, user))
 }
 
