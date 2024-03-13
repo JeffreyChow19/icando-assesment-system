@@ -15,7 +15,7 @@ type Config struct {
 	ServiceName  string `envconfig:"SERVICE_NAME" required:"true"`
 	ClientHost   string `envconfig:"CLIENT_HOST" required:"true"`
 	Cors         string `envconfig:"CORS" required:"true" default:"https://localhost:5173"`
-	// environment is either 'dev' or 'prod'
+	// environment is either 'dev' or 'prod' or 'test'
 	Environment string `envconfig:"ENVIRONMENT" required:"true" default:"dev"`
 
 	ServicePort int    `envconfig:"SERVICE_PORT" default:"8000" required:"true"`
@@ -26,12 +26,6 @@ type Config struct {
 	DatabaseUsername string `envconfig:"DB_USERNAME" required:"true"`
 	DatabasePassword string `envconfig:"DB_PASSWORD" required:"true"`
 	DatabaseName     string `envconfig:"DB_NAME" required:"true"`
-
-	TestDatabaseHost     string `envconfig:"TEST_DB_HOST" required:"true"`
-	TestDatabasePort     string `envconfig:"TEST_DB_PORT" required:"true"`
-	TestDatabaseUsername string `envconfig:"TEST_DB_USERNAME" required:"true"`
-	TestDatabasePassword string `envconfig:"TEST_DB_PASSWORD" required:"true"`
-	TestDatabaseName     string `envconfig:"TEST_DB_NAME" required:"true"`
 
 	JwtSecret string `envconfig:"JWT_SECRET" required:"true"`
 }

@@ -10,8 +10,8 @@ import (
 )
 
 func TestHealthcheck_BestCase(t *testing.T) {
-	testRunner(
-		t, func(server *server.Server, db *lib.TestDatabase) {
+	TestRunner(
+		t, func(server *server.Server, db *lib.Database) {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(
 				"GET",
