@@ -7,7 +7,7 @@ import (
 )
 
 type Class struct {
-	ID            uuid.UUID `gorm:"primarykey"`
+	Model
 	Name          string
 	Grade         string
 	InstitutionID uuid.UUID
