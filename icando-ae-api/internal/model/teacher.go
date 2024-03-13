@@ -8,7 +8,6 @@ import (
 
 type Teacher struct {
 	Model
-	ID            uuid.UUID `gorm:"primarykey"`
 	FirstName     string
 	LastName      string
 	Email         string
