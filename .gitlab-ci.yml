@@ -9,7 +9,7 @@ variables:
   POSTGRES_PASSWORD: ${TEST_DB_PASSWORD}
 
 be-build:
-  image: golang:latest
+  image: golang:1.22.1-alpine
   stage: be-build
   script:
     - mkdir -p $GOPATH/src/$(dirname $GO_PROJECT)
@@ -27,7 +27,7 @@ be-build:
       - icando-ae-api/**/*
 
 fe-build:
-  image: node:latest
+  image: node:20-alpine
   stage: fe-build
   script:
     - cd icando-ae-fe
