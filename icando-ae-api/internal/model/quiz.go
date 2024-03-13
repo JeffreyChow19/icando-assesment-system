@@ -14,4 +14,5 @@ type Quiz struct {
 	CreatedBy    uuid.UUID `gorm:"type:uuid;not null"`
 	UpdatedBy    uuid.UUID `gorm:"type:uuid"`
 	PublishedAt  time.Time `gorm:"type:timestamptz"`
+	Deadline     time.Time `gorm:"type:timestamptz"`
 }

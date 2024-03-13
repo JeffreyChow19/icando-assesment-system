@@ -8,6 +8,6 @@ ALTER TABLE quizzes
 -- +goose Down
 -- +goose StatementBegin
 ALTER TABLE quizzes
-    DROP FOREIGN KEY fk_quizzes_created_by,
-    DROP FOREIGN KEY fk_quizzes_updated_by;
+    DROP CONSTRAINT fk_quizzes_created_by,
+    DROP CONSTRAINT fk_quizzes_updated_by;
 -- +goose StatementEnd
