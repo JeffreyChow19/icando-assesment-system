@@ -1,4 +1,4 @@
-package handler
+package designer
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"icando/internal/domain/service"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
@@ -17,6 +18,7 @@ type StudentHandler interface {
 	Get(c *gin.Context)
 	Patch(c *gin.Context)
 	Delete(c *gin.Context)
+	GetAll(c *gin.Context)
 }
 
 type StudentHandlerImpl struct {
@@ -27,6 +29,40 @@ func NewStudentHandlerImpl(studentService service.StudentService) *StudentHandle
 	return &StudentHandlerImpl{
 		studentService: studentService,
 	}
+}
+
+func (h *StudentHandlerImpl) GetAll(c *gin.Context) {
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID).String()
+
+	filter := dto.GetAllStudentsFilter{
+		InstitutionID: &parsedInstutionID,
+		Page:          1,
+		Limit:         10,
+	}
+
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid query"})
+		return
+	}
+
+	students, meta, err := h.studentService.GetAllStudents(filter)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, students, meta))
 }
 
 func (h *StudentHandlerImpl) Post(c *gin.Context) {
@@ -45,13 +81,16 @@ func (h *StudentHandlerImpl) Post(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
 		return
 	}
-	class, err := h.studentService.AddStudent(uuid.New(), payload)
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+
+	student, err := h.studentService.AddStudent(parsedInstutionID, payload)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
 		return
 	}
 	createdMsg := "Created"
-	c.JSON(http.StatusCreated, response.NewBaseResponse(&createdMsg, *class))
+	c.JSON(http.StatusCreated, response.NewBaseResponse(&createdMsg, *student))
 }
 
 func (h *StudentHandlerImpl) Get(c *gin.Context) {
@@ -62,7 +101,10 @@ func (h *StudentHandlerImpl) Get(c *gin.Context) {
 		return
 	}
 
-	student, httperr := h.studentService.GetStudent(uuid.New(), parsedId)
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+
+	student, httperr := h.studentService.GetStudent(parsedInstutionID, parsedId)
 	if httperr != nil {
 		c.AbortWithStatusJSON(httperr.StatusCode, gin.H{"errors": httperr.Err.Error()})
 		return
@@ -94,7 +136,10 @@ func (h *StudentHandlerImpl) Patch(c *gin.Context) {
 		return
 	}
 
-	student, httperr := h.studentService.UpdateStudent(uuid.New(), parsedId, payload)
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+
+	student, httperr := h.studentService.UpdateStudent(parsedInstutionID, parsedId, payload)
 	if httperr != nil {
 		c.AbortWithStatusJSON(httperr.StatusCode, gin.H{"errors": httperr.Err.Error()})
 		return
@@ -109,7 +154,11 @@ func (h *StudentHandlerImpl) Delete(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("Invalid student ID").Error()})
 		return
 	}
-	httperr := h.studentService.DeleteStudent(uuid.New(), parsedId)
+
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+
+	httperr := h.studentService.DeleteStudent(parsedInstutionID, parsedId)
 	if httperr != nil {
 		c.AbortWithStatusJSON(httperr.StatusCode, gin.H{"errors": httperr.Err.Error()})
 		return

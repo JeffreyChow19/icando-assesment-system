@@ -27,7 +27,6 @@ func NewClassServiceImpl(classRepository repository.ClassRepository) *ClassServi
 
 func (s *ClassServiceImpl) GetAllClass(filter dto.GetAllClassFilter) ([]dao.ClassDao, error) {
 	class, err := s.classRepository.GetAllClass(filter)
-
 	if err != nil {
 		return nil, err
 	}

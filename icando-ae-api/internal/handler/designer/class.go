@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"icando/internal/domain/service"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
@@ -31,7 +32,7 @@ func NewClassHandlerImpl(classService service.ClassService) *ClassHandlerImpl {
 }
 
 func (h *ClassHandlerImpl) GetAll(c *gin.Context) {
-	institutionID, _ := c.Get("InstitutionID")
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
 	parsedInstitutionID := institutionID.(uuid.UUID)
 	sortBy := "name"
 

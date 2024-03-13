@@ -15,7 +15,7 @@ var Module = fx.Module(
 			fx.Annotate(NewAuthHandlerImpl, fx.As(new(AuthHandler))),
 		),
 		fx.Provide(
-			fx.Annotate(NewStudentHandlerImpl, fx.As(new(StudentHandler))),
+			fx.Annotate(designer.NewStudentHandlerImpl, fx.As(new(designer.StudentHandler))),
 		),
 		fx.Provide(
 			fx.Annotate(designer.NewClassHandlerImpl, fx.As(new(designer.ClassHandler))),
