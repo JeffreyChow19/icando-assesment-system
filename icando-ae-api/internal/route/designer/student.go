@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"icando/internal/handler"
 	"icando/internal/middleware"
-	"icando/internal/model/enum"
 )
 
 type StudentRoute struct {
@@ -14,10 +13,10 @@ type StudentRoute struct {
 
 func (r StudentRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/student")
-	group.POST("", r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER), r.studentHandler.Post)
-	group.GET("/:id", r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER), r.studentHandler.Get)
-	group.PATCH("/:id", r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER), r.studentHandler.Patch)
-	group.DELETE("/:id", r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER), r.studentHandler.Delete)
+	group.POST("", r.studentHandler.Post)
+	group.GET("/:id", r.studentHandler.Get)
+	group.PATCH("/:id", r.studentHandler.Patch)
+	group.DELETE("/:id", r.studentHandler.Delete)
 }
 
 func NewStudentRoute(

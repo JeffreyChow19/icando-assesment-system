@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"icando/internal/model"
+	"icando/internal/model/enum"
 	"icando/lib"
 	"icando/utils/logger"
 	"math/rand"
@@ -47,13 +48,14 @@ func main() {
 		for i := 0; i < 3; i++ {
 			firstName, lastName, email := generateAccount()
 
-			ld := model.LearningDesigner{
+			ld := model.Teacher{
 				ID:            uuid.New(),
 				FirstName:     firstName,
 				LastName:      lastName,
 				Email:         email,
 				Password:      string(hashedPassword),
 				InstitutionID: institution.ID,
+				Role:          enum.TEACHER_ROLE_LEARNING_DESIGNER,
 			}
 
 			if err := tx.Create(&ld).Error; err != nil {
@@ -73,6 +75,7 @@ func main() {
 				Email:         email,
 				Password:      string(hashedPassword),
 				InstitutionID: institution.ID,
+				Role:          enum.TEACHER_ROLE_REGULAR,
 			}
 
 			if err := tx.Create(&teacher).Error; err != nil {

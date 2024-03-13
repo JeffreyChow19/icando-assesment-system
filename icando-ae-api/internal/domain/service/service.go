@@ -12,7 +12,7 @@ var Module = fx.Module(
 			fx.Annotate(NewStudentServiceImpl, fx.As(new(StudentService))),
 		),
 		fx.Provide(fx.Annotate(NewAuthServiceImpl, fx.As(new(AuthService)))),
-		fx.Provide(fx.Annotate(NewLearningDesignerServiceImpl, fx.As(new(LearningDesignerService)))),
+		fx.Provide(fx.Annotate(NewTeacherServiceImpl, fx.As(new(TeacherService)))),
 		fx.Provide(fx.Annotate(NewClassServiceImpl, fx.As(new(ClassService)))),
 	),
 )

@@ -3,16 +3,20 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
+	"icando/internal/middleware"
+	"icando/internal/model/enum"
 	"icando/internal/route/designer"
 	"icando/internal/route/student"
 	"icando/internal/route/teacher"
 )
 
 type Routes struct {
-	student  []Route
-	teacher  []Route
-	designer []Route
-	public   []Route
+	student        []Route
+	teacher        []Route
+	designer       []Route
+	public         []Route
+	auth           []Route
+	authMiddleware *middleware.AuthMiddleware
 }
 
 var Module = fx.Options(
@@ -40,17 +44,21 @@ func NewRoutes(
 	studentAuth *student.AuthRoute,
 	studentRoute *designer.StudentRoute,
 	competencyRoute *designer.CompetencyRoute,
+	authMiddleware *middleware.AuthMiddleware,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
-	designerRoutes := []Route{studentRoute, designerAuth, designerClass, competencyRoute}
-	teacherRoutes := []Route{teacherAuth}
-	studentRoutes := []Route{studentAuth}
+	designerRoutes := []Route{studentRoute, designerClass, competencyRoute}
+	teacherRoutes := []Route{}
+	studentRoutes := []Route{}
+	authRoutes := []Route{teacherAuth, designerAuth, studentAuth}
 
 	return &Routes{
-		public:   publicRoutes,
-		designer: designerRoutes,
-		teacher:  teacherRoutes,
-		student:  studentRoutes,
+		public:         publicRoutes,
+		designer:       designerRoutes,
+		teacher:        teacherRoutes,
+		student:        studentRoutes,
+		authMiddleware: authMiddleware,
+		auth:           authRoutes,
 	}
 }
 
@@ -58,8 +66,15 @@ func (r Routes) Setup(engine *gin.Engine) {
 	public := engine.Group("")
 
 	studentGroup := engine.Group("/student")
+	studentGroup.Use(r.authMiddleware.Handler(enum.ROLE_STUDENT))
+
 	teacherGroup := engine.Group("/teacher")
+	teacherGroup.Use(r.authMiddleware.Handler(enum.ROLE_TEACHER))
+
 	designerGroup := engine.Group("/designer")
+	designerGroup.Use(r.authMiddleware.Handler(enum.ROLE_LEARNING_DESIGNER))
+
+	authGroup := engine.Group("/auth")
 
 	for _, route := range r.public {
 		route.Setup(public)
@@ -75,5 +90,9 @@ func (r Routes) Setup(engine *gin.Engine) {
 
 	for _, route := range r.designer {
 		route.Setup(designerGroup)
+	}
+
+	for _, route := range r.auth {
+		route.Setup(authGroup)
 	}
 }

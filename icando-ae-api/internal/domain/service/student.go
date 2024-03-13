@@ -37,13 +37,9 @@ func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.
 	// to do get class by id
 	// check if class s institution == institution id
 
-	existingStudent, err := s.studentRepository.GetOne(dto.GetStudentFilter{Nisn: &studentDto.Nisn})
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return nil, httperror.InternalServerError
-	}
-
-	if existingStudent != nil {
-		return nil, ErrDuplicateNisn
+	httperr := s.checkStudentUniqueIdentifier(studentDto.Email, studentDto.Nisn)
+	if httperr != nil {
+		return nil, httperr
 	}
 
 	student := model.Student{
@@ -54,7 +50,7 @@ func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.
 		ClassID:       studentDto.ClassID,
 		InstitutionID: institutionId,
 	}
-	err = s.studentRepository.Create(student)
+	err := s.studentRepository.Create(student)
 	if err != nil {
 		return nil, ErrCreateStudent
 	}
@@ -63,19 +59,22 @@ func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.
 }
 
 func (s *StudentServiceImpl) checkStudentUniqueIdentifier(email string, nisn string) *httperror.HttpError {
-	existingStudent, err := s.studentRepository.GetOne(dto.GetStudentFilter{Nisn: &nisn})
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return httperror.InternalServerError
-	}
-	if existingStudent != nil {
+	_, err := s.studentRepository.GetOne(dto.GetStudentFilter{Nisn: &nisn})
+	if err == nil {
 		return ErrDuplicateNisn
 	}
-	existingStudent, err = s.studentRepository.GetOne(dto.GetStudentFilter{Email: &email})
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return httperror.InternalServerError
 	}
-	if existingStudent != nil {
+
+	_, err = s.studentRepository.GetOne(dto.GetStudentFilter{Email: &email})
+	if err == nil {
 		return ErrDuplicateEmail
+	}
+
+	if !errors.Is(err, gorm.ErrRecordNotFound) {
+		return httperror.InternalServerError
 	}
 
 	return nil
