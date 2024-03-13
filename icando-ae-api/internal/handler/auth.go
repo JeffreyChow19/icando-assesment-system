@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/rs/zerolog/log"
 	"icando/internal/domain/service"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
@@ -64,6 +65,7 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 
 func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
 	user, _ := c.Get("user")
+	log.Print(user)
 	claim := user.(*dao.TokenClaim)
 
 	data, err := h.service.ProfileTeacher(claim.ID)

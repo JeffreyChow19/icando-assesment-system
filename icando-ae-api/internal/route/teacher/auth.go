@@ -3,11 +3,13 @@ package teacher
 import (
 	"github.com/gin-gonic/gin"
 	"icando/internal/handler"
+	"icando/internal/middleware"
 	"icando/internal/model/enum"
 )
 
 type AuthRoute struct {
-	authHandler handler.AuthHandler
+	authHandler    handler.AuthHandler
+	authMiddleware *middleware.AuthMiddleware
 }
 
 func (r AuthRoute) Setup(engine *gin.RouterGroup) {
@@ -19,11 +21,12 @@ func (r AuthRoute) Setup(engine *gin.RouterGroup) {
 		},
 	)
 
-	group.GET("/profile", r.authHandler.GetTeacherProfile)
+	group.GET("/profile", r.authMiddleware.Handler(enum.ROLE_TEACHER), r.authHandler.GetTeacherProfile)
 }
 
-func NewAuthRoute(authHandler handler.AuthHandler) *AuthRoute {
+func NewAuthRoute(authHandler handler.AuthHandler, authMiddleware *middleware.AuthMiddleware) *AuthRoute {
 	return &AuthRoute{
-		authHandler: authHandler,
+		authHandler:    authHandler,
+		authMiddleware: authMiddleware,
 	}
 }
