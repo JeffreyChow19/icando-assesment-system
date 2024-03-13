@@ -36,12 +36,12 @@ func (r *ClassRepository) CreateClass(dto dto.ClassDto) (*model.Class, error) {
 
 func (r *ClassRepository) UpdateClass(id uuid.UUID, dto dto.ClassDto) (*model.Class, error) {
 	class := model.Class{
-		ID:            id,
 		Name:          dto.Name,
 		Grade:         dto.Grade,
 		InstitutionID: dto.InstitutionID,
 		TeacherID:     dto.TeacherID,
 	}
+	class.ID = id
 
 	if err := r.db.Save(&class).Error; err != nil {
 		return nil, err
