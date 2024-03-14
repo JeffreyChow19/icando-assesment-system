@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
 import { cn } from "@ui/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -30,8 +30,14 @@ const formSchema = z.object({
 
 export function LoginPage({ className, ...props }: UserAuthFormProps) {
   const [fieldError, setFieldError] = useState<string | null>(null);
-  const { refresh } = useUser();
+  const { refresh, user } = useUser();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [navigate, user]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

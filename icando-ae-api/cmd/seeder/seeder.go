@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"icando/internal/model"
+	"icando/internal/model/enum"
 	"icando/lib"
 	"icando/utils/logger"
 	"math/rand"
@@ -28,11 +29,11 @@ func main() {
 	tx := db.DB.Begin()
 
 	institutions := []model.Institution{
-		{ID: uuid.New(), Name: "SMAN 1 Kwangya", Nis: "23456781", Slug: "sman-1-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 2 Kwangya", Nis: "23456782", Slug: "sman-2-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 3 Kwangya", Nis: "23456783", Slug: "sman-3-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 4 Kwangya", Nis: "23456784", Slug: "sman-4-kwangya"},
-		{ID: uuid.New(), Name: "SMAN 5 Kwangya", Nis: "23456785", Slug: "sman-5-kwangya"},
+		{Name: "SMAN 1 Kwangya", Nis: "23456781", Slug: "sman-1-kwangya"},
+		{Name: "SMAN 2 Kwangya", Nis: "23456782", Slug: "sman-2-kwangya"},
+		{Name: "SMAN 3 Kwangya", Nis: "23456783", Slug: "sman-3-kwangya"},
+		{Name: "SMAN 4 Kwangya", Nis: "23456784", Slug: "sman-4-kwangya"},
+		{Name: "SMAN 5 Kwangya", Nis: "23456785", Slug: "sman-5-kwangya"},
 	}
 
 	for _, institution := range institutions {
@@ -47,13 +48,13 @@ func main() {
 		for i := 0; i < 3; i++ {
 			firstName, lastName, email := generateAccount()
 
-			ld := model.LearningDesigner{
-				ID:            uuid.New(),
+			ld := model.Teacher{
 				FirstName:     firstName,
 				LastName:      lastName,
 				Email:         email,
 				Password:      string(hashedPassword),
 				InstitutionID: institution.ID,
+				Role:          enum.TEACHER_ROLE_LEARNING_DESIGNER,
 			}
 
 			if err := tx.Create(&ld).Error; err != nil {
@@ -67,12 +68,12 @@ func main() {
 			firstName, lastName, email := generateAccount()
 
 			teacher := model.Teacher{
-				ID:            uuid.New(),
 				FirstName:     firstName,
 				LastName:      lastName,
 				Email:         email,
 				Password:      string(hashedPassword),
 				InstitutionID: institution.ID,
+				Role:          enum.TEACHER_ROLE_REGULAR,
 			}
 
 			if err := tx.Create(&teacher).Error; err != nil {
@@ -86,7 +87,6 @@ func main() {
 			for _, grade := range grades {
 				for j := 1; j <= 3; j++ {
 					class := model.Class{
-						ID:            uuid.New(),
 						Name:          fmt.Sprintf("Class %d", j),
 						Grade:         grade,
 						InstitutionID: institution.ID,

@@ -2,7 +2,6 @@ package dao
 
 import (
 	"github.com/google/uuid"
-	"icando/internal/model/enum"
 )
 
 type AuthDao struct {
@@ -11,7 +10,6 @@ type AuthDao struct {
 }
 
 type TokenClaim struct {
-	ID   uuid.UUID `json:"id"`
-	Role enum.Role `json:"role"`
-	Exp  int64     `json:"exp"`
+	ID  uuid.UUID `json:"id"`
+	Exp int64     `json:"exp"`
 }

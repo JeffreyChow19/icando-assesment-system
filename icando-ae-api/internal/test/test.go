@@ -14,10 +14,10 @@ import (
 	"testing"
 )
 
-func testRunner(t *testing.T, testFunc func(*server.Server, *lib.TestDatabase)) {
+func TestRunner(t *testing.T, testFunc func(*server.Server, *lib.Database)) {
 	app := fxtest.New(
 		t,
-		fx.Options(fx.Provide(lib.NewConfig), fx.Provide(lib.NewTestDatabase)),
+		fx.Options(fx.Provide(lib.NewConfig), fx.Provide(lib.NewDatabase)),
 		middleware.Module,
 		handler.Module,
 		service.Module,
@@ -25,7 +25,7 @@ func testRunner(t *testing.T, testFunc func(*server.Server, *lib.TestDatabase)) 
 		route.Module,
 		server.Module,
 		fx.Invoke(
-			func(server *server.Server, testDb *lib.TestDatabase) {
+			func(server *server.Server, testDb *lib.Database) {
 				migrations.Up(testDb.DB)
 				server.RunForTest()
 				testFunc(server, testDb)

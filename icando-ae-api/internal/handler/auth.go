@@ -14,7 +14,6 @@ import (
 type AuthHandler interface {
 	Login(c *gin.Context, role enum.Role)
 	GetTeacherProfile(c *gin.Context)
-	GetLearningDesignerProfile(c *gin.Context)
 	GetStudentProfile(c *gin.Context)
 	ChangePassword(c *gin.Context)
 }
@@ -35,7 +34,6 @@ func (h *AuthHandlerImpl) Login(c *gin.Context, role enum.Role) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	authDao, err := h.service.Login(loginDto, role)
 
 	if err != nil {
@@ -48,7 +46,7 @@ func (h *AuthHandlerImpl) Login(c *gin.Context, role enum.Role) {
 }
 
 func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	userModel := user.(*dao.LearningDesignerDao)
 	var changePasswordDto dto.ChangePasswordDto
 	err := c.ShouldBindJSON(&changePasswordDto)
@@ -65,7 +63,7 @@ func (h *AuthHandlerImpl) ChangePassword(c *gin.Context) {
 }
 
 func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	claim := user.(*dao.TokenClaim)
 
 	data, err := h.service.ProfileTeacher(claim.ID)
@@ -78,21 +76,8 @@ func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
 }
 
-func (h *AuthHandlerImpl) GetLearningDesignerProfile(c *gin.Context) {
-	user, _ := c.Get("user")
-	claim := user.(*dao.TokenClaim)
-
-	data, err := h.service.ProfileLearningDesigner(claim.ID)
-
-	if err != nil {
-		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
-}
 func (h *AuthHandlerImpl) GetStudentProfile(c *gin.Context) {
-	user, _ := c.Get("user")
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
 	claim := user.(*dao.TokenClaim)
 
 	data, err := h.service.ProfileStudent(claim.ID)

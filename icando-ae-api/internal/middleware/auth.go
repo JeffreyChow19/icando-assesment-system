@@ -18,23 +18,20 @@ import (
 )
 
 type AuthMiddleware struct {
-	studentRepository          repository.StudentRepository
-	teacherRepository          repository.TeacherRepository
-	learningDesignerRepository repository.LearningDesignerRepository
-	config                     *lib.Config
+	studentRepository repository.StudentRepository
+	teacherRepository repository.TeacherRepository
+	config            *lib.Config
 }
 
 func NewAuthMiddleware(
 	config *lib.Config,
 	studentRepository repository.StudentRepository,
 	teacherRepository repository.TeacherRepository,
-	learningDesignerRepository repository.LearningDesignerRepository,
 ) *AuthMiddleware {
 	return &AuthMiddleware{
-		studentRepository:          studentRepository,
-		teacherRepository:          teacherRepository,
-		learningDesignerRepository: learningDesignerRepository,
-		config:                     config,
+		studentRepository: studentRepository,
+		teacherRepository: teacherRepository,
+		config:            config,
 	}
 }
 
@@ -53,7 +50,7 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 				return
 			}
 
-			if authorized.Role == enum.ROLE_TEACHER {
+			if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
 				teacher, err := m.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &authorized.ID})
 
 				if err != nil {
@@ -61,30 +58,25 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 					return
 				}
 
-				c.Set("InstitutionID", teacher.InstitutionID)
-			} else if authorized.Role == enum.ROLE_STUDENT {
-				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &authorized.ID})
+				if role == enum.ROLE_LEARNING_DESIGNER && teacher.Role != enum.ROLE_LEARNING_DESIGNER {
+					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": errors.New("Forbidden")})
+					return
+				}
+
+				c.Set(enum.INSTITUTION_ID_CONTEXT_KEY, teacher.InstitutionID)
+			} else if role == enum.ROLE_STUDENT {
+				idString := authorized.ID.String()
+				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
 
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Student not found")})
 					return
 				}
-			} else if authorized.Role == enum.ROLE_LEARNING_DESIGNER {
-				learningDesigner, err := m.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &authorized.ID})
-
-				if err != nil {
-					c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": errors.New("Learning designer not found")})
-					return
-				}
-
-				c.Set("InstitutionID", learningDesigner.InstitutionID)
 			}
 
-			if authorized.Role == role || role == enum.ROLE_ALL {
-				c.Set("user", authorized)
-				c.Next()
-				return
-			}
+			c.Set(enum.USER_CONTEXT_KEY, authorized)
+			c.Next()
+			return
 		}
 
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -93,9 +85,11 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 
 func (m *AuthMiddleware) authorize(tokenString string) (*dao.TokenClaim, error) {
 	claims := jwt.MapClaims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(m.config.JwtSecret), nil
-	})
+	token, err := jwt.ParseWithClaims(
+		tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(m.config.JwtSecret), nil
+		},
+	)
 
 	if !token.Valid || err != nil {
 		return nil, errors.New("token is invalid")
@@ -111,24 +105,11 @@ func (m *AuthMiddleware) authorize(tokenString string) (*dao.TokenClaim, error) 
 
 	parsedUuid, err := uuid.Parse(id)
 
-	role := fmt.Sprint(claims["role"])
-
 	if err != nil {
 		return nil, errors.New("Cannot parse uuid")
 	}
 
-	var parsedRole enum.Role
-
-	if role == enum.ROLE_LEARNING_DESIGNER {
-		parsedRole = enum.ROLE_LEARNING_DESIGNER
-	} else if role == enum.ROLE_STUDENT {
-		parsedRole = enum.ROLE_STUDENT
-	} else if role == enum.ROLE_TEACHER {
-		parsedRole = enum.ROLE_TEACHER
-	}
-
 	return &dao.TokenClaim{
-		ID:   parsedUuid,
-		Role: parsedRole,
+		ID: parsedUuid,
 	}, nil
 }

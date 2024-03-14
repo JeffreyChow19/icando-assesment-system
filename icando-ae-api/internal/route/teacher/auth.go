@@ -9,21 +9,24 @@ import (
 
 type AuthRoute struct {
 	authHandler    handler.AuthHandler
-	authMiddleware middleware.AuthMiddleware
+	authMiddleware *middleware.AuthMiddleware
 }
 
 func (r AuthRoute) Setup(engine *gin.RouterGroup) {
-	group := engine.Group("/auth")
+	group := engine.Group("/teacher")
 
-	group.POST("/login", func(c *gin.Context) {
-		r.authHandler.Login(c, enum.ROLE_TEACHER)
-	})
+	group.POST(
+		"/login", func(c *gin.Context) {
+			r.authHandler.Login(c, enum.ROLE_TEACHER)
+		},
+	)
 
 	group.GET("/profile", r.authMiddleware.Handler(enum.ROLE_TEACHER), r.authHandler.GetTeacherProfile)
 }
 
-func NewAuthRoute(authHandler handler.AuthHandler) *AuthRoute {
+func NewAuthRoute(authHandler handler.AuthHandler, authMiddleware *middleware.AuthMiddleware) *AuthRoute {
 	return &AuthRoute{
-		authHandler: authHandler,
+		authHandler:    authHandler,
+		authMiddleware: authMiddleware,
 	}
 }

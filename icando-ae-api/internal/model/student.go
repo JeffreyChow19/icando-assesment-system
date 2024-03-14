@@ -23,7 +23,7 @@ func (s Student) ToDao() dao.StudentDao {
 		FirstName: s.FirstName,
 		LastName:  s.LastName,
 		Nisn:      s.Nisn,
-		Email:     &s.Email,
+		Email:     s.Email,
 		ClassID:   s.ClassID,
 	}
 }

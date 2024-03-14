@@ -3,16 +3,18 @@ package model
 import (
 	"github.com/google/uuid"
 	"icando/internal/model/dao"
+	"icando/internal/model/enum"
 )
 
 type Teacher struct {
-	ID            uuid.UUID `gorm:"primarykey"`
+	Model
 	FirstName     string
 	LastName      string
 	Email         string
 	Password      string
 	InstitutionID uuid.UUID
 	Institution   *Institution
+	Role          enum.TeacherRole
 }
 
 func (s Teacher) ToDao() dao.TeacherDao {

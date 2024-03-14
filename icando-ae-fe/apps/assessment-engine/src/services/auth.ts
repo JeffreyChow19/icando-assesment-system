@@ -32,7 +32,7 @@ interface CheckAuthResponse {
   token?: string;
 }
 
-const path = "/designer/auth";
+const path = "/auth/designer";
 
 export const login = async (payload: LoginPayload): Promise<void> => {
   const { token } = (await api.post(`${path}/login`, payload))

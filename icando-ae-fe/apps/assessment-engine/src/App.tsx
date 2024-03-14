@@ -6,11 +6,11 @@ import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import dayjs from "dayjs";
 import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
-import { Hello } from "./pages/hello.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
-import { TestPage } from "./pages/test.tsx";
+import { Home } from './pages';
 import { LoginPage } from "./pages/login.tsx";
+import { Students } from './pages/students/students.tsx';
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -20,16 +20,16 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/hello",
-      element: <Hello />,
-    },
-    {
       path: "/",
-      element: <TestPage />,
+      element: <Home />,
     },
     {
       path: "/login",
       element: <LoginPage />,
+    },
+    {
+      path: "/students",
+      element: <Students />,
     },
   ]);
   return (

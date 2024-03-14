@@ -1,12 +1,11 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"icando/internal/model/dao"
 )
 
 type Institution struct {
-	ID   uuid.UUID `gorm:"primarykey"`
+	Model
 	Name string
 	Nis  string
 	Slug string

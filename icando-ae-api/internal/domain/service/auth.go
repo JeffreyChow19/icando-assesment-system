@@ -21,59 +21,28 @@ type AuthService interface {
 	ChangePassword(id uuid.UUID, role enum.Role, dto dto.ChangePasswordDto) *httperror.HttpError
 	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
 	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
-	ProfileLearningDesigner(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
 }
 
 type AuthServiceImpl struct {
-	learningDesignerRepository repository.LearningDesignerRepository
-	studentRepository          repository.StudentRepository
-	teacherRepository          repository.TeacherRepository
-	learningDesignerService    LearningDesignerService
-	config                     *lib.Config
+	studentRepository repository.StudentRepository
+	teacherRepository repository.TeacherRepository
+	config            *lib.Config
 }
 
-func NewAuthServiceImpl(learningDesignerRepository repository.LearningDesignerRepository,
+func NewAuthServiceImpl(
 	studentRepository repository.StudentRepository,
 	teacherRepository repository.TeacherRepository,
-	learningDesignerService LearningDesignerService,
-	config *lib.Config) *AuthServiceImpl {
+	config *lib.Config,
+) *AuthServiceImpl {
 	return &AuthServiceImpl{
-		learningDesignerRepository: learningDesignerRepository,
-		studentRepository:          studentRepository,
-		teacherRepository:          teacherRepository,
-		config:                     config,
-		learningDesignerService:    learningDesignerService,
+		studentRepository: studentRepository,
+		teacherRepository: teacherRepository,
+		config:            config,
 	}
 }
 
 func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, *httperror.HttpError) {
-	if role == enum.ROLE_LEARNING_DESIGNER {
-		learningDesigner, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{Email: &loginDto.Email})
-
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, ErrLearningDesignerNotFound
-			}
-			return nil, httperror.InternalServerError
-		}
-
-		if !s.checkPassword(loginDto.Password, learningDesigner.Password) {
-			return nil, InvalidCredentialsError
-		}
-
-		claim := dao.TokenClaim{
-			ID:   learningDesigner.ID,
-			Role: enum.ROLE_LEARNING_DESIGNER,
-		}
-
-		authDao, err := s.buildAuthDao(claim)
-
-		if err != nil {
-			return nil, httperror.InternalServerError
-		}
-
-		return authDao, nil
-	} else if role == enum.ROLE_STUDENT {
+	if role == enum.ROLE_STUDENT {
 		// todo student token should have different expire date (1 week or manually configurable)
 		student, err := s.studentRepository.GetOne(dto.GetStudentFilter{Email: &loginDto.Email})
 
@@ -85,8 +54,7 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 		}
 
 		claim := dao.TokenClaim{
-			ID:   student.ID,
-			Role: enum.ROLE_STUDENT,
+			ID: student.ID,
 		}
 
 		authDao, err := s.buildAuthDao(claim)
@@ -96,9 +64,8 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 		}
 
 		return authDao, nil
-	} else if role == enum.ROLE_TEACHER {
+	} else if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
 		teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{Email: &loginDto.Email})
-
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil, ErrTeacherNotFound
@@ -106,13 +73,17 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 			return nil, httperror.InternalServerError
 		}
 
+		if teacher.Role != enum.ROLE_LEARNING_DESIGNER && role == enum.ROLE_LEARNING_DESIGNER {
+			return nil, httperror.UnauthorizedError
+		}
+
 		if !s.checkPassword(loginDto.Password, teacher.Password) {
 			return nil, httperror.UnauthorizedError
 		}
 
 		claim := dao.TokenClaim{
-			ID:   teacher.ID,
-			Role: enum.ROLE_TEACHER,
+			ID:  teacher.ID,
+			Exp: time.Now().Add(time.Hour * 8).Unix(),
 		}
 
 		authDao, err := s.buildAuthDao(claim)
@@ -127,27 +98,10 @@ func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.Aut
 	return nil, httperror.InternalServerError
 }
 
-func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role enum.Role, changePasswordDto dto.ChangePasswordDto) *httperror.HttpError {
-	if role == enum.ROLE_LEARNING_DESIGNER {
-		user, err := s.learningDesignerRepository.FindLearningDesigner(dto.GetLearningDesignerFilter{ID: &id})
-
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return ErrLearningDesignerNotFound
-			}
-			return httperror.InternalServerError
-		}
-
-		if !s.checkPassword(changePasswordDto.OldPassword, user.Password) {
-			return httperror.UnauthorizedError
-		}
-
-		user.Password = s.hashPassword(changePasswordDto.NewPassword)
-		err = s.learningDesignerRepository.UpdateUserInfo(user)
-		if err != nil {
-			return httperror.InternalServerError
-		}
-	} else if role == enum.ROLE_TEACHER {
+func (s *AuthServiceImpl) ChangePassword(
+	id uuid.UUID, role enum.Role, changePasswordDto dto.ChangePasswordDto,
+) *httperror.HttpError {
+	if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
 		user, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &id})
 
 		if err != nil {
@@ -167,12 +121,14 @@ func (s *AuthServiceImpl) ChangePassword(id uuid.UUID, role enum.Role, changePas
 			return httperror.InternalServerError
 		}
 	}
+	// to do: handle for student
 
 	return nil
 }
 
 func (s *AuthServiceImpl) ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError) {
-	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &id})
+	idString := id.String()
+	student, err := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrStudentNotFound
@@ -200,16 +156,6 @@ func (s *AuthServiceImpl) ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httper
 	return &teacherDao, nil
 }
 
-func (s *AuthServiceImpl) ProfileLearningDesigner(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError) {
-	learningDesignerDao, err := s.learningDesignerService.FindLearningDesignerById(id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return learningDesignerDao, nil
-}
-
 func (s *AuthServiceImpl) buildAuthDao(claim dao.TokenClaim) (*dao.AuthDao, error) {
 
 	token, err := s.generateToken(claim)
@@ -228,9 +174,8 @@ func (s *AuthServiceImpl) buildAuthDao(claim dao.TokenClaim) (*dao.AuthDao, erro
 func (s *AuthServiceImpl) generateToken(user dao.TokenClaim) (string, error) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodHS256, jwt.MapClaims{
-			"id":   user.ID.String(),
-			"role": string(user.Role),
-			"exp":  time.Now().Add(time.Hour * 8).Unix(),
+			"id":  user.ID.String(),
+			"exp": user.Exp,
 		},
 	)
 	tokenString, err := token.SignedString([]byte(s.config.JwtSecret))
@@ -245,11 +190,6 @@ func (s *AuthServiceImpl) hashPassword(password string) string {
 func (s *AuthServiceImpl) checkPassword(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
-}
-
-var ErrLearningDesignerNotFound = &httperror.HttpError{
-	StatusCode: http.StatusNotFound,
-	Err:        errors.New("Learning Designer not found"),
 }
 
 var ErrTeacherNotFound = &httperror.HttpError{
