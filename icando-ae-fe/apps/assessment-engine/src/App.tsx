@@ -10,7 +10,7 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from './pages';
 import { LoginPage } from "./pages/login.tsx";
-import { Students } from './pages/students/students.tsx';
+import { Students } from './pages/students';
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
