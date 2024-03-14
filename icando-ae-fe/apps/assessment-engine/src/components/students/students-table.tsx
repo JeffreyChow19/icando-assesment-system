@@ -18,7 +18,7 @@ import { Pagination } from '../pagination.tsx';
 
 
 export function StudentsTable() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const pageParams = searchParams.get('page');
 
   const [page, setPage] = useState(pageParams ? parseInt(pageParams) : 1);
