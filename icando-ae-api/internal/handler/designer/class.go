@@ -2,15 +2,17 @@ package designer
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"icando/internal/domain/service"
+	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 type ClassHandler interface {
@@ -19,15 +21,19 @@ type ClassHandler interface {
 	Update(c *gin.Context)
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
+	GetWithStudents(c *gin.Context)
+	AssignStudents(c *gin.Context)
 }
 
 type ClassHandlerImpl struct {
 	classService service.ClassService
+	studentService service.StudentService
 }
 
-func NewClassHandlerImpl(classService service.ClassService) *ClassHandlerImpl {
+func NewClassHandlerImpl(classService service.ClassService, studentService service.StudentService) *ClassHandlerImpl {
 	return &ClassHandlerImpl{
 		classService: classService,
+		studentService: studentService,
 	}
 }
 
@@ -154,4 +160,69 @@ func (h *ClassHandlerImpl) Delete(c *gin.Context) {
 	msg := "Deleted"
 
 	c.JSON(http.StatusOK, response.NewBaseResponse(&msg, nil))
+}
+
+func (h *ClassHandlerImpl) GetWithStudents(c *gin.Context) {
+	classId := c.Param("id")
+	parsedId, err := uuid.Parse(classId)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
+		return
+	}
+
+	filter := dto.GetClassFitler{WithStudentRelation: true}
+
+	class, err := h.classService.GetClass(parsedId, filter)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *class))
+}
+
+// todo: handle nullable (unassign students from class)
+func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
+	classId := c.Param("id")
+	parsedId, err := uuid.Parse(classId)
+
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
+		return
+	}
+	
+	var studentData dto.AssignStudentsRequest
+
+	if err := c.ShouldBindJSON(&studentData); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
+		return
+	}
+
+	var student []*dao.StudentDao
+	for _, studentId := range studentData.StudentIDs {
+		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &parsedId})
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})		
+			return
+		}
+
+		student = append(student, updatedStudent)
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, student))
 }
