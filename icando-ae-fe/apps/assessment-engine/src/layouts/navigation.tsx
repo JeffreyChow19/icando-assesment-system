@@ -78,7 +78,7 @@ const UserDropdown = () => {
 
 const NavMenus = () => {
   const location = useLocation();
-  const pathname = location.pathname;
+  const pathname = '/' + location.pathname.split('/')[1];
 
   return (
     <div className="p-2 lg:p-4 flex flex-col gap-2">
@@ -105,7 +105,7 @@ const NavMenus = () => {
 
 export const SideBar = () => {
   return (
-    <div className="sticky top-0 left-0 min-h-full bg-primary-foreground hidden lg:block shadow-lg">
+    <div className="sticky top-0 left-0 min-h-screen max-h-screen bg-primary-foreground hidden lg:block shadow-lg">
       <img src={"/logo.png"} alt={"logo"} className="w-48 m-auto pt-4" />
       <NavMenus />
     </div>
