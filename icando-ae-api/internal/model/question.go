@@ -8,6 +8,7 @@ import (
 
 type Question struct {
 	Model
+	Text     string
 	Choices  *postgres.Jsonb `gorm:"type:jsonb"`
 	AnswerID int             `gorm:"column:answer_id"`
 	QuizID   uuid.UUID       `gorm:"column:quiz_id"`
