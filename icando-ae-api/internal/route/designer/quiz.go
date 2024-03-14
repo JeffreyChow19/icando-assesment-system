@@ -14,6 +14,7 @@ type QuizRoute struct {
 func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/quiz")
 	group.POST("", r.quizHandler.Create)
+	group.PATCH("", r.quizHandler.Update)
 }
 
 func NewQuizRoute(
