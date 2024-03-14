@@ -106,7 +106,7 @@ export const StudentsForm = ({ student }: { student?: Student }) => {
               <FormItem>
                 <FormLabel>Email*</FormLabel>
                 <FormControl>
-                  <Input placeholder="Competency description" {...field} disabled={!!student} />
+                  <Input placeholder="example@gmail.com" {...field} disabled={!!student} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

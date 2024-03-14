@@ -11,6 +11,8 @@ import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from './pages';
 import { LoginPage } from "./pages/login.tsx";
 import { Students } from './pages/students';
+import { StudentsEdit } from './pages/students/students-edit.tsx';
+import { StudentsNew } from './pages/students/students-new.tsx';
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -30,6 +32,14 @@ function App() {
     {
       path: "/students",
       element: <Students />,
+    },
+    {
+      path: "/students/new",
+      element: <StudentsNew />,
+    },
+    {
+      path: "/students/edit/:id",
+      element: <StudentsEdit />,
     },
   ]);
   return (

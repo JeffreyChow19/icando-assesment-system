@@ -26,6 +26,10 @@ interface GetAllStudentsResponse {
   data: Student[];
 }
 
+interface GetStudentResponse {
+  data: Student;
+}
+
 
 const path = '/designer/student';
 
@@ -41,6 +45,11 @@ export const getAllStudent = async (filter: GetAllStudentsFilter) => {
   return (await api.get(path, { params: filter })).data as GetAllStudentsResponse;
 };
 
+export const getStudent = async (id: string) => {
+  const { data } = (await api.get(`${path}/${id}`)).data as GetStudentResponse;
+  return data;
+};
+
 export const deleteStudent = async (id: string) => {
   await api.delete(`${path}/${id}`);
-}
+};
