@@ -8,8 +8,8 @@ import (
 
 type Quiz struct {
 	Model
-	Name         string
-	Subject      string
+	Name         *string
+	Subject      *string
 	PassingGrade float64
 	ParentQuiz   *uuid.UUID
 	CreatedBy    uuid.UUID  `gorm:"type:uuid;not null"`
@@ -21,8 +21,8 @@ type Quiz struct {
 func (q Quiz) ToDao() dao.QuizDao {
 	daoQuiz := dao.QuizDao{
 		ID:           q.ID,
-		Name:         &q.Name,
-		Subject:      &q.Subject,
+		Name:         q.Name,
+		Subject:      q.Subject,
 		PassingGrade: q.PassingGrade,
 	}
 
