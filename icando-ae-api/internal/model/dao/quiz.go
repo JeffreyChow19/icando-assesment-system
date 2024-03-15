@@ -7,8 +7,9 @@ import (
 
 type QuizDao struct {
 	ID           uuid.UUID  `json:"id"`
-	Name         *string    `json:"name,omitempty"`
-	Subject      *string    `json:"subject,omitempty"`
-	PassingGrade float64    `json:"passing_grade,omitempty"`
-	Deadline     *time.Time `json:"deadline,omitempty"`
+	Name         *string    `json:"name"`
+	Subject      *string    `json:"subject"`
+	PassingGrade float64    `json:"passingGrade"`
+	PublishedAt  *time.Time `json:"publishedAt"`
+	Deadline     *time.Time `json:"deadline"`
 }

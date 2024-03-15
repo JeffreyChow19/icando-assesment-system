@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
@@ -15,6 +16,7 @@ import (
 type QuizService interface {
 	CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
+	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.QuizDao, *dao.MetaDao, *httperror.HttpError)
 }
 
 type QuizServiceImpl struct {
@@ -89,4 +91,19 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	quizDao := quiz.ToDao()
 
 	return &quizDao, nil
+}
+
+func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.QuizDao, *dao.MetaDao, *httperror.HttpError) {
+	quizzes, meta, err := s.quizRepository.GetAllQuiz(filter)
+	if err != nil {
+		log.Print(err)
+		return nil, nil, httperror.InternalServerError
+	}
+
+	quizzesDao := []dao.QuizDao{}
+	for _, quiz := range quizzes {
+		quizzesDao = append(quizzesDao, quiz.ToDao())
+	}
+
+	return quizzesDao, meta, nil
 }
