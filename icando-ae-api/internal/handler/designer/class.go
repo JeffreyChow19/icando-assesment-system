@@ -68,7 +68,7 @@ func (h *ClassHandlerImpl) Get(c *gin.Context) {
 
 	// change param here to include other relation
 	// todo: check for route params
-	filter := dto.GetClassFitler{}
+	filter := dto.GetClassFilter{}
 
 	class, err := h.classService.GetClass(parsedId, filter)
 
