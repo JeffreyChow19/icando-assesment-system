@@ -21,7 +21,6 @@ type ClassHandler interface {
 	Update(c *gin.Context)
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
-	GetWithStudents(c *gin.Context)
 	AssignStudents(c *gin.Context)
 	UnassignStudents(c *gin.Context)
 }
@@ -68,6 +67,7 @@ func (h *ClassHandlerImpl) Get(c *gin.Context) {
 	}
 
 	// change param here to include other relation
+	// todo: check for route params
 	filter := dto.GetClassFitler{}
 
 	class, err := h.classService.GetClass(parsedId, filter)
@@ -161,27 +161,6 @@ func (h *ClassHandlerImpl) Delete(c *gin.Context) {
 	msg := "Deleted"
 
 	c.JSON(http.StatusOK, response.NewBaseResponse(&msg, nil))
-}
-
-func (h *ClassHandlerImpl) GetWithStudents(c *gin.Context) {
-	classId := c.Param("id")
-	parsedId, err := uuid.Parse(classId)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
-		return
-	}
-
-	filter := dto.GetClassFitler{WithStudentRelation: true}
-
-	class, err := h.classService.GetClass(parsedId, filter)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *class))
 }
 
 func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
