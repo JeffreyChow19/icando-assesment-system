@@ -21,3 +21,7 @@ type GetClassFitler struct {
 	WithInstitutionRelation bool
 	WithStudentRelation     bool
 }
+
+type AssignStudentsRequest struct {
+	StudentIDs		[]uuid.UUID `json:"studentIds" binding:"required"`
+}
