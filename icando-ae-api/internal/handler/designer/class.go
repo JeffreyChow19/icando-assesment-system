@@ -23,6 +23,7 @@ type ClassHandler interface {
 	Delete(c *gin.Context)
 	GetWithStudents(c *gin.Context)
 	AssignStudents(c *gin.Context)
+	UnassignStudents(c *gin.Context)
 }
 
 type ClassHandlerImpl struct {
@@ -183,7 +184,6 @@ func (h *ClassHandlerImpl) GetWithStudents(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *class))
 }
 
-// todo: handle nullable (unassign students from class)
 func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 	classId := c.Param("id")
 	parsedId, err := uuid.Parse(classId)
@@ -215,6 +215,41 @@ func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 	var student []*dao.StudentDao
 	for _, studentId := range studentData.StudentIDs {
 		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &parsedId})
+
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})		
+			return
+		}
+
+		student = append(student, updatedStudent)
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, student))
+}
+
+func (h *ClassHandlerImpl) UnassignStudents(c *gin.Context) {
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID)
+	
+	var studentData dto.AssignStudentsRequest
+
+	if err := c.ShouldBindJSON(&studentData); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
+		return
+	}
+
+	var student []*dao.StudentDao
+	for _, studentId := range studentData.StudentIDs {
+		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &uuid.Nil})
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})		
