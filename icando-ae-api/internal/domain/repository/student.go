@@ -2,12 +2,14 @@ package repository
 
 import (
 	"fmt"
-	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"math"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type StudentRepository struct {
@@ -89,8 +91,14 @@ func (r *StudentRepository) Upsert(student model.Student) error {
 	return r.db.Save(&student).Error
 }
 
-// todo: bulk update
-
 func (r *StudentRepository) Delete(student model.Student) error {
 	return r.db.Delete(&student).Error
+}
+
+func (r *StudentRepository) BatchClassIdUpdate(dto dto.UpdateStudentClassIdDto) error {
+	if dto.ClassID == &uuid.Nil {
+		return r.db.Model(model.Student{}).Where("id in ?", dto.StudentIDs).Updates(map[string]interface{}{"class_id": nil}).Error
+	} else {
+		return r.db.Model(model.Student{}).Where("id in ?", dto.StudentIDs).Updates(model.Student{ClassID: dto.ClassID}).Error
+	}
 }

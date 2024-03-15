@@ -5,6 +5,7 @@ import (
 )
 
 type GetAllStudentsFilter struct {
+	// todo: ID from string to UUID?
 	Name               *string `form:"name"`
 	InstitutionID      *string `form:"institutionId"`
 	ClassID            *string `form:"classId"`
@@ -15,6 +16,7 @@ type GetAllStudentsFilter struct {
 }
 
 type GetStudentFilter struct {
+	// todo: ID from string to UUID?
 	ID                 *string
 	Nisn               *string
 	Email              *string
@@ -34,4 +36,9 @@ type UpdateStudentDto struct {
 	FirstName *string    `json:"firstName"`
 	LastName  *string    `json:"lastName"`
 	ClassID   *uuid.UUID `json:"classId"`
+}
+
+type UpdateStudentClassIdDto struct {
+	StudentIDs 	[]uuid.UUID	`json:"studentIds" binding:"required"`
+	ClassID 		*uuid.UUID		`json:"classId" binding:"required"`
 }
