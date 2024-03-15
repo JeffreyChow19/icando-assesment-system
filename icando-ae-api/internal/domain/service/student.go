@@ -174,18 +174,21 @@ func (s *StudentServiceImpl) UpdateStudent(institutionId uuid.UUID, id uuid.UUID
 func (s *StudentServiceImpl) BatchUpdateStudentClassId(args dto.UpdateStudentClassIdDto) (
 	[]dao.StudentDao, *httperror.HttpError,
 ) {
-	// todo: check for uuids first
 	err := s.studentRepository.BatchClassIdUpdate(args)
 	if err != nil {
 		return nil, ErrUpdateStudent
 	}
 
-	stringUUID := args.ClassID.String()
-	
 	// todo: dto, class id from string to uuid?
-	students, _, _ := s.GetAllStudents(dto.GetAllStudentsFilter{ClassID: &stringUUID})
+	stringUUID := args.ClassID.String()
+	students, _, _ := s.studentRepository.GetAllStudent((dto.GetAllStudentsFilter{ClassID: &stringUUID}))
+
+	studentsDao := []dao.StudentDao{}
+	for _, student := range students {
+		studentsDao = append(studentsDao, student.ToDao())
+	}
 	// todo: return getallstudents correctly
-	return students, nil
+	return studentsDao, nil
 }
 
 func (s *StudentServiceImpl) DeleteStudent(institutionId uuid.UUID, id uuid.UUID) *httperror.HttpError {
