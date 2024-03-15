@@ -179,15 +179,13 @@ func (s *StudentServiceImpl) BatchUpdateStudentClassId(args dto.UpdateStudentCla
 		return nil, ErrUpdateStudent
 	}
 
-	// todo: dto, class id from string to uuid?
 	stringUUID := args.ClassID.String()
-	students, _, _ := s.studentRepository.GetAllStudent((dto.GetAllStudentsFilter{ClassID: &stringUUID}))
+	students, _, _ := s.studentRepository.GetAllStudent((dto.GetAllStudentsFilter{ClassID: &stringUUID, Page: 1, Limit: 10}))
 
 	studentsDao := []dao.StudentDao{}
 	for _, student := range students {
 		studentsDao = append(studentsDao, student.ToDao())
 	}
-	// todo: return getallstudents correctly
 	return studentsDao, nil
 }
 

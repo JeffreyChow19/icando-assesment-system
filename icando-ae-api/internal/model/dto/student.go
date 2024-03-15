@@ -5,7 +5,6 @@ import (
 )
 
 type GetAllStudentsFilter struct {
-	// todo: ID from string to UUID?
 	Name               *string `form:"name"`
 	InstitutionID      *string `form:"institutionId"`
 	ClassID            *string `form:"classId"`
@@ -16,7 +15,6 @@ type GetAllStudentsFilter struct {
 }
 
 type GetStudentFilter struct {
-	// todo: ID from string to UUID?
 	ID                 *string
 	Nisn               *string
 	Email              *string

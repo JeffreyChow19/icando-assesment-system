@@ -112,7 +112,7 @@ func main() {
 							Nisn:          nisn,
 							Email:         email,
 							InstitutionID: institution.ID,
-							ClassID:       class.ID,
+							ClassID:       &class.ID,
 						}
 
 						if err := tx.Create(&student).Error; err != nil {
