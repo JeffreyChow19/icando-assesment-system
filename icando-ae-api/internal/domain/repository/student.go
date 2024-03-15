@@ -89,6 +89,8 @@ func (r *StudentRepository) Upsert(student model.Student) error {
 	return r.db.Save(&student).Error
 }
 
+// todo: bulk update
+
 func (r *StudentRepository) Delete(student model.Student) error {
 	return r.db.Delete(&student).Error
 }

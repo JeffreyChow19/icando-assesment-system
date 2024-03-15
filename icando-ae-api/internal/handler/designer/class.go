@@ -214,6 +214,7 @@ func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 
 	var student []*dao.StudentDao
 	for _, studentId := range studentData.StudentIDs {
+		// todo: fix n+1
 		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &parsedId})
 
 		if err != nil {
@@ -248,6 +249,7 @@ func (h *ClassHandlerImpl) UnassignStudents(c *gin.Context) {
 	}
 
 	var student []*dao.StudentDao
+	// todo: fix n+1
 	for _, studentId := range studentData.StudentIDs {
 		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &uuid.Nil})
 

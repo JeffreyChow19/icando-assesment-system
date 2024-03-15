@@ -181,6 +181,8 @@ func (s *StudentServiceImpl) DeleteStudent(institutionId uuid.UUID, id uuid.UUID
 	return nil
 }
 
+// todo: bulk update
+
 var ErrCreateStudent = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when creating student"),
