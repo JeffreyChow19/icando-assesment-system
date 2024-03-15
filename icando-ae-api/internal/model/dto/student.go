@@ -27,7 +27,7 @@ type CreateStudentDto struct {
 	LastName  string    `json:"lastName" binding:"required"`
 	Nisn      string    `json:"nisn" binding:"required"`
 	Email     string    `json:"email" binding:"required,email"`
-	ClassID   uuid.UUID `json:"classId" binding:"required"`
+	ClassID   *uuid.UUID `json:"classId"`
 }
 
 type UpdateStudentDto struct {

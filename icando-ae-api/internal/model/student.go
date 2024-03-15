@@ -12,7 +12,7 @@ type Student struct {
 	Nisn          string
 	Email         string
 	InstitutionID uuid.UUID
-	ClassID       uuid.UUID
+	ClassID       *uuid.UUID
 	Institution   *Institution
 	Class         *Class
 }

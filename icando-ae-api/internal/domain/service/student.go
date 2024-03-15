@@ -67,9 +67,14 @@ func (s *StudentServiceImpl) AddStudent(institutionId uuid.UUID, studentDto dto.
 		LastName:      studentDto.LastName,
 		Email:         studentDto.Email,
 		Nisn:          studentDto.Nisn,
-		ClassID:       studentDto.ClassID,
 		InstitutionID: institutionId,
 	}
+
+	if studentDto.ClassID != nil {
+		// nullable classId
+		student.ClassID = studentDto.ClassID
+	}
+	
 	err := s.studentRepository.Create(&student)
 	if err != nil {
 		return nil, ErrCreateStudent
@@ -145,8 +150,13 @@ func (s *StudentServiceImpl) UpdateStudent(institutionId uuid.UUID, id uuid.UUID
 	}
 
 	if dto.ClassID != nil {
-		// get class, update class id
-		student.ClassID = *dto.ClassID
+		if dto.ClassID != &uuid.Nil {
+			// get class, update class id
+			student.ClassID = dto.ClassID
+		} else {
+			// unassign student, uses uuid.Nil as flag
+			student.ClassID = nil
+		}
 	}
 
 	err := s.studentRepository.Upsert(*student)
