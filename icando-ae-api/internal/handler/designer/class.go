@@ -9,6 +9,7 @@ import (
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -66,9 +67,23 @@ func (h *ClassHandlerImpl) Get(c *gin.Context) {
 		return
 	}
 
-	// change param here to include other relation
-	// todo: check for route params
+	// check for query params withStudents, withTeacher, withInstitution
 	filter := dto.GetClassFilter{}
+	if withStudents, ok := c.GetQuery("withStudents"); ok {
+		isWithStudents, _ := strconv.ParseBool(withStudents)
+
+		filter.WithStudentRelation = isWithStudents
+	}
+	if withTeacher, ok := c.GetQuery("withTeacher"); ok {
+		isWithTeacher, _ := strconv.ParseBool(withTeacher)
+
+		filter.WithTeacherRelation = isWithTeacher
+	}
+	if withInstitution, ok := c.GetQuery("withInstitution"); ok {
+		isWithInstitution, _ := strconv.ParseBool(withInstitution)
+
+		filter.WithInstitutionRelation = isWithInstitution
+	}
 
 	class, err := h.classService.GetClass(parsedId, filter)
 
