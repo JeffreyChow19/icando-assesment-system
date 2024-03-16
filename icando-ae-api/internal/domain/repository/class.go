@@ -178,7 +178,7 @@ func (r *ClassRepository) GetAllClass(filter dto.GetAllClassFilter) ([]model.Cla
 	return result, nil
 }
 
-func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFitler) (*model.Class, error) {
+func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFilter) (*model.Class, error) {
 	var class model.Class
 
 	query := r.db.Session(&gorm.Session{})

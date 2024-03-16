@@ -35,3 +35,8 @@ type UpdateStudentDto struct {
 	LastName  *string    `json:"lastName"`
 	ClassID   *uuid.UUID `json:"classId"`
 }
+
+type UpdateStudentClassIdDto struct {
+	StudentIDs 	[]uuid.UUID	`json:"studentIds" binding:"required"`
+	ClassID 		*uuid.UUID		`json:"classId" binding:"required"`
+}
