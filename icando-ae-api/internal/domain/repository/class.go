@@ -59,7 +59,7 @@ func (r *ClassRepository) CreateClass(dto dto.ClassDto) (*model.Class, error) {
 
 func (r *ClassRepository) UpdateClass(id uuid.UUID, classDto dto.ClassDto) (*model.Class, error) {
 
-	oldClass, err := r.GetClass(id, dto.GetClassFitler{WithTeacherRelation: true})
+	oldClass, err := r.GetClass(id, dto.GetClassFilter{WithTeacherRelation: true})
 
 	if err != nil {
 		return nil, err
