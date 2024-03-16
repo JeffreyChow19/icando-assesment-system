@@ -24,6 +24,9 @@ type StudentService interface {
 		[]dao.StudentDao,
 		*dao.MetaDao, *httperror.HttpError,
 	)
+	BatchUpdateStudentClassId(args dto.UpdateStudentClassIdDto) (
+		[]dao.StudentDao, *httperror.HttpError,
+	) 
 }
 
 type StudentServiceImpl struct {
@@ -168,6 +171,24 @@ func (s *StudentServiceImpl) UpdateStudent(institutionId uuid.UUID, id uuid.UUID
 	return &dao, nil
 }
 
+func (s *StudentServiceImpl) BatchUpdateStudentClassId(args dto.UpdateStudentClassIdDto) (
+	[]dao.StudentDao, *httperror.HttpError,
+) {
+	err := s.studentRepository.BatchClassIdUpdate(args)
+	if err != nil {
+		return nil, ErrUpdateStudent
+	}
+
+	stringUUID := args.ClassID.String()
+	students, _, _ := s.studentRepository.GetAllStudent((dto.GetAllStudentsFilter{ClassID: &stringUUID, Page: 1, Limit: 10}))
+
+	studentsDao := []dao.StudentDao{}
+	for _, student := range students {
+		studentsDao = append(studentsDao, student.ToDao())
+	}
+	return studentsDao, nil
+}
+
 func (s *StudentServiceImpl) DeleteStudent(institutionId uuid.UUID, id uuid.UUID) *httperror.HttpError {
 	student, httperr := s.getStudentById(institutionId, id)
 	if httperr != nil {
@@ -180,6 +201,7 @@ func (s *StudentServiceImpl) DeleteStudent(institutionId uuid.UUID, id uuid.UUID
 	}
 	return nil
 }
+
 
 var ErrCreateStudent = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,

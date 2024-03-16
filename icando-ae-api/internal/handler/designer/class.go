@@ -3,12 +3,12 @@ package designer
 import (
 	"errors"
 	"icando/internal/domain/service"
-	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -21,7 +21,6 @@ type ClassHandler interface {
 	Update(c *gin.Context)
 	Create(c *gin.Context)
 	Delete(c *gin.Context)
-	GetWithStudents(c *gin.Context)
 	AssignStudents(c *gin.Context)
 	UnassignStudents(c *gin.Context)
 }
@@ -67,8 +66,23 @@ func (h *ClassHandlerImpl) Get(c *gin.Context) {
 		return
 	}
 
-	// change param here to include other relation
-	filter := dto.GetClassFitler{}
+	// check for query params withStudents, withTeacher, withInstitution
+	filter := dto.GetClassFilter{}
+	if withStudents, ok := c.GetQuery("withStudents"); ok {
+		isWithStudents, _ := strconv.ParseBool(withStudents)
+
+		filter.WithStudentRelation = isWithStudents
+	}
+	if withTeacher, ok := c.GetQuery("withTeacher"); ok {
+		isWithTeacher, _ := strconv.ParseBool(withTeacher)
+
+		filter.WithTeacherRelation = isWithTeacher
+	}
+	if withInstitution, ok := c.GetQuery("withInstitution"); ok {
+		isWithInstitution, _ := strconv.ParseBool(withInstitution)
+
+		filter.WithInstitutionRelation = isWithInstitution
+	}
 
 	class, err := h.classService.GetClass(parsedId, filter)
 
@@ -163,34 +177,10 @@ func (h *ClassHandlerImpl) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, response.NewBaseResponse(&msg, nil))
 }
 
-func (h *ClassHandlerImpl) GetWithStudents(c *gin.Context) {
-	classId := c.Param("id")
-	parsedId, err := uuid.Parse(classId)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
-		return
-	}
-
-	filter := dto.GetClassFitler{WithStudentRelation: true}
-
-	class, err := h.classService.GetClass(parsedId, filter)
-
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *class))
-}
-
 func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 	classId := c.Param("id")
 	parsedId, err := uuid.Parse(classId)
 
-	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
-	parsedInstutionID := institutionID.(uuid.UUID)
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
@@ -212,25 +202,18 @@ func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 		return
 	}
 
-	var student []*dao.StudentDao
-	for _, studentId := range studentData.StudentIDs {
-		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &parsedId})
-
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})		
-			return
-		}
-
-		student = append(student, updatedStudent)
+	updatedStudents, errr := h.studentService.BatchUpdateStudentClassId(dto.UpdateStudentClassIdDto{ClassID: &parsedId, StudentIDs: studentData.StudentIDs})
+	
+	if errr != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})		
+		return
 	}
 
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, student))
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, updatedStudents))
 }
 
 func (h *ClassHandlerImpl) UnassignStudents(c *gin.Context) {
-	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
-	parsedInstutionID := institutionID.(uuid.UUID)
-	
+
 	var studentData dto.AssignStudentsRequest
 
 	if err := c.ShouldBindJSON(&studentData); err != nil {
@@ -247,17 +230,12 @@ func (h *ClassHandlerImpl) UnassignStudents(c *gin.Context) {
 		return
 	}
 
-	var student []*dao.StudentDao
-	for _, studentId := range studentData.StudentIDs {
-		updatedStudent, err := h.studentService.UpdateStudent(parsedInstutionID, studentId, dto.UpdateStudentDto{ClassID: &uuid.Nil})
-
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})		
-			return
-		}
-
-		student = append(student, updatedStudent)
+	updatedStudents, errr := h.studentService.BatchUpdateStudentClassId(dto.UpdateStudentClassIdDto{ClassID: &uuid.Nil, StudentIDs: studentData.StudentIDs})
+	
+	if errr != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})		
+		return
 	}
 
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, student))
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, updatedStudents))
 }
