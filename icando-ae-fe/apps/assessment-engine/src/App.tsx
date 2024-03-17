@@ -10,8 +10,10 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from './pages';
 import { LoginPage } from "./pages/login.tsx";
-import { Students } from './pages/students/students.tsx';
 import {NewQuizPage} from "./pages/quiz/new.tsx";
+import { StudentsEdit } from './pages/students/students-edit.tsx';
+import { StudentsNew } from './pages/students/students-new.tsx';
+import {Students} from "./pages/students";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -35,7 +37,15 @@ function App() {
     {
       path: "/quiz/new",
       element: <NewQuizPage />
-    }
+    },
+    {
+      path: "/students/new",
+      element: <StudentsNew />,
+    },
+    {
+      path: "/students/edit/:id",
+      element: <StudentsEdit />,
+    },
   ]);
   return (
     <QueryClientProvider client={queryClient}>

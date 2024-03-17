@@ -1,9 +1,10 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+
+	"github.com/google/uuid"
 )
 
 type Class struct {
@@ -17,7 +18,7 @@ type Class struct {
 	Students      []Student
 }
 
-func (s Class) ToDao(option dto.GetClassFitler) dao.ClassDao {
+func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
 	classDao := dao.ClassDao{
 		ID:           s.ID,
 		Name:         s.Name,

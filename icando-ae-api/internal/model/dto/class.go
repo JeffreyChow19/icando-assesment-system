@@ -16,8 +16,12 @@ type GetAllClassFilter struct {
 	Desc          bool       `json:"desc"`
 }
 
-type GetClassFitler struct {
+type GetClassFilter struct {
 	WithTeacherRelation     bool
 	WithInstitutionRelation bool
 	WithStudentRelation     bool
+}
+
+type AssignStudentsRequest struct {
+	StudentIDs		[]uuid.UUID `json:"studentIds" binding:"required"`
 }

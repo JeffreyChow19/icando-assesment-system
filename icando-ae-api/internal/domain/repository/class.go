@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"icando/utils"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ClassRepository struct {
@@ -81,7 +82,7 @@ func (r *ClassRepository) GetAllClass(filter dto.GetAllClassFilter) ([]model.Cla
 	return result, nil
 }
 
-func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFitler) (*model.Class, error) {
+func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFilter) (*model.Class, error) {
 	var class model.Class
 
 	query := r.db.Session(&gorm.Session{})
