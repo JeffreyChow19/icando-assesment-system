@@ -90,7 +90,7 @@ func main() {
 						Name:          fmt.Sprintf("Class %d", j),
 						Grade:         grade,
 						InstitutionID: institution.ID,
-						TeacherID:     teacher.ID,
+						Teachers:      []model.Teacher{teacher},
 					}
 
 					if err := tx.Create(&class).Error; err != nil {
