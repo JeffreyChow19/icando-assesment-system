@@ -14,6 +14,7 @@ import (
 
 type QuizService interface {
 	CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
+	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
 }
 
@@ -52,9 +53,27 @@ var ErrQuizNotFound = &httperror.HttpError{
 	Err:        errors.New("Quiz Not Found"),
 }
 
+var ErrGetQuiz = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when retrieving quiz"),
+}
+
 var ErrUpdateQuiz = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when updating quiz"),
+}
+
+func (s *QuizServiceImpl)	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError) {
+	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: id})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	quizDao := quiz.ToDao()
+	return &quizDao, nil
 }
 
 func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError) {

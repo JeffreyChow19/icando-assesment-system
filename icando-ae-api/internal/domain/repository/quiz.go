@@ -19,10 +19,15 @@ func NewQuizRepository(db *lib.Database) QuizRepository {
 }
 
 func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) {
-	query := r.db.Model(&model.Quiz{})
+	query := r.db.Session(&gorm.Session{})
+
+	query = query.Preload("Creator")
+	query = query.Preload("Updater")
+
+	// todo: preload questions.competencies
 
 	if filter.ID != uuid.Nil {
-		query.Where("id = ?", filter.ID)
+		query = query.Where("id = ?", filter.ID)
 	}
 
 	var quiz model.Quiz

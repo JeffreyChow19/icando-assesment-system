@@ -11,4 +11,7 @@ type QuizDao struct {
 	Subject      *string    `json:"subject,omitempty"`
 	PassingGrade float64    `json:"passing_grade,omitempty"`
 	Deadline     *time.Time `json:"deadline,omitempty"`
+	Creator			 *TeacherDao		`json:"creator,omitempty"`
+	Updater			 *TeacherDao		`json:"updater,omitempty"`
+	Questions		 []QuestionDao	`json:"questions,omitempty"`
 }
