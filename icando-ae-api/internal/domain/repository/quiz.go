@@ -1,11 +1,12 @@
 package repository
 
 import (
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/lib"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type QuizRepository struct {
@@ -21,9 +22,17 @@ func NewQuizRepository(db *lib.Database) QuizRepository {
 func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) {
 	query := r.db.Session(&gorm.Session{})
 
-	query = query.Preload("Creator")
-	query = query.Preload("Updater")
+	if filter.WithCreator {
+		query = query.Preload("Creator")
+	}
 
+	if filter.WithUpdater {
+		query = query.Preload("Updater")
+	}
+
+	if filter.WithQuestions {
+		query = query.Preload("Questions")
+	}
 	// todo: preload questions.competencies
 
 	if filter.ID != uuid.Nil {

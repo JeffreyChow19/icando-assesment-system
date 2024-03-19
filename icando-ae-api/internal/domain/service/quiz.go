@@ -64,7 +64,7 @@ var ErrUpdateQuiz = &httperror.HttpError{
 }
 
 func (s *QuizServiceImpl)	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError) {
-	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: id})
+	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: id, WithCreator: true, WithUpdater: true, WithQuestions: true})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQuizNotFound
