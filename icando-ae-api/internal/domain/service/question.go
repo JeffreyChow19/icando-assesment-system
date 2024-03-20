@@ -46,15 +46,15 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 		return nil, ErrCreateQuestion
 	}
 
+	// Get competencies by IDs
+	competencies, err := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
+	if err != nil {
+		return nil, ErrCompetencyNotFound
+	}
+
 	// Add competencies to the question
-	for _, competencyID := range questionDto.Competencies {
-		competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-			Id: competencyID,
-		})
-		if err != nil {
-			return nil, ErrCompetencyNotFound
-		}
-		question.Competencies = append(question.Competencies, *competency)
+	for _, competency := range competencies {
+		question.Competencies = append(question.Competencies, competency)
 	}
 
 	question, err = s.questionRepository.CreateQuestion(question)
