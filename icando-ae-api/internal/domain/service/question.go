@@ -95,29 +95,61 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 		return nil, ErrUpdateQuestion
 	}
 
-	// Delete all existing competencies in the question_competency relation
-	err = s.questionCompetencyRepository.Delete(question.ID)
+	// Get all existing competencies
+	existingCompetencies, errGetExistingCompetencies := s.questionCompetencyRepository.GetAll(question.ID)
+	if errGetExistingCompetencies != nil {
+		return nil, ErrUpdateQuestion
+	}
+	existingCompetencyMap := make(map[uuid.UUID]bool)
+	for _, competency := range existingCompetencies {
+		existingCompetencyMap[competency.CompetencyID] = true
+	}
+
+	// Get updated competencies
+	updatedCompetencies, errGetUpdatedCompetencies := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
+	if errGetUpdatedCompetencies != nil {
+		return nil, ErrUpdateQuestion
+	}
+	updatedCompetencyMap := make(map[uuid.UUID]*model.Competency)
+	for i := range updatedCompetencies {
+		updatedCompetencyMap[updatedCompetencies[i].ID] = &updatedCompetencies[i]
+	}
+
+	// Prepare the list of competencies to be deleted and added
+	toBeDeletedCompetencies := []model.QuestionCompetency{}
+	toBeAddedCompetencies := []model.Competency{}
+
+	// Find competencies to be deleted and added
+	for competencyID := range existingCompetencyMap {
+		if _, ok := updatedCompetencyMap[competencyID]; !ok {
+			toBeDeletedCompetencies = append(toBeDeletedCompetencies, model.QuestionCompetency{
+				QuestionID:   question.ID,
+				CompetencyID: competencyID,
+			})
+		}
+	}
+	for competencyID, competency := range updatedCompetencyMap {
+		if _, ok := existingCompetencyMap[competencyID]; !ok {
+			toBeAddedCompetencies = append(toBeAddedCompetencies, *competency)
+		}
+	}
+
+	// Delete competencies that are no longer part of the question
+	err = s.questionCompetencyRepository.Delete(toBeDeletedCompetencies)
 	if err != nil {
 		return nil, ErrUpdateQuestion
 	}
 
-	// Update competencies
-	question.Competencies = []model.Competency{}
-	for _, competencyID := range questionDto.Competencies {
-		competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-			Id: competencyID,
-		})
-		if err != nil {
-			return nil, ErrCompetencyNotFound
-		}
-		question.Competencies = append(question.Competencies, *competency)
-	}
+	// Add competencies that are not yet part of the question
+	question.Competencies = toBeAddedCompetencies
 
 	// Save the updated question
-	err = s.questionRepository.UpdateQuestion(*question)
+	err = s.questionRepository.UpdateQuestion(question)
 	if err != nil {
 		return nil, ErrUpdateQuestion
 	}
+
+	question.Competencies = updatedCompetencies
 
 	questionDao, errDao := question.ToDao()
 	if errDao != nil {
