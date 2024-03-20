@@ -13,6 +13,7 @@ import { LoginPage } from "./pages/login.tsx";
 import { Students } from './pages/students';
 import { StudentsEdit } from './pages/students/students-edit.tsx';
 import { StudentsNew } from './pages/students/students-new.tsx';
+import { Quizzes } from "./pages/quizzes/index.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -41,6 +42,10 @@ function App() {
       path: "/students/edit/:id",
       element: <StudentsEdit />,
     },
+    {
+      path: "/quizzes",
+      element: <Quizzes />,
+    }
   ]);
   return (
     <QueryClientProvider client={queryClient}>
