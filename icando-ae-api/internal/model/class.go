@@ -1,9 +1,10 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+
+	"github.com/google/uuid"
 )
 
 type Class struct {
@@ -11,24 +12,27 @@ type Class struct {
 	Name          string
 	Grade         string
 	InstitutionID uuid.UUID
-	TeacherID     uuid.UUID
-	Teacher       *Teacher
+	Teachers      []Teacher `gorm:"many2many:class_teacher;"`
 	Institution   *Institution
 	Students      []Student
 }
 
-func (s Class) ToDao(option dto.GetClassFitler) dao.ClassDao {
+func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
 	classDao := dao.ClassDao{
 		ID:           s.ID,
 		Name:         s.Name,
 		Grade:        s.Grade,
 		InstituionID: s.InstitutionID,
-		TeacherID:    s.TeacherID,
 	}
 
-	if option.WithTeacherRelation && s.Teacher != nil {
-		teacherDao := s.Teacher.ToDao()
-		classDao.Teacher = &teacherDao
+	if option.WithTeacherRelation {
+		teachersDao := make([]dao.TeacherDao, 0)
+
+		for _, teacher := range s.Teachers {
+			teachersDao = append(teachersDao, teacher.ToDao())
+		}
+
+		classDao.Teachers = teachersDao
 	}
 
 	if option.WithInstitutionRelation && s.Institution != nil {

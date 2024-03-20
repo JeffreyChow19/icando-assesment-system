@@ -3,10 +3,10 @@ package dto
 import "github.com/google/uuid"
 
 type ClassDto struct {
-	Name          string    `json:"name" binding:"required"`
-	Grade         string    `json:"grade" binding:"required,numeric"`
-	InstitutionID uuid.UUID `json:"institutionId" binding:"required"`
-	TeacherID     uuid.UUID `json:"teacherId" binding:"required"`
+	Name          string      `json:"name" binding:"required"`
+	Grade         string      `json:"grade" binding:"required,numeric"`
+	InstitutionID uuid.UUID   `json:"institutionId" binding:"required"`
+	TeacherIDs    []uuid.UUID `json:"teacherIds" binding:"required"`
 }
 
 type GetAllClassFilter struct {
@@ -16,8 +16,12 @@ type GetAllClassFilter struct {
 	Desc          bool       `json:"desc"`
 }
 
-type GetClassFitler struct {
+type GetClassFilter struct {
 	WithTeacherRelation     bool
 	WithInstitutionRelation bool
 	WithStudentRelation     bool
+}
+
+type AssignStudentsRequest struct {
+	StudentIDs []uuid.UUID `json:"studentIds" binding:"required"`
 }

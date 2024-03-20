@@ -13,6 +13,8 @@ func (r ClassRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/class")
 	group.GET("/", r.classHandler.GetAll)
 	group.POST("", r.classHandler.Create)
+	group.POST("/:id/students", r.classHandler.AssignStudents)
+	group.PATCH("/:id/students", r.classHandler.UnassignStudents)
 	group.GET("/:id", r.classHandler.Get)
 	group.PATCH("/:id", r.classHandler.Update)
 	group.DELETE("/:id", r.classHandler.Delete)

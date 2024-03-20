@@ -14,6 +14,7 @@ type Teacher struct {
 	Password      string
 	InstitutionID uuid.UUID
 	Institution   *Institution
+	Classes       []Class `gorm:"many2many:class_teacher;"`
 	Role          enum.TeacherRole
 }
 

@@ -1,15 +1,16 @@
 package service
 
 import (
-	"github.com/google/uuid"
 	"icando/internal/domain/repository"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+
+	"github.com/google/uuid"
 )
 
 type ClassService interface {
 	GetAllClass(filter dto.GetAllClassFilter) ([]dao.ClassDao, error)
-	GetClass(classID uuid.UUID, fitler dto.GetClassFitler) (*dao.ClassDao, error)
+	GetClass(classID uuid.UUID, filter dto.GetClassFilter) (*dao.ClassDao, error)
 	CreateClass(classDto dto.ClassDto) (*dao.ClassDao, error)
 	UpdateClass(id uuid.UUID, classDto dto.ClassDto) (*dao.ClassDao, error)
 	DeleteClass(id uuid.UUID) error
@@ -34,13 +35,13 @@ func (s *ClassServiceImpl) GetAllClass(filter dto.GetAllClassFilter) ([]dao.Clas
 	payload := make([]dao.ClassDao, 0)
 
 	for _, cls := range class {
-		payload = append(payload, cls.ToDao(dto.GetClassFitler{}))
+		payload = append(payload, cls.ToDao(dto.GetClassFilter{}))
 	}
 
 	return payload, nil
 }
 
-func (s *ClassServiceImpl) GetClass(classID uuid.UUID, filter dto.GetClassFitler) (*dao.ClassDao, error) {
+func (s *ClassServiceImpl) GetClass(classID uuid.UUID, filter dto.GetClassFilter) (*dao.ClassDao, error) {
 	class, err := s.classRepository.GetClass(classID, filter)
 
 	if err != nil {
@@ -59,7 +60,7 @@ func (s *ClassServiceImpl) CreateClass(classDto dto.ClassDto) (*dao.ClassDao, er
 		return nil, err
 	}
 
-	classDao := class.ToDao(dto.GetClassFitler{})
+	classDao := class.ToDao(dto.GetClassFilter{})
 
 	return &classDao, nil
 }
@@ -71,7 +72,7 @@ func (s *ClassServiceImpl) UpdateClass(id uuid.UUID, classDto dto.ClassDto) (*da
 		return nil, err
 	}
 
-	classDao := class.ToDao(dto.GetClassFitler{})
+	classDao := class.ToDao(dto.GetClassFilter{})
 
 	return &classDao, nil
 }
