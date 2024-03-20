@@ -31,9 +31,8 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 	}
 
 	if filter.WithQuestions {
-		query = query.Preload("Questions")
+		query = query.Preload("Questions").Preload("Questions.Competencies")
 	}
-	// todo: preload questions.competencies
 
 	if filter.ID != uuid.Nil {
 		query = query.Where("id = ?", filter.ID)
