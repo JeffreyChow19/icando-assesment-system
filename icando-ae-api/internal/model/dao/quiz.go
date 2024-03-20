@@ -13,3 +13,12 @@ type QuizDao struct {
 	PublishedAt  *time.Time `json:"publishedAt"`
 	Deadline     *time.Time `json:"deadline"`
 }
+
+type ParentQuizDao struct {
+	ID              uuid.UUID  `json:"id"`
+	Name            *string    `json:"name"`
+	Subject         *string    `json:"subject"`
+	PassingGrade    float64    `json:"passingGrade"`
+	LastPublishedAt *time.Time `json:"lastPublishedAt"`
+	CreatedBy       string     `json:"createdBy"`
+}
