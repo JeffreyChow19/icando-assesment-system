@@ -15,5 +15,6 @@ var Module = fx.Module(
 		fx.Provide(fx.Annotate(NewTeacherServiceImpl, fx.As(new(TeacherService)))),
 		fx.Provide(fx.Annotate(NewClassServiceImpl, fx.As(new(ClassService)))),
 		fx.Provide(fx.Annotate(NewQuizServiceImpl, fx.As(new(QuizService)))),
+		fx.Provide(fx.Annotate(NewQuestionServiceImpl, fx.As(new(QuestionService)))),
 	),
 )
