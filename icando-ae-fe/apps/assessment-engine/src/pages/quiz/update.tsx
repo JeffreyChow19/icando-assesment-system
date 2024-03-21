@@ -18,7 +18,7 @@ export const UpdateQuizPage = () => {
   });
 
   return (
-    <Layout pageTitle="Edit Quiz" showTitle={true}>
+    <Layout pageTitle="Edit Quiz" showTitle={false} withBack={true}>
       {isLoading && <LoadingComponent />}
       {data && <QuizForm quiz={data} />}
     </Layout>
