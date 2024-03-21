@@ -12,6 +12,10 @@ type QuizDao struct {
 	PassingGrade float64    `json:"passingGrade"`
 	PublishedAt  *time.Time `json:"publishedAt"`
 	Deadline     *time.Time `json:"deadline"`
+	Creator			 *TeacherDao		`json:"creator,omitempty"`
+	Updater			 *TeacherDao		`json:"updater,omitempty"`
+	Questions		 []QuestionDao	`json:"questions,omitempty"`
+
 }
 
 type ParentQuizDao struct {

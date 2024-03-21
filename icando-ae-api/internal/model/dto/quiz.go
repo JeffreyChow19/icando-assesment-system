@@ -1,12 +1,16 @@
 package dto
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type GetQuizFilter struct {
 	ID uuid.UUID
+	WithCreator		bool
+	WithUpdater 	bool
+	WithQuestions	bool
 }
 
 type GetAllQuizzesFilter struct {
