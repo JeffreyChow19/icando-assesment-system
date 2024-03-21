@@ -24,10 +24,8 @@ func (q Quiz) ToDao() dao.QuizDao {
 		Name:         q.Name,
 		Subject:      q.Subject,
 		PassingGrade: q.PassingGrade,
-	}
-
-	if q.Deadline != nil {
-		daoQuiz.Deadline = q.Deadline
+		PublishedAt:  q.PublishedAt,
+		Deadline:     q.Deadline,
 	}
 
 	return daoQuiz
