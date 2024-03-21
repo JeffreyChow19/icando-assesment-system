@@ -57,7 +57,7 @@ func (h *QuizHandlerImpl) Get(c *gin.Context) {
 	quiz, errr := h.quizService.GetQuiz(parsedId)
 
 	if errr != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
+		c.AbortWithStatusJSON(errr.StatusCode, gin.H{"errors": errr.Error()})
 		return
 	}
 
