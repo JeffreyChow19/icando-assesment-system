@@ -47,8 +47,12 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 	}
 
 	// Get competencies by IDs
-	competencies, err := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
-	if err != nil {
+	competencies, errGetCompetencies := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
+	if errGetCompetencies != nil {
+		return nil, ErrCompetencyNotFound
+	}
+
+	if len(competencies) != len(questionDto.Competencies) {
 		return nil, ErrCompetencyNotFound
 	}
 
