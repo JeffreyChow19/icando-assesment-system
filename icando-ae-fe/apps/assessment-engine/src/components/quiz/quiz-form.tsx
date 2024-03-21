@@ -1,7 +1,9 @@
 import { QuestionList } from "./questions/question-list.tsx";
 import { QuestionForm } from "./questions/question-form.tsx";
+import { QuizDetail } from "src/interfaces/quiz.ts";
 
-export const QuizForm = () => {
+export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
+  console.log(quiz);
   const dummyQuestions = [];
   for (let i = 0; i < 20; i++) {
     dummyQuestions.push({

@@ -27,10 +27,8 @@ import { RadioGroup, RadioGroupItem } from "@ui/components/ui/radio-group.tsx";
 import { cn } from "@ui/lib/utils.ts";
 import { ScrollArea } from "@ui/components/ui/scroll-area.tsx";
 import { useQuery } from "@tanstack/react-query";
-import {
-  createQuestion,
-  getAllCompetency,
-} from "../../../services/question.ts";
+import { getAllCompetency } from "../../../services/competency.ts";
+import { createQuestion } from "../../../services/quiz.ts";
 import {
   Table,
   TableBody,
