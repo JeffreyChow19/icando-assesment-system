@@ -119,6 +119,10 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 		updatedCompetencyMap[updatedCompetencies[i].ID] = &updatedCompetencies[i]
 	}
 
+	if len(updatedCompetencies) != len(questionDto.Competencies) {
+		return nil, ErrCompetencyNotFound
+	}
+
 	// Prepare the list of competencies to be deleted and added
 	toBeDeletedCompetencies := []model.QuestionCompetency{}
 	toBeAddedCompetencies := []model.Competency{}
