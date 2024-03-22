@@ -46,7 +46,7 @@ export const QuestionForm = ({
           id: 0,
         },
       ],
-      correctAnswer:
+      answerId:
         question?.answerId && question?.choices
           ? question.choices.findIndex(
               (choice) => choice.id == question.answerId,

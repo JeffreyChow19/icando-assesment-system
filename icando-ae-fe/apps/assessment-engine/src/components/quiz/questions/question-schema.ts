@@ -18,6 +18,6 @@ export const questionFormSchema = z.object({
     message: "Question text must be at least 2 characters.",
   }),
   choices: z.array(answerFormSchema).min(1),
-  correctAnswer: z.number(),
+  answerId: z.number(),
   competencies: z.array(competencyFormSchema),
 });

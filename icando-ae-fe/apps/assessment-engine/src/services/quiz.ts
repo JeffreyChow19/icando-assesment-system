@@ -23,7 +23,7 @@ export interface CreateQuestionPayload {
     id: number;
     text: string;
   }[];
-  correctAnswer: number;
+  answerId: number;
   competencies: string[];
 }
 

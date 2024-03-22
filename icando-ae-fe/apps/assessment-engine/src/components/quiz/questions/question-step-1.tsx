@@ -35,61 +35,23 @@ export const QuestionStep1 = ({ next }: QuestionStep1Props) => {
 
   const removeAnswer = (index: number) => {
     const currAnswer = form.getValues("choices");
-    const correctAnswer = form.getValues("correctAnswer");
+    const deletedAnswer = currAnswer[index];
+    const answerId = form.getValues("answerId");
     currAnswer.splice(index, 1);
     form.setValue("choices", currAnswer);
-    if (index == correctAnswer) form.setValue("correctAnswer", 0);
+    if (deletedAnswer.id == answerId) {
+      form.setValue("answerId", choicesState[0].id);
+    }
   };
 
   const addAnswer = () => {
     const currAnswer = form.getValues("choices");
     currAnswer.push({
-      text: `Option ${answerLength + 1}`,
+      text: "",
       id: largestId + 1,
     });
     form.setValue("choices", currAnswer);
   };
-
-  const answerElements = Array.from({ length: answerLength }, (_, index) => (
-    <div key={index} className="grid grid-cols-1">
-      <FormField
-        control={form.control}
-        name={`choices.${index}.text`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>{`Option ${index + 1}`} </FormLabel>
-            <div
-              className={cn(
-                form.watch("correctAnswer") == index && "bg-green-100",
-                "flex flex-row justify-between gap-2 items-center py-2 px-3 rounded-md",
-              )}
-            >
-              <RadioGroupItem
-                value={index.toString()}
-                checked={index == form.watch("correctAnswer")}
-                className="mr-2"
-              />
-              <FormControl>
-                <Input placeholder={`Option ${index + 1}`} {...field} />
-              </FormControl>
-              <Button
-                className="h-8 w-8 p-1"
-                variant="ghost"
-                type="button"
-                onClick={() => {
-                  removeAnswer(index);
-                }}
-                disabled={answerLength === 1}
-              >
-                <XIcon size="12" />
-              </Button>
-            </div>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  ));
 
   return (
     <>
@@ -111,11 +73,54 @@ export const QuestionStep1 = ({ next }: QuestionStep1Props) => {
         </div>
         <div className="flex flex-col gap-2 mt-4">
           <RadioGroup
-            onValueChange={(val) =>
-              form.setValue("correctAnswer", parseInt(val))
-            }
+            onValueChange={(val) => form.setValue("answerId", parseInt(val))}
           >
-            {answerElements}
+            {choicesState.map((choice, index) => {
+              return (
+                <div key={index} className="grid grid-cols-1">
+                  <FormField
+                    control={form.control}
+                    name={`choices.${index}.text`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{`Option ${index + 1}`} </FormLabel>
+                        <div
+                          className={cn(
+                            form.watch("answerId") == choice.id &&
+                              "bg-green-100",
+                            "flex flex-row justify-between gap-2 items-center py-2 px-3 rounded-md",
+                          )}
+                        >
+                          <RadioGroupItem
+                            value={choice.id.toString()}
+                            checked={choice.id == form.watch("answerId")}
+                            className="mr-2"
+                          />
+                          <FormControl>
+                            <Input
+                              placeholder={`Option ${index + 1}`}
+                              {...field}
+                            />
+                          </FormControl>
+                          <Button
+                            className="h-8 w-8 p-1"
+                            variant="ghost"
+                            type="button"
+                            onClick={() => {
+                              removeAnswer(index);
+                            }}
+                            disabled={answerLength === 1}
+                          >
+                            <XIcon size="12" />
+                          </Button>
+                        </div>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              );
+            })}
           </RadioGroup>
           <Button
             variant="ghost"

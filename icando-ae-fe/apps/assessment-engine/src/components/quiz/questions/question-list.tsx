@@ -105,7 +105,7 @@ export const QuestionList = ({ onSuccess, quizId }: QuestionListProps) => {
                     correctAnswer={question.answerId}
                   />
                   <h2 className="font-bold">Competencies</h2>
-                  <div className="flex-wrap">
+                  <div className="flex flex-wrap gap-1">
                     {question.competencies.map((competency) => {
                       return (
                         <Badge key={competency.id} variant="outline">
