@@ -10,6 +10,7 @@ type QuestionDao struct {
 	Choices      []QuestionChoiceDao `json:"choices"`
 	AnswerID     int                 `json:"answerId"`
 	Competencies []CompetencyDao     `json:"competencies"`
+	Order        int                 `json:"order"`
 }
 
 type QuestionChoiceDao struct {

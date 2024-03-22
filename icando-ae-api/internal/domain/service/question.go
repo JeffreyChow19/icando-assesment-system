@@ -40,6 +40,7 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 		Text:     questionDto.Text,
 		AnswerID: questionDto.AnswerID,
 		QuizID:   quizID,
+		Order:    questionDto.Order,
 	}
 	err := question.SetQuestionChoices(questionDto.Choices)
 	if err != nil {
@@ -94,6 +95,7 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 	// Update the question fields
 	question.Text = questionDto.Text
 	question.AnswerID = questionDto.AnswerID
+	question.Order = questionDto.Order
 	err = question.SetQuestionChoices(questionDto.Choices)
 	if err != nil {
 		return nil, ErrUpdateQuestion
