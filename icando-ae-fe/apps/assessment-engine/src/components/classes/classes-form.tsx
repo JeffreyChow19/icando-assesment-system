@@ -40,15 +40,12 @@ const classFormSchema = z.object({
   name: z.string({ required_error: "Class name can't be empty" }).min(1),
   grade: z.string({ required_error: "Class grade can't be empty" }).min(1),
   teacherIds: SemicolonSeparatedIDsSchema,
-  institutionId: z
-    .string({ required_error: "Institution ID can't be empty" })
-    .min(1),
 });
 
 export const ClassesForm = ({ classes }: { classes?: Class }) => {
   const navigator = useNavigate();
 
-  console.log(classes)
+  console.log(classes);
 
   const form = useForm<z.infer<typeof classFormSchema>>({
     resolver: zodResolver(classFormSchema),
@@ -56,8 +53,8 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
       ? {
           name: classes.name,
           grade: classes.grade,
-          institutionId: classes.institutionId,
-          teacherIds: classes.teachers!.map(teacher => teacher.id).join(";")
+          teacherIds: classes.teachers!.map((teacher) => teacher.id).join(";"),
+          // todo: refine selection of teacherId
         }
       : {},
   });
@@ -70,7 +67,6 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
           name: payload.name,
           grade: payload.grade,
           teacherIds: payload.teacherIds,
-          institutionId: payload.institutionId,
         };
         return updateClass(updatePayload, classes.id);
       }
@@ -95,7 +91,6 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
             mutation.mutate({
               name: values.name,
               grade: values.grade,
-              institutionId: values.institutionId,
               teacherIds: values.teacherIds.split(";"),
             }),
           )}
@@ -139,19 +134,7 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="institutionId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Institution ID*</FormLabel>
-                <FormControl>
-                  <Input placeholder="Institution ID" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <div className="flex w-full justify-end">
             <Button type="submit" disabled={mutation.isPending}>
               {mutation.isPending ? (

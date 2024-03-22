@@ -26,13 +26,13 @@ type ClassHandler interface {
 }
 
 type ClassHandlerImpl struct {
-	classService service.ClassService
+	classService   service.ClassService
 	studentService service.StudentService
 }
 
 func NewClassHandlerImpl(classService service.ClassService, studentService service.StudentService) *ClassHandlerImpl {
 	return &ClassHandlerImpl{
-		classService: classService,
+		classService:   classService,
 		studentService: studentService,
 	}
 }
@@ -102,8 +102,10 @@ func (h *ClassHandlerImpl) Update(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
 	}
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstitutionID := institutionID.(uuid.UUID)
 
-	var payload dto.ClassDto
+	var payload dto.CreateUpdateClassPayload
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		var ve validator.ValidationErrors
@@ -119,7 +121,12 @@ func (h *ClassHandlerImpl) Update(c *gin.Context) {
 		return
 	}
 
-	student, err := h.classService.UpdateClass(parsedId, payload)
+	student, err := h.classService.UpdateClass(parsedId, dto.ClassDto{
+		Name:          payload.Name,
+		Grade:         payload.Grade,
+		TeacherIDs:    payload.TeacherIDs,
+		InstitutionID: parsedInstitutionID,
+	})
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
@@ -130,7 +137,10 @@ func (h *ClassHandlerImpl) Update(c *gin.Context) {
 }
 
 func (h *ClassHandlerImpl) Create(c *gin.Context) {
-	var payload dto.ClassDto
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstitutionID := institutionID.(uuid.UUID)
+
+	var payload dto.CreateUpdateClassPayload
 
 	if err := c.ShouldBindJSON(&payload); err != nil {
 		var ve validator.ValidationErrors
@@ -146,7 +156,12 @@ func (h *ClassHandlerImpl) Create(c *gin.Context) {
 		return
 	}
 
-	student, err := h.classService.CreateClass(payload)
+	student, err := h.classService.CreateClass(dto.ClassDto{
+		Name:          payload.Name,
+		Grade:         payload.Grade,
+		TeacherIDs:    payload.TeacherIDs,
+		InstitutionID: parsedInstitutionID,
+	})
 
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
@@ -185,7 +200,7 @@ func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
 	}
-	
+
 	var studentData dto.AssignStudentsRequest
 
 	if err := c.ShouldBindJSON(&studentData); err != nil {
@@ -203,9 +218,9 @@ func (h *ClassHandlerImpl) AssignStudents(c *gin.Context) {
 	}
 
 	updatedStudents, errr := h.studentService.BatchUpdateStudentClassId(dto.UpdateStudentClassIdDto{ClassID: &parsedId, StudentIDs: studentData.StudentIDs})
-	
+
 	if errr != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})		
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})
 		return
 	}
 
@@ -231,9 +246,9 @@ func (h *ClassHandlerImpl) UnassignStudents(c *gin.Context) {
 	}
 
 	updatedStudents, errr := h.studentService.BatchUpdateStudentClassId(dto.UpdateStudentClassIdDto{ClassID: &uuid.Nil, StudentIDs: studentData.StudentIDs})
-	
+
 	if errr != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})		
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errr})
 		return
 	}
 
