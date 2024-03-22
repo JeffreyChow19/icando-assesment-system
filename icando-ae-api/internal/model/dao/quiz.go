@@ -6,18 +6,6 @@ import (
 )
 
 type QuizDao struct {
-<<<<<<< HEAD
-	ID           uuid.UUID  `json:"id"`
-	Name         *string    `json:"name"`
-	Subject      *string    `json:"subject"`
-	PassingGrade float64    `json:"passingGrade"`
-	PublishedAt  *time.Time `json:"publishedAt"`
-	Deadline     *time.Time `json:"deadline"`
-	Creator			 *TeacherDao		`json:"creator,omitempty"`
-	Updater			 *TeacherDao		`json:"updater,omitempty"`
-	Questions		 []QuestionDao	`json:"questions,omitempty"`
-
-=======
 	ID           uuid.UUID     `json:"id"`
 	Name         *string       `json:"name"`
 	Subject      *string       `json:"subject"`
@@ -27,7 +15,6 @@ type QuizDao struct {
 	Creator      *TeacherDao   `json:"creator,omitempty"`
 	Updater      *TeacherDao   `json:"updater,omitempty"`
 	Questions    []QuestionDao `json:"questions,omitempty"`
->>>>>>> main/main
 }
 
 type ParentQuizDao struct {
