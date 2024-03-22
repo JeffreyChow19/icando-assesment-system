@@ -30,6 +30,7 @@ var Module = fx.Options(
 	fx.Provide(designer.NewClassRoute),
 	fx.Provide(designer.NewCompetencyRoute),
 	fx.Provide(designer.NewQuizRoute),
+	fx.Provide(designer.NewQuestionRoute),
 )
 
 type Route interface {
@@ -46,10 +47,11 @@ func NewRoutes(
 	studentRoute *designer.StudentRoute,
 	competencyRoute *designer.CompetencyRoute,
 	quizRoute *designer.QuizRoute,
+	questionRoute *designer.QuestionRoute,
 	authMiddleware *middleware.AuthMiddleware,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
-	designerRoutes := []Route{studentRoute, designerClass, competencyRoute, quizRoute}
+	designerRoutes := []Route{studentRoute, designerClass, competencyRoute, quizRoute, questionRoute}
 	teacherRoutes := []Route{}
 	studentRoutes := []Route{}
 	authRoutes := []Route{teacherAuth, designerAuth, studentAuth}

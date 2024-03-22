@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
@@ -14,7 +15,9 @@ import (
 
 type QuizService interface {
 	CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
+	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
+	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
 }
 
 type QuizServiceImpl struct {
@@ -52,9 +55,27 @@ var ErrQuizNotFound = &httperror.HttpError{
 	Err:        errors.New("Quiz Not Found"),
 }
 
+var ErrGetQuiz = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when retrieving quiz"),
+}
+
 var ErrUpdateQuiz = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when updating quiz"),
+}
+
+func (s *QuizServiceImpl)	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError) {
+	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: id, WithCreator: true, WithUpdater: true, WithQuestions: true})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	quizDao := quiz.ToDao()
+	return &quizDao, nil
 }
 
 func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError) {
@@ -89,4 +110,14 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	quizDao := quiz.ToDao()
 
 	return &quizDao, nil
+}
+
+func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError) {
+	quizzes, meta, err := s.quizRepository.GetAllQuiz(filter)
+	if err != nil {
+		log.Print(err)
+		return nil, nil, httperror.InternalServerError
+	}
+
+	return quizzes, meta, nil
 }
