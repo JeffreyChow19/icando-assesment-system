@@ -20,9 +20,9 @@ import { Button } from "@ui/components/ui/button.tsx";
 import { cn } from "@ui/lib/utils.ts";
 import { QuestionForm } from "./question-form.tsx";
 import { Badge } from "@ui/components/ui/badge.tsx";
-import { quizFormSchema } from "../quiz-form.tsx";
 import { useFormContext } from "react-hook-form";
 import { z } from "zod";
+import { quizFormSchema } from "../quiz-schema.ts";
 
 const ChoiceList = ({
   choices,

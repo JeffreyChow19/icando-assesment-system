@@ -49,7 +49,7 @@ export interface UpdateQuizPayload {
   name: string;
   subject: string;
   passingGrade: number;
-  deadline: string | null;
+  deadline?: string | null;
 }
 
 export type UpdateQuestionPayload = CreateQuestionPayload;
@@ -78,11 +78,7 @@ export const createQuiz = async () => {
 };
 
 export const updateQuiz = async (payload: UpdateQuizPayload) => {
-  const { passingGrade, ...rest } = payload;
-  await api.patch(path, {
-    ...rest,
-    passing_grade: passingGrade,
-  });
+  await api.patch(path, payload);
 };
 
 export const getQuiz = async (id: string) => {
