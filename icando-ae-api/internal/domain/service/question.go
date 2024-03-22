@@ -47,8 +47,12 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 	}
 
 	// Get competencies by IDs
-	competencies, err := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
-	if err != nil {
+	competencies, errGetCompetencies := s.competencyRepository.GetCompetenciesByIDs(questionDto.Competencies)
+	if errGetCompetencies != nil {
+		return nil, ErrCompetencyNotFound
+	}
+
+	if len(competencies) != len(questionDto.Competencies) {
 		return nil, ErrCompetencyNotFound
 	}
 
@@ -113,6 +117,10 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 	updatedCompetencyMap := make(map[uuid.UUID]*model.Competency)
 	for i := range updatedCompetencies {
 		updatedCompetencyMap[updatedCompetencies[i].ID] = &updatedCompetencies[i]
+	}
+
+	if len(updatedCompetencies) != len(questionDto.Competencies) {
+		return nil, ErrCompetencyNotFound
 	}
 
 	// Prepare the list of competencies to be deleted and added
