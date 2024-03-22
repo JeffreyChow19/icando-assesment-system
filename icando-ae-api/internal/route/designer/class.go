@@ -1,12 +1,15 @@
 package designer
 
 import (
-	"github.com/gin-gonic/gin"
 	"icando/internal/handler/designer"
+	"icando/internal/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ClassRoute struct {
 	classHandler designer.ClassHandler
+	authMiddleware middleware.AuthMiddleware
 }
 
 func (r ClassRoute) Setup(group *gin.RouterGroup) {
@@ -22,8 +25,10 @@ func (r ClassRoute) Setup(group *gin.RouterGroup) {
 
 func NewClassRoute(
 	classHandler designer.ClassHandler,
+	authMiddleware *middleware.AuthMiddleware,
 ) *ClassRoute {
 	return &ClassRoute{
 		classHandler: classHandler,
+		authMiddleware: *authMiddleware,
 	}
 }

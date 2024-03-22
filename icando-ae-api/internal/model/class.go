@@ -22,7 +22,7 @@ func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
 		ID:           s.ID,
 		Name:         s.Name,
 		Grade:        s.Grade,
-		InstituionID: s.InstitutionID,
+		InstitutionID: s.InstitutionID,
 	}
 
 	if option.WithTeacherRelation {
