@@ -5,7 +5,7 @@ export interface Class {
   id: string;
   name: string;
   grade: string;
-  teacherId: string;
+  institutionId: string;
   students?: Student[];
-  teacher?: Teacher;
+  teachers?: Teacher[];
 }

@@ -1,4 +1,4 @@
-import { Class } from "src/interfaces/classes.ts";
+import { Class } from "../interfaces/classes.ts";
 import { api } from "../utils/api.ts";
 
 export interface GetClassFilter {
@@ -9,13 +9,15 @@ export interface GetClassFilter {
 export interface CreateClassPayload {
   name: string;
   grade: string;
-  teacherId: string;
+  teacherIds?: string[];
+  institutionId: string;
 }
 
 export interface UpdateClassPayload {
   name?: string;
   grade?: string;
-  teacherId?: string;
+  teacherIds?: string[];
+  institutionId: string;
 }
 
 export interface AssignStudentsRequest {

@@ -8,13 +8,15 @@ import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
-import { Home } from './pages';
+import { Home } from "./pages";
 import { LoginPage } from "./pages/login.tsx";
-import {NewQuizPage} from "./pages/quiz/new.tsx";
-import { StudentsEdit } from './pages/students/students-edit.tsx';
-import { StudentsNew } from './pages/students/students-new.tsx';
-import {Students} from "./pages/students";
+import { NewQuizPage } from "./pages/quiz/new.tsx";
+import { StudentsEdit } from "./pages/students/students-edit.tsx";
+import { StudentsNew } from "./pages/students/students-new.tsx";
+import { Students } from "./pages/students";
 import { Classes } from "./pages/classes";
+import { ClassNew } from "./pages/classes/class-new.tsx";
+import { ClassEdit } from "./pages/classes/class-edit.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -37,7 +39,7 @@ function App() {
     },
     {
       path: "/quiz/new",
-      element: <NewQuizPage />
+      element: <NewQuizPage />,
     },
     {
       path: "/students/new",
@@ -49,8 +51,16 @@ function App() {
     },
     {
       path: "/classes",
-      element: <Classes/>,
-    }
+      element: <Classes />,
+    },
+    {
+      path: "/classes/new",
+      element: <ClassNew />,
+    },
+    {
+      path: "/classes/edit/:id",
+      element: <ClassEdit />,
+    },
   ]);
   return (
     <QueryClientProvider client={queryClient}>
