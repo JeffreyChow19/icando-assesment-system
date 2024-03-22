@@ -1,7 +1,6 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from '@tanstack/react-query';
-import { useConfirm } from "../../context/alert-dialog.tsx";
 import { Button } from "@ui/components/ui/button.tsx";
 import { Table, TableBody, TableCaption } from "@ui/components/ui/table.tsx";
 import { SearchIcon } from "lucide-react";
@@ -17,7 +16,7 @@ export function QuizzesTable() {
 
   const [page, setPage] = useState(pageParams ? parseInt(pageParams) : 1);
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['quiz', page],
     queryFn: () => getAllQuiz({ page: page, limit: 10 }),
   });
@@ -29,9 +28,6 @@ export function QuizzesTable() {
       }
     }
   }, [data, page]);
-
-  const confirm = useConfirm();
-
 
   return (
     <div className="w-full mb-2">
