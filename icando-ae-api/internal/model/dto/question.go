@@ -14,6 +14,7 @@ type QuestionDto struct {
 	Choices      []QuestionChoiceDto `json:"choices"`
 	AnswerID     int                 `json:"answerId"`
 	Competencies []uuid.UUID         `json:"competencies"`
+	Order        int                 `json:"order"`
 }
 
 type QuestionChoiceDto struct {

@@ -46,3 +46,7 @@ func (r *QuestionRepository) CreateQuestion(question model.Question) (model.Ques
 func (r *QuestionRepository) UpdateQuestion(question *model.Question) error {
 	return r.db.Save(question).Error
 }
+
+func (r *QuestionRepository) DeleteQuestion(question *model.Question) error {
+	return r.db.Delete(question).Error
+}
