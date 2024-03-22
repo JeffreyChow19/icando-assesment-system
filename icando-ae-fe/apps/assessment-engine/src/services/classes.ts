@@ -10,14 +10,12 @@ export interface CreateClassPayload {
   name: string;
   grade: string;
   teacherIds?: string[];
-  institutionId: string;
 }
 
 export interface UpdateClassPayload {
   name?: string;
   grade?: string;
   teacherIds?: string[];
-  institutionId: string;
 }
 
 export interface AssignStudentsRequest {

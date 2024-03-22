@@ -45,8 +45,6 @@ const classFormSchema = z.object({
 export const ClassesForm = ({ classes }: { classes?: Class }) => {
   const navigator = useNavigate();
 
-  console.log(classes);
-
   const form = useForm<z.infer<typeof classFormSchema>>({
     resolver: zodResolver(classFormSchema),
     defaultValues: classes
