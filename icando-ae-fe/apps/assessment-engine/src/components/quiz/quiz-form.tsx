@@ -13,10 +13,11 @@ import {
   TabsList,
   TabsTrigger,
 } from "@ui/components/ui/tabs.tsx";
-import { updateQuiz } from "../../services/quiz.ts";
+import { getQuiz, updateQuiz } from "../../services/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { onErrorToast } from "../ui/error-toast.tsx";
 import { useMutation } from "@tanstack/react-query";
+import { useCallback } from "react";
 
 export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
   const form = useForm<z.infer<typeof quizFormSchema>>({
@@ -28,6 +29,11 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
       questions: quiz.questions,
     },
   });
+
+  const onQuestionUpdate = useCallback(async () => {
+    const result = await getQuiz(quiz.id);
+    form.setValue("questions", result.questions);
+  }, [form, quiz.id]);
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof quizFormSchema>) => {
@@ -71,9 +77,16 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
           </TabsContent>
           <TabsContent value="questions">
             <div className="flex w-full justify-end">
-              <QuestionForm type="new" quizId={quiz.id} />
+              <QuestionForm
+                type="new"
+                quizId={quiz.id}
+                onSuccess={() => onQuestionUpdate()}
+              />
             </div>
-            <QuestionList />
+            <QuestionList
+              onSuccess={() => onQuestionUpdate()}
+              quizId={quiz.id}
+            />
           </TabsContent>
         </Tabs>
       </form>

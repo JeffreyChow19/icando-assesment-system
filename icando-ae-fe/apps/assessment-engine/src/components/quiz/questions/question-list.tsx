@@ -51,7 +51,12 @@ const ChoiceList = ({
   );
 };
 
-export const QuestionList = () => {
+interface QuestionListProps {
+  onSuccess: () => void;
+  quizId: string;
+}
+
+export const QuestionList = ({ onSuccess, quizId }: QuestionListProps) => {
   const form = useFormContext<z.infer<typeof quizFormSchema>>();
   const questions = form.watch("questions");
 
@@ -110,7 +115,12 @@ export const QuestionList = () => {
                     })}
                   </div>
                   <div className="flex w-full justify-end">
-                    <QuestionForm type="edit" question={question} />
+                    <QuestionForm
+                      type="edit"
+                      quizId={quizId}
+                      question={question}
+                      onSuccess={onSuccess}
+                    />
                   </div>
                 </div>
               </TableCell>

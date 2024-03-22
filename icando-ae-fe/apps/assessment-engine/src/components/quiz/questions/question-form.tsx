@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { Form } from "@ui/components/ui/form.tsx";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { createQuestion } from "../../../services/quiz.ts";
+import { createQuestion, updateQuestion } from "../../../services/quiz.ts";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { onErrorToast } from "../../ui/error-toast.tsx";
@@ -25,9 +25,15 @@ interface QuestionFormProps {
   type: "edit" | "new";
   question?: Question;
   quizId?: string;
+  onSuccess: () => void;
 }
 
-export const QuestionForm = ({ type, question, quizId }: QuestionFormProps) => {
+export const QuestionForm = ({
+  type,
+  question,
+  quizId,
+  onSuccess,
+}: QuestionFormProps) => {
   const [step, setStep] = useState<number>(0);
 
   const form = useForm<z.infer<typeof questionFormSchema>>({
@@ -60,13 +66,20 @@ export const QuestionForm = ({ type, question, quizId }: QuestionFormProps) => {
           ...others,
           competencies: competencies.map((competency) => competency.id),
         });
+      } else if (type === "edit" && quizId && question) {
+        await updateQuestion(quizId, question.id, {
+          ...others,
+          competencies: competencies.map((competency) => competency.id),
+        });
       }
     },
     onSuccess: () => {
+      onSuccess();
       toast({
-        description: "Successfully created question",
+        description: `Successfully ${type === "new" ? "added" : "updated"} question`,
       });
       setOpen(false);
+      form.reset();
     },
     onError: (e: Error) => {
       onErrorToast(e);
@@ -88,7 +101,13 @@ export const QuestionForm = ({ type, question, quizId }: QuestionFormProps) => {
         <Form {...form}>
           <form
             id="question"
-            onSubmit={form.handleSubmit((payload) => mutation.mutate(payload))}
+            onSubmit={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              form.handleSubmit((payload) => {
+                mutation.mutate(payload);
+              })(e);
+            }}
             className="space-y-8"
           >
             <DialogHeader>
