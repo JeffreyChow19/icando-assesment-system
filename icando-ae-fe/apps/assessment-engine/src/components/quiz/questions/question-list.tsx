@@ -20,10 +20,9 @@ import { Button } from "@ui/components/ui/button.tsx";
 import { cn } from "@ui/lib/utils.ts";
 import { QuestionForm } from "./question-form.tsx";
 import { Badge } from "@ui/components/ui/badge.tsx";
-
-interface QuestionListProps {
-  questions: Question[];
-}
+import { quizFormSchema } from "../quiz-form.tsx";
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
 
 const ChoiceList = ({
   choices,
@@ -52,7 +51,10 @@ const ChoiceList = ({
   );
 };
 
-export const QuestionList = ({ questions }: QuestionListProps) => {
+export const QuestionList = () => {
+  const form = useFormContext<z.infer<typeof quizFormSchema>>();
+  const questions = form.watch("questions");
+
   const [page, setPage] = useState<number>(1);
   const questionsPerPage = 10;
   const startIndex = (page - 1) * questionsPerPage;

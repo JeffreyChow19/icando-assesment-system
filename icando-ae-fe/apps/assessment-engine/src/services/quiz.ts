@@ -48,7 +48,7 @@ export interface UpdateQuizPayload {
   id: string;
   name: string;
   subject: string;
-  passing_grade: number;
+  passingGrade: number;
   deadline: string | null;
 }
 
@@ -69,20 +69,22 @@ export const updateQuestion = async (
   questionId: string,
   payload: UpdateQuestionPayload,
 ) => {
-  return (await api.patch(
-    `${path}/${quizId}/question/${questionId}`,
-    payload,
-  )) as UpdateQuestionResponse;
+  return (await api.patch(`${path}/${quizId}/question/${questionId}`, payload))
+    .data as UpdateQuestionResponse;
 };
 
 export const createQuiz = async () => {
-  return (await api.post(path)).data as CreateQuizResponseData;
+  return (await api.post(path)).data.data as CreateQuizResponseData;
 };
 
 export const updateQuiz = async (payload: UpdateQuizPayload) => {
-  await api.patch(path, payload);
+  const { passingGrade, ...rest } = payload;
+  await api.patch(path, {
+    ...rest,
+    passing_grade: passingGrade,
+  });
 };
 
 export const getQuiz = async (id: string) => {
-  return (await api.get(`${path}/${id}`)).data as QuizDetail;
+  return (await api.get(`${path}/${id}`)).data.data as QuizDetail;
 };
