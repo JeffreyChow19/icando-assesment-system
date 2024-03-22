@@ -26,7 +26,7 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
       name: quiz.name || "",
       subject: quiz.subject || "",
       passingGrade: quiz.passingGrade,
-      questions: quiz.questions,
+      questions: quiz.questions || [],
     },
   });
 

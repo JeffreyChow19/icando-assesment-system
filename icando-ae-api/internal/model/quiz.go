@@ -13,12 +13,12 @@ type Quiz struct {
 	PassingGrade float64
 	ParentQuiz   *uuid.UUID
 	CreatedBy    uuid.UUID  `gorm:"type:uuid;not null"`
-	Creator			 *Teacher		`gorm:"foreignKey:CreatedBy"`
+	Creator      *Teacher   `gorm:"foreignKey:CreatedBy"`
 	UpdatedBy    *uuid.UUID `gorm:"type:uuid"`
-	Updater			 *Teacher		`gorm:"foreignKey:UpdatedBy"`
+	Updater      *Teacher   `gorm:"foreignKey:UpdatedBy"`
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
 	Deadline     *time.Time `gorm:"type:timestamptz"`
-	Questions		 []Question	
+	Questions    []Question
 }
 
 func (q Quiz) ToDao() dao.QuizDao {
@@ -43,7 +43,6 @@ func (q Quiz) ToDao() dao.QuizDao {
 
 	if q.Questions != nil {
 		questions := make([]dao.QuestionDao, 0)
-
 		for _, question := range q.Questions {
 			questionDao, err := question.ToDao()
 			if err != nil {
@@ -52,7 +51,6 @@ func (q Quiz) ToDao() dao.QuizDao {
 
 			questions = append(questions, *questionDao)
 		}
-
 		daoQuiz.Questions = questions
 	}
 
