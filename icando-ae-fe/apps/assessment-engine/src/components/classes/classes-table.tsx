@@ -36,8 +36,7 @@ export function ClassesTable() {
         <div className="w-full flex flex-row font-normal gap-x-3"></div>
         <div>
           <Button size={"sm"}>
-            {/* todo new class button */}
-            <Link to={"#"}>New Class</Link>
+            <Link to={"/classes/new"}>New Class</Link>
           </Button>
         </div>
       </div>
@@ -66,7 +65,6 @@ export function ClassesTable() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Grade</TableHead>
-            <TableHead>Teacher</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -81,13 +79,17 @@ export function ClassesTable() {
                     <TableCell>{classes.name}</TableCell>
                     <TableCell>{classes.grade}</TableCell>
                     {/* todo: display teacher correctly (not by id?) */}
-                    <TableCell>{classes.teacherId}</TableCell>
+                    {/* todo: display participant (student count?) */}
                     <TableCell>
                       <div className="flex space-x-2">
                         <>
                           <Button size={"sm"}>
-                            {/* todo edit class button */}
-                            <Link to={`#`}>Edit</Link>
+                            <Link to={`/classes/edit/${classes.id}`}>
+                              Edit Class
+                            </Link>
+                          </Button>
+                          <Button size={"sm"}>
+                            <Link to={`#`}>Edit Participants</Link>
                           </Button>
                           <Button
                             size={"sm"}
