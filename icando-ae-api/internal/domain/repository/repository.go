@@ -11,5 +11,7 @@ var Module = fx.Module(
 		fx.Provide(NewClassRepository),
 		fx.Provide(NewCompetencyRepository),
 		fx.Provide(NewQuizRepository),
+		fx.Provide(NewQuestionRepository),
+		fx.Provide(NewQuestionCompetencyRepository),
 	),
 )
