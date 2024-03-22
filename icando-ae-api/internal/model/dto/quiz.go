@@ -1,12 +1,24 @@
 package dto
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type GetQuizFilter struct {
 	ID uuid.UUID
+	WithCreator		bool
+	WithUpdater 	bool
+	WithQuestions	bool
+}
+
+type GetAllQuizzesFilter struct {
+	InstitutionID *string `form:"institutionId"`
+	Query         *string `form:"q"`
+	Subject       *string `form:"subject"`
+	Page          int     `form:"page"`
+	Limit         int     `form:"limit"`
 }
 
 type UpdateQuizDto struct {

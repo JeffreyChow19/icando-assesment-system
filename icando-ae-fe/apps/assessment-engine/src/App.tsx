@@ -10,10 +10,11 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from './pages';
 import { LoginPage } from "./pages/login.tsx";
-import { Students } from './pages/students';
+import {NewQuizPage} from "./pages/quiz/new.tsx";
 import { StudentsEdit } from './pages/students/students-edit.tsx';
 import { StudentsNew } from './pages/students/students-new.tsx';
 import { Quizzes } from "./pages/quizzes/index.tsx";
+import {Students} from "./pages/students";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -33,6 +34,10 @@ function App() {
     {
       path: "/students",
       element: <Students />,
+    },
+    {
+      path: "/quiz/new",
+      element: <NewQuizPage />
     },
     {
       path: "/students/new",

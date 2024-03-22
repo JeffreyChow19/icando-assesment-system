@@ -7,8 +7,7 @@ type ClassDao struct {
 	Name         string          `json:"name"`
 	Grade        string          `json:"grade"`
 	InstituionID uuid.UUID       `json:"instituionId"`
-	TeacherID    uuid.UUID       `json:"teacherId"`
-	Teacher      *TeacherDao     `json:"teacher,omitempty"`
+	Teachers     []TeacherDao    `json:"teachers,omitempty"`
 	Institution  *InstitutionDao `json:"institution,omitempty"`
 	Students     []StudentDao    `json:"students,omitempty"`
 }
