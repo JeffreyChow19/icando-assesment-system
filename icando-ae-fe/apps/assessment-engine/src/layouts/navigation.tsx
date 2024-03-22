@@ -46,7 +46,7 @@ const navItems: NavItemLink[] = [
   {
     icon: <BookOpenCheck className={iconClassName} />,
     title: "Quiz",
-    link: "/quizzes",
+    link: "/quiz",
   },
 ];
 

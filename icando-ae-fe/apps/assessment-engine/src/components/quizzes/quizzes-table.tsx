@@ -52,7 +52,7 @@ export function QuizzesTable() {
         </div>
         <div>
           <Button size={'sm'}>
-            <Link to={'/quizzes/new'}>New Quiz</Link>
+            <Link to={'/quiz/new'}>New Quiz</Link>
           </Button>
         </div>
       </div>

@@ -48,7 +48,7 @@ function App() {
       element: <StudentsEdit />,
     },
     {
-      path: "/quizzes",
+      path: "/quiz",
       element: <Quizzes />,
     }
   ]);
