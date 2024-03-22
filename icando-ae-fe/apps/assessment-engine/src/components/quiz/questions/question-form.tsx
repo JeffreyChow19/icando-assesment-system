@@ -59,10 +59,6 @@ export const QuestionForm = ({
     },
   });
 
-  if (type === "new") {
-    form.setValue("order", nextOrder());
-  }
-
   const [open, setOpen] = useState<boolean>(false);
 
   const mutation = useMutation({
@@ -72,6 +68,7 @@ export const QuestionForm = ({
         await createQuestion(quizId, {
           ...others,
           competencies: competencies.map((competency) => competency.id),
+          order: nextOrder(),
         });
       } else if (type === "edit" && quizId && question) {
         await updateQuestion(quizId, question.id, {
