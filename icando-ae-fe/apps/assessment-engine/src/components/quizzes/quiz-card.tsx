@@ -6,34 +6,38 @@ import {
     CardHeader,
     CardTitle,
 } from "@ui/components/ui/card.tsx"
-
-import { useEffect, useState } from 'react';
+import { QuizDetail } from "../../interfaces/quiz.ts";
 import { Button } from '@ui/components/ui/button.tsx';
+import { Link } from "react-router-dom";
 
-export function QuizCard() {
+export function QuizCard({ quiz }: { quiz: QuizDetail }) {
     return (
         <Card className="space-x-2">
             <CardHeader className="flex flex-row justify-between">
-                <CardTitle>Quiz Title</CardTitle>
-                <p className="text-green-500">Published</p>
+                <CardTitle>{quiz.name? quiz.name:'Untitled Quiz'}</CardTitle>
+                {quiz.publishedAt ?
+                    <p className="text-green-500">Published</p> :
+                    <p className="text-red-500">Draft</p>
+                }
             </CardHeader>
             <CardContent>
                 <CardDescription >
-                    <p>Quiz Subject</p>
-                </CardDescription>
-                <CardDescription >
-                    <p>2 Questions</p>
+                    <p>{quiz.subject? quiz.subject: 'Untitled Subject'}</p>
                 </CardDescription>
             </CardContent>
             <CardFooter className="flex justify-between">
                 <div className="flex flex-column justify-between">
                     <div>
-                        <p>Last Published at: -</p>
-                        <p>Updated at: 2021-09-20 12:00</p>
+                        <p>Created By: {quiz.creator ? `${quiz.creator.firstName} ${quiz.creator.lastName}` : '-'}</p>
+                        <p>Last Published at: {quiz.publishedAt ? quiz.publishedAt : '-'}</p>
                     </div>
                 </div>
                 <div className="flex flex-row justify-between space-x-2">
-                    <Button variant="outline">Edit</Button>
+                    <Button variant="outline">
+                        <Link to={`/quiz/${quiz.id}/edit`}>
+                            Edit
+                        </Link>
+                    </Button>
                     <Button>Publish</Button>
                 </div>
             </CardFooter>
