@@ -41,14 +41,15 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
       return 0;
     }
 
-    return (result =
+    return (
       questions.reduce((max, curr) => {
         if (max < curr.order) {
           return curr.order;
         }
 
         return max;
-      }, 0) + 1);
+      }, 0) + 1
+    );
   };
 
   const mutation = useMutation({
