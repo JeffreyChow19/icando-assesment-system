@@ -62,7 +62,7 @@ func (q Question) ToDao() (*dao.QuestionDao, error) {
 	}
 
 	// Convert competencies to a slice of CompetencyDao
-	var competenciesDao []dao.CompetencyDao
+	competenciesDao := make([]dao.CompetencyDao, 0)
 	for _, competency := range q.Competencies {
 		numbering := competency.Numbering
 		name := competency.Name

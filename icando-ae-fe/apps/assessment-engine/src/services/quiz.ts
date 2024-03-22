@@ -24,6 +24,7 @@ export interface CreateQuestionPayload {
     text: string;
   }[];
   answerId: number;
+  order: number;
   competencies: string[];
 }
 
@@ -53,14 +54,14 @@ export interface UpdateQuizPayload {
 }
 
 export interface GetAllQuizFilter {
-    name?: string;
-    subject?: string;
-    page: number;
-    limit: number;
+  name?: string;
+  subject?: string;
+  page: number;
+  limit: number;
 }
-interface GetAllQuiz{
-    meta: Meta;
-    data: QuizDetail[];
+interface GetAllQuiz {
+  meta: Meta;
+  data: QuizDetail[];
 }
 
 export type UpdateQuestionPayload = CreateQuestionPayload;
@@ -101,5 +102,5 @@ export const getQuiz = async (id: string) => {
 };
 
 export const getAllQuiz = async (filter: GetAllQuizFilter) => {
-    return (await api.get(path, { params: filter })).data as GetAllQuiz;
-}
+  return (await api.get(path, { params: filter })).data as GetAllQuiz;
+};

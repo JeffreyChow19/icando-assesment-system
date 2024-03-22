@@ -126,6 +126,7 @@ export const QuestionList = ({ onSuccess, quizId }: QuestionListProps) => {
                         quizId={quizId}
                         question={question}
                         onSuccess={onSuccess}
+                        nextOrder={() => 0}
                       />
                       <Button
                         type="button"

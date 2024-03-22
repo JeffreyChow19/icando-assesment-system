@@ -35,6 +35,22 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
     form.setValue("questions", result.questions);
   }, [form, quiz.id]);
 
+  const nextOrder = () => {
+    const questions = form.getValues("questions");
+    if (questions.length === 0) {
+      return 0;
+    }
+
+    return (result =
+      questions.reduce((max, curr) => {
+        if (max < curr.order) {
+          return curr.order;
+        }
+
+        return max;
+      }, 0) + 1);
+  };
+
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof quizFormSchema>) => {
       console.log(payload);
@@ -81,6 +97,7 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
                 type="new"
                 quizId={quiz.id}
                 onSuccess={() => onQuestionUpdate()}
+                nextOrder={nextOrder}
               />
             </div>
             <QuestionList

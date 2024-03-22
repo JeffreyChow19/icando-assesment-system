@@ -17,6 +17,7 @@ export const questionSchema = z.object({
       text: z.string(),
     })
     .array(),
+  order: z.number(),
   competencies: competencySchema.array(),
 });
 

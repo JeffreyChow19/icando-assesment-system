@@ -20,4 +20,5 @@ export const questionFormSchema = z.object({
   choices: z.array(answerFormSchema).min(1),
   answerId: z.number(),
   competencies: z.array(competencyFormSchema),
+  order: z.number(),
 });

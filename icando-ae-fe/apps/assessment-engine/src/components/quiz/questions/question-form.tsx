@@ -26,6 +26,7 @@ interface QuestionFormProps {
   question?: Question;
   quizId?: string;
   onSuccess: () => void;
+  nextOrder: () => number;
 }
 
 export const QuestionForm = ({
@@ -33,6 +34,7 @@ export const QuestionForm = ({
   question,
   quizId,
   onSuccess,
+  nextOrder,
 }: QuestionFormProps) => {
   const [step, setStep] = useState<number>(0);
 
@@ -53,8 +55,13 @@ export const QuestionForm = ({
             )
           : 0,
       competencies: question?.competencies || [],
+      order: question?.order || 0,
     },
   });
+
+  if (type === "new") {
+    form.setValue("order", nextOrder());
+  }
 
   const [open, setOpen] = useState<boolean>(false);
 
@@ -79,6 +86,7 @@ export const QuestionForm = ({
         description: `Successfully ${type === "new" ? "added" : "updated"} question`,
       });
       setOpen(false);
+      setStep(0);
       form.reset();
     },
     onError: (e: Error) => {

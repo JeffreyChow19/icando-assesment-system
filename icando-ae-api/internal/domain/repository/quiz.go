@@ -9,6 +9,7 @@ import (
 	"icando/internal/model/dto"
 	"icando/lib"
 	"math"
+	"sort"
 	"strings"
 )
 
@@ -34,7 +35,7 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 	}
 
 	if filter.WithQuestions {
-		query = query.Preload("Questions").Preload("Questions.Competencies")
+		query = query.Preload("Questions.Competencies")
 	}
 
 	if filter.ID != uuid.Nil {
@@ -45,6 +46,12 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 	err := query.First(&quiz).Error
 	if err != nil {
 		return nil, err
+	}
+
+	if filter.WithQuestions {
+		sort.Slice(quiz.Questions, func(i, j int) bool {
+			return quiz.Questions[i].Order < quiz.Questions[j].Order
+		})
 	}
 
 	return &quiz, nil
