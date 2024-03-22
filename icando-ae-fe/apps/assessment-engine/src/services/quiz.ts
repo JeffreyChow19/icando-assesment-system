@@ -84,6 +84,10 @@ export const updateQuestion = async (
     .data as UpdateQuestionResponse;
 };
 
+export const deleteQuestion = async (quizId: string, questionId: string) => {
+  return await api.delete(`${path}/${quizId}/question/${questionId}`);
+};
+
 export const createQuiz = async () => {
   return (await api.post(path)).data.data as CreateQuizResponseData;
 };
@@ -96,6 +100,6 @@ export const getQuiz = async (id: string) => {
   return (await api.get(`${path}/${id}`)).data.data as QuizDetail;
 };
 
-export const getAllQuiz = async (filter: GetAllQuizFilter) => { 
+export const getAllQuiz = async (filter: GetAllQuizFilter) => {
     return (await api.get(path, { params: filter })).data as GetAllQuiz;
 }
