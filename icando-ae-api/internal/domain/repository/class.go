@@ -1,13 +1,14 @@
 package repository
 
 import (
+	"fmt"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"icando/utils"
-
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"strings"
 )
 
 type ClassRepository struct {
@@ -21,30 +22,114 @@ func NewClassRepository(db *lib.Database) ClassRepository {
 }
 
 func (r *ClassRepository) CreateClass(dto dto.ClassDto) (*model.Class, error) {
+	tx := r.db.Begin()
+
 	class := model.Class{
 		Name:          dto.Name,
 		Grade:         dto.Grade,
 		InstitutionID: dto.InstitutionID,
-		TeacherID:     dto.TeacherID,
 	}
 
-	if err := r.db.Create(&class).Error; err != nil {
+	if err := tx.Create(&class).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
+
+	var values []string
+
+	for _, teacherId := range dto.TeacherIDs {
+		values = append(values, fmt.Sprintf("('%s', '%s')", class.ID.String(), teacherId.String()))
+	}
+
+	if values != nil && len(values) != 0 {
+		query := fmt.Sprintf("INSERT INTO class_teacher(class_id, teacher_id) VALUES %s", strings.Join(values, ", "))
+
+		if err := tx.Exec(query).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
 	return &class, nil
 }
 
-func (r *ClassRepository) UpdateClass(id uuid.UUID, dto dto.ClassDto) (*model.Class, error) {
+func (r *ClassRepository) UpdateClass(id uuid.UUID, classDto dto.ClassDto) (*model.Class, error) {
+
+	oldClass, err := r.GetClass(id, dto.GetClassFilter{WithTeacherRelation: true})
+
+	if err != nil {
+		return nil, err
+	}
+
+	tx := r.db.Begin()
+
 	class := model.Class{
-		Name:          dto.Name,
-		Grade:         dto.Grade,
-		InstitutionID: dto.InstitutionID,
-		TeacherID:     dto.TeacherID,
+		Name:          classDto.Name,
+		Grade:         classDto.Grade,
+		InstitutionID: classDto.InstitutionID,
 	}
 	class.ID = id
 
-	if err := r.db.Save(&class).Error; err != nil {
+	if err := tx.Save(&class).Error; err != nil {
+		return nil, err
+	}
+
+	// to delete teacher
+	toDeleteIds := []string{}
+
+	for _, teacher := range oldClass.Teachers {
+		shouldDelete := true
+
+		for _, newTeacherId := range classDto.TeacherIDs {
+			if newTeacherId.String() == teacher.ID.String() {
+				shouldDelete = false
+				break
+			}
+		}
+
+		if shouldDelete {
+			toDeleteIds = append(toDeleteIds, teacher.ID.String())
+		}
+	}
+
+	if toDeleteIds != nil && len(toDeleteIds) != 0 {
+		if err := tx.Exec("DELETE FROM class_teacher WHERE class_id = ? AND teacher_id IN ?", oldClass.ID.String(), toDeleteIds).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	var toAddIds []string
+
+	for _, teacherId := range classDto.TeacherIDs {
+		shouldAdd := true
+
+		for _, oldTeacher := range oldClass.Teachers {
+			if oldTeacher.ID.String() == teacherId.String() {
+				shouldAdd = false
+				break
+			}
+		}
+
+		if shouldAdd {
+			toAddIds = append(toAddIds, fmt.Sprintf("('%s', '%s')", oldClass.ID.String(), teacherId.String()))
+		}
+	}
+
+	if toAddIds != nil && len(toAddIds) != 0 {
+		query := fmt.Sprintf("INSERT INTO class_teacher(class_id, teacher_id) VALUES %s", strings.Join(toAddIds, ", "))
+
+		if err := tx.Exec(query).Error; err != nil {
+			tx.Rollback()
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return nil, err
 	}
 
@@ -60,22 +145,33 @@ func (r *ClassRepository) DeleteClass(id uuid.UUID) error {
 }
 
 func (r *ClassRepository) GetAllClass(filter dto.GetAllClassFilter) ([]model.Class, error) {
-	var scopes []func(*gorm.DB) *gorm.DB
+	query := r.db
 	result := make([]model.Class, 0)
 
 	if filter.SortBy != nil && *filter.SortBy != "" {
-		scopes = append(scopes, utils.QuerySortBy(*filter.SortBy, !filter.Desc))
+		utils.QuerySortBy(query, *filter.SortBy, !filter.Desc)
 	}
 
 	if filter.TeacherID != nil {
-		scopes = append(scopes, classWhereTeacherID(*filter.TeacherID))
+		var classIds []ClassIds
+		ids := make([]string, 0)
+
+		if err := r.db.Raw("SELECT class_id FROM class_teacher WHERE teacher_id = ?", filter.TeacherID.String()).Scan(&classIds).Error; err != nil {
+			return nil, err
+		}
+
+		for _, classId := range classIds {
+			ids = append(ids, classId.ClassID.String())
+		}
+
+		query.Where("id IN ?", ids)
 	}
 
 	if filter.InstitutionID != nil {
-		scopes = append(scopes, classWhereInstitutionID(*filter.InstitutionID))
+		query.Where("institution_id = ?", filter.InstitutionID.String())
 	}
 
-	if err := r.db.Model(&model.Class{}).Scopes(scopes...).Find(&result).Error; err != nil {
+	if err := query.Find(&result).Error; err != nil {
 		return nil, err
 	}
 
@@ -96,7 +192,7 @@ func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFilter) (*mo
 	}
 
 	if filter.WithTeacherRelation {
-		query = query.Preload("Teacher")
+		query = query.Preload("Teachers")
 	}
 
 	if err := query.Where("id = ?", id.String()).First(&class).Error; err != nil {
@@ -106,14 +202,6 @@ func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFilter) (*mo
 	return &class, nil
 }
 
-func classWhereTeacherID(id uuid.UUID) func(db *gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("teached_id = ?", id.String())
-	}
-}
-
-func classWhereInstitutionID(id uuid.UUID) func(db *gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		return db.Where("institution_id = ?", id.String())
-	}
+type ClassIds struct {
+	ClassID uuid.UUID
 }

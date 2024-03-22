@@ -74,6 +74,24 @@ func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesF
 	return competencies, &meta, nil
 }
 
+func (r *CompetencyRepository) GetCompetenciesByIDs(competencyIDs []uuid.UUID) ([]model.Competency, error) {
+	var competencies []model.Competency
+
+	// Convert the slice of UUIDs to a slice of interfaces for the Where clause
+	ids := make([]interface{}, len(competencyIDs))
+	for i, id := range competencyIDs {
+		ids[i] = id
+	}
+
+	// Find all Competency records where the ID is in the provided list
+	err := r.db.Model(&model.Competency{}).Where("id IN (?)", ids).Find(&competencies).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return competencies, nil
+}
+
 func (r *CompetencyRepository) CreateCompetency(competency model.Competency) (model.Competency, error) {
 	err := r.db.Create(&competency).Error
 	return competency, err
