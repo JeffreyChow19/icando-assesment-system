@@ -36,7 +36,7 @@ function App() {
       element: <Students />,
     },
     {
-      path: "/quizzes/:id/edit",
+      path: "/quiz/:id/edit",
       element: <UpdateQuizPage />,
     },
     {
@@ -48,9 +48,9 @@ function App() {
       element: <StudentsEdit />,
     },
     {
-      path: "/quizzes",
+      path: "/quiz",
       element: <Quizzes />,
-    },
+    }
   ]);
   return (
     <QueryClientProvider client={queryClient}>

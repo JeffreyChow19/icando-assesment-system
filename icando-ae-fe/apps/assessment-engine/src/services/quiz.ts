@@ -52,6 +52,17 @@ export interface UpdateQuizPayload {
   deadline?: string | null;
 }
 
+export interface GetAllQuizFilter {
+    name?: string;
+    subject?: string;
+    page: number;
+    limit: number;
+}
+interface GetAllQuiz{
+    meta: Meta;
+    data: QuizDetail[];
+}
+
 export type UpdateQuestionPayload = CreateQuestionPayload;
 
 export const createQuestion = async (
@@ -84,3 +95,7 @@ export const updateQuiz = async (payload: UpdateQuizPayload) => {
 export const getQuiz = async (id: string) => {
   return (await api.get(`${path}/${id}`)).data.data as QuizDetail;
 };
+
+export const getAllQuiz = async (filter: GetAllQuizFilter) => { 
+    return (await api.get(path, { params: filter })).data as GetAllQuiz;
+}

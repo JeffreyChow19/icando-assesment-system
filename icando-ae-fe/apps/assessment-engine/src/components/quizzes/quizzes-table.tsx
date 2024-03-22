@@ -1,14 +1,12 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
-// import { useQuery } from '@tanstack/react-query';
-// import { deleteStudent, getAllStudent } from '../../services/student.ts';
-import { useConfirm } from "../../context/alert-dialog.tsx";
+import { useEffect, useState } from "react";
+import { useQuery } from '@tanstack/react-query';
 import { Button } from "@ui/components/ui/button.tsx";
 import { Table, TableBody, TableCaption } from "@ui/components/ui/table.tsx";
 import { SearchIcon } from "lucide-react";
 import { Pagination } from "../pagination.tsx";
 import { QuizCard } from "./quiz-card.tsx";
-import { createQuiz } from "../../services/quiz.ts";
+import { createQuiz, getAllQuiz } from "../../services/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 
 export function QuizzesTable() {
@@ -18,25 +16,18 @@ export function QuizzesTable() {
 
   const [page, setPage] = useState(pageParams ? parseInt(pageParams) : 1);
 
-  // const { data, isLoading, refetch } = useQuery({
-  //   queryKey: ['students', page],
-  //   queryFn: () => getAllStudent({ page: page, limit: 10 }),
-  // });
+  const { data, isLoading } = useQuery({
+    queryKey: ['quiz', page],
+    queryFn: () => getAllQuiz({ page: page, limit: 10 }),
+  });
 
-  // useEffect(() => {
-  //   if (data) {
-  //     if (data.meta.page != page) {
-  //       setPage(data.meta.page);
-  //     }
-  //   }
-  // }, [data, page]);
-
-  const confirm = useConfirm();
-
-  const data = [
-    { id: 1, firstName: "John", lastName: "Doe", email: "" },
-    { id: 2, firstName: "Jane", lastName: "Doe", email: "" },
-  ];
+  useEffect(() => {
+    if (data) {
+      if (data.meta.page != page) {
+        setPage(data.meta.page);
+      }
+    }
+  }, [data, page]);
 
   return (
     <div className="w-full mb-2">
@@ -48,7 +39,7 @@ export function QuizzesTable() {
             onClick={() => {
               createQuiz()
                 .then((data) => {
-                  navigate(`/quizzes/${data.id}/edit`);
+                  navigate(`/quiz/${data.id}/edit`);
                 })
                 .catch(() => {
                   toast({
@@ -64,17 +55,19 @@ export function QuizzesTable() {
       </div>
       <Table className="my-2">
         <TableCaption>
-          {data ? (
+          {data && data.meta.totalItem === 0 ? (
             <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
               <SearchIcon className="w-10 h-10" />
               No quiz yet.
             </div>
           ) : (
-            data && (
+            !isLoading &&
+            data &&
+            data.meta.totalPage > 1 && (
               <div className="flex w-full justify-end">
                 <Pagination
                   page={page}
-                  totalPage={5 || 1}
+                  totalPage={data?.meta.totalPage || 1}
                   setPage={setPage}
                   withSearchParams={true}
                 />
@@ -84,9 +77,9 @@ export function QuizzesTable() {
         </TableCaption>
         <TableBody className="space-y-2">
           {data &&
-            data.length > 0 &&
-            data.map((quiz) => {
-              return <QuizCard />;
+            data.data.length > 0 &&
+            data.data.map(quiz => {
+              return <QuizCard key={quiz.id} quiz={quiz}/>;
             })}
         </TableBody>
       </Table>
