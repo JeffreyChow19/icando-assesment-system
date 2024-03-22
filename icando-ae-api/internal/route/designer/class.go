@@ -14,7 +14,7 @@ type ClassRoute struct {
 
 func (r ClassRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/class")
-	group.GET("/", r.classHandler.GetAll)
+	group.GET("", r.classHandler.GetAll)
 	group.POST("", r.classHandler.Create)
 	group.POST("/:id/students", r.classHandler.AssignStudents)
 	group.PATCH("/:id/students", r.classHandler.UnassignStudents)
