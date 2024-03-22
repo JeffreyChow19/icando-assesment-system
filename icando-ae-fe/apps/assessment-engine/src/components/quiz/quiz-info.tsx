@@ -67,7 +67,7 @@ export const QuizInfo = ({ isPending }: { isPending: boolean }) => {
         )}
       />
       <div className="flex w-full justify-end">
-        <Button type="submit" form="quiz" size={"lg"} disabled={isPending}>
+        <Button type="submit" size={"lg"} disabled={isPending}>
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

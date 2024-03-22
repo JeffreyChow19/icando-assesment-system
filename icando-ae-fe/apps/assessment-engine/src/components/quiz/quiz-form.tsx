@@ -53,10 +53,8 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((val) => {
-          console.log(val);
           mutation.mutate(val);
         })}
-        id="quiz"
       >
         <div className="mb-4">
           <h1 className="text-center text-xl font-bold">
@@ -73,7 +71,7 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
           </TabsContent>
           <TabsContent value="questions">
             <div className="flex w-full justify-end">
-              <QuestionForm type="new" />
+              <QuestionForm type="new" quizId={quiz.id} />
             </div>
             <QuestionList />
           </TabsContent>
