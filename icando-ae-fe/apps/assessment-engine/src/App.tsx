@@ -17,6 +17,7 @@ import { Students } from "./pages/students";
 import { Classes } from "./pages/classes";
 import { ClassNew } from "./pages/classes/class-new.tsx";
 import { ClassEdit } from "./pages/classes/class-edit.tsx";
+import { ClassParticipants } from "./pages/classes/class-participants.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -60,6 +61,10 @@ function App() {
     {
       path: "/classes/edit/:id",
       element: <ClassEdit />,
+    },
+    {
+      path: "/classes/participants/:id",
+      element: <ClassParticipants />,
     },
   ]);
   return (

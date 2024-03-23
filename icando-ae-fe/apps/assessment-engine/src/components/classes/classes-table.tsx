@@ -65,6 +65,7 @@ export function ClassesTable() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Grade</TableHead>
+            <TableHead>Participants</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -81,6 +82,11 @@ export function ClassesTable() {
                     {/* todo: display teacher correctly (not by id?) */}
                     {/* todo: display participant (student count?) */}
                     <TableCell>
+                      <Link to={`/classes/participants/${classes.id}`}>
+                        View
+                      </Link>
+                    </TableCell>
+                    <TableCell>
                       <div className="flex space-x-2">
                         <>
                           <Button size={"sm"}>
@@ -88,9 +94,7 @@ export function ClassesTable() {
                               Edit Class
                             </Link>
                           </Button>
-                          <Button size={"sm"}>
-                            <Link to={`#`}>Edit Participants</Link>
-                          </Button>
+
                           <Button
                             size={"sm"}
                             variant={"destructive"}
