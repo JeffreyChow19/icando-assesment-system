@@ -8,8 +8,9 @@ type QuestionDao struct {
 	ID           uuid.UUID           `json:"id"`
 	Text         string              `json:"text"`
 	Choices      []QuestionChoiceDao `json:"choices"`
-	AnswerID     int                 `json:"answer_id"`
+	AnswerID     int                 `json:"answerId"`
 	Competencies []CompetencyDao     `json:"competencies"`
+	Order        int                 `json:"order"`
 }
 
 type QuestionChoiceDao struct {

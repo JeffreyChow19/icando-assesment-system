@@ -9,7 +9,7 @@ import {
 } from "@ui/components/ui/table.tsx";
 import { Choice, Question } from "../../../interfaces/question.ts";
 import { useState } from "react";
-import { ChevronsUpDown, GripVertical, SearchIcon } from "lucide-react";
+import { ChevronsUpDown, GripVertical, SearchIcon, Trash2 } from "lucide-react";
 import { Pagination } from "../../pagination.tsx";
 import {
   Collapsible,
@@ -20,10 +20,12 @@ import { Button } from "@ui/components/ui/button.tsx";
 import { cn } from "@ui/lib/utils.ts";
 import { QuestionForm } from "./question-form.tsx";
 import { Badge } from "@ui/components/ui/badge.tsx";
-
-interface QuestionListProps {
-  questions: Question[];
-}
+import { useFormContext } from "react-hook-form";
+import { z } from "zod";
+import { quizFormSchema } from "../quiz-schema.ts";
+import { useConfirm } from "../../../context/alert-dialog.tsx";
+import { deleteQuestion } from "../../../services/quiz.ts";
+import { toast } from "@ui/components/ui/use-toast.ts";
 
 const ChoiceList = ({
   choices,
@@ -52,13 +54,23 @@ const ChoiceList = ({
   );
 };
 
-export const QuestionList = ({ questions }: QuestionListProps) => {
+interface QuestionListProps {
+  onSuccess: () => void;
+  quizId: string;
+}
+
+export const QuestionList = ({ onSuccess, quizId }: QuestionListProps) => {
+  const form = useFormContext<z.infer<typeof quizFormSchema>>();
+  const questions = form.watch("questions");
+
   const [page, setPage] = useState<number>(1);
   const questionsPerPage = 10;
   const startIndex = (page - 1) * questionsPerPage;
   const endIndex = startIndex + questionsPerPage;
   const paginatedQuestions = questions.slice(startIndex, endIndex);
   const totalPage = Math.ceil(questions.length / questionsPerPage);
+
+  const confirm = useConfirm();
 
   const QuestionDetails = ({
     question,
@@ -98,7 +110,7 @@ export const QuestionList = ({ questions }: QuestionListProps) => {
                     correctAnswer={question.answerId}
                   />
                   <h2 className="font-bold">Competencies</h2>
-                  <div className="flex-wrap">
+                  <div className="flex flex-wrap gap-1">
                     {question.competencies.map((competency) => {
                       return (
                         <Badge key={competency.id} variant="outline">
@@ -108,7 +120,37 @@ export const QuestionList = ({ questions }: QuestionListProps) => {
                     })}
                   </div>
                   <div className="flex w-full justify-end">
-                    <QuestionForm type="edit" question={question} />
+                    <div className="flex gap-2">
+                      <QuestionForm
+                        type="edit"
+                        quizId={quizId}
+                        question={question}
+                        onSuccess={onSuccess}
+                        nextOrder={() => 0}
+                      />
+                      <Button
+                        type="button"
+                        className="h-8 w-8 p-1"
+                        variant="destructive"
+                        onClick={() => {
+                          confirm({
+                            title: "Are you sure?",
+                            body: "Are you sure want to delete this question?",
+                          }).then((res) => {
+                            if (res) {
+                              deleteQuestion(quizId, question.id).then(() => {
+                                onSuccess();
+                                toast({
+                                  description: "Question deleted successfully",
+                                });
+                              });
+                            }
+                          });
+                        }}
+                      >
+                        <Trash2 size="12" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </TableCell>

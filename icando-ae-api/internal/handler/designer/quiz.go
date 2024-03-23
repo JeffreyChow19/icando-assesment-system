@@ -48,16 +48,16 @@ func (h *QuizHandlerImpl) Create(c *gin.Context) {
 func (h *QuizHandlerImpl) Get(c *gin.Context) {
 	quizId := c.Param("id")
 	parsedId, err := uuid.Parse(quizId)
-	
+
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
 	}
-	
+
 	quiz, errr := h.quizService.GetQuiz(parsedId)
 
 	if errr != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
+		c.AbortWithStatusJSON(errr.StatusCode, gin.H{"errors": errr.Error()})
 		return
 	}
 

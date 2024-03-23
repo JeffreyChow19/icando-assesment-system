@@ -33,6 +33,9 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
     queryKey: ["user"],
     queryFn: () => checkAuth(),
     retry: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    refetchOnWindowFocus: false,
   });
 
   useEffect(() => {

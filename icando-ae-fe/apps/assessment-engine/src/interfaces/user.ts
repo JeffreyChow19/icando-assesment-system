@@ -4,3 +4,7 @@ export interface User {
   firstName: string;
   lastName: string;
 }
+
+export interface Teacher extends User {
+  institutionId: string;
+}
