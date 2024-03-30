@@ -9,6 +9,12 @@ type ClassDto struct {
 	TeacherIDs    []uuid.UUID `json:"teacherIds" binding:"required"`
 }
 
+type CreateUpdateClassPayload struct {
+	Name          string      `json:"name" binding:"required"`
+	Grade         string      `json:"grade" binding:"required,numeric"`
+	TeacherIDs    []uuid.UUID `json:"teacherIds" binding:"required"`
+}
+
 type GetAllClassFilter struct {
 	InstitutionID *uuid.UUID `json:"institutionId"`
 	TeacherID     *uuid.UUID `json:"teacherId"`

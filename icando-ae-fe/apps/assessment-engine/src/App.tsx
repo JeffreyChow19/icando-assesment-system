@@ -10,6 +10,10 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from "./pages";
 import { LoginPage } from "./pages/login.tsx";
+import { Classes } from "./pages/classes";
+import { ClassNew } from "./pages/classes/class-new.tsx";
+import { ClassEdit } from "./pages/classes/class-edit.tsx";
+import { ClassParticipants } from "./pages/classes/class-participants.tsx";
 import { UpdateQuizPage } from "./pages/quiz/update.tsx";
 import { StudentsEdit } from "./pages/students/students-edit.tsx";
 import { StudentsNew } from "./pages/students/students-new.tsx";
@@ -48,9 +52,25 @@ function App() {
       element: <StudentsEdit />,
     },
     {
+      path: "/classes",
+      element: <Classes />,
+    },
+    {
+      path: "/classes/new",
+      element: <ClassNew />,
+    },
+    {
+      path: "/classes/edit/:id",
+      element: <ClassEdit />,
+    },
+    {
+      path: "/classes/participants/:id",
+      element: <ClassParticipants />,
+    },
+    {
       path: "/quiz",
       element: <Quizzes />,
-    }
+    },
   ]);
   return (
     <QueryClientProvider client={queryClient}>
