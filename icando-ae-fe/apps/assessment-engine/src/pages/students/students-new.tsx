@@ -3,7 +3,7 @@ import { StudentsForm } from '../../components/students/students-form.tsx';
 
 export const StudentsNew = () => {
   return (
-    <Layout pageTitle={'New Student'} showTitle={true}>
+    <Layout pageTitle={'New Student'} showTitle={true} withBack={true}>
       <StudentsForm/>
     </Layout>
   )

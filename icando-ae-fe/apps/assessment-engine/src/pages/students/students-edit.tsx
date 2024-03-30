@@ -14,7 +14,7 @@ export const StudentsEdit = () => {
   });
 
   return (
-    <Layout pageTitle={'Edit Student'} showTitle={true}>
+    <Layout pageTitle={'Edit Student'} showTitle={true} withBack={true}>
       {isLoading || !data ? <LoadingComponent /> : <StudentsForm student={data} />}
     </Layout>
   );
