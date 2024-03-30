@@ -17,6 +17,7 @@ export interface UpdateStudentPayload {
 
 export interface GetAllStudentsFilter {
   classId?: string;
+  name?: string;
   page: number;
   limit: number;
 }

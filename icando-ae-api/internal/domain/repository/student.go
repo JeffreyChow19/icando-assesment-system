@@ -36,8 +36,8 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 	if filter.Name != nil {
 		query.Where("concat(first_name, ' ', last_name) ilike ?", fmt.Sprintf("%s%%", *filter.Name))
 	}
-	if filter.ClassID != nil {
-		query.Where("class_id = ?", filter.ClassID)
+	if filter.ClassID != nil && *filter.ClassID != "" {
+		query.Where("class_id = ?", *filter.ClassID)
 	}
 
 	var totalItem int64

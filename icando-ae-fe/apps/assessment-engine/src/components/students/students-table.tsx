@@ -15,17 +15,44 @@ import {
 } from '@ui/components/ui/table.tsx';
 import { SearchIcon } from 'lucide-react';
 import { Pagination } from '../pagination.tsx';
+import { useDebouncedCallback } from 'use-debounce';
+import { Input } from '@ui/components/ui/input.tsx';
+import {
+  Select,
+  SelectContent,
+  SelectItem, SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@ui/components/ui/select.tsx';
+import { getAllClasses } from '../../services/classes.ts';
+import { Class } from '../../interfaces/classes.ts';
 
 
 export function StudentsTable() {
   const [searchParams] = useSearchParams();
   const pageParams = searchParams.get('page');
+  const nameParams = searchParams.get('name');
+  const classIdParams = searchParams.get('classId');
 
   const [page, setPage] = useState(pageParams ? parseInt(pageParams) : 1);
+  const [name, setName] = useState(nameParams ? nameParams : '');
+  const [classId, setClassId] = useState(classIdParams ? classIdParams : '');
+
+  const debouncedName = useDebouncedCallback(
+    (value) => {
+      setName(value);
+    },
+    1000,
+  );
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['students', page],
-    queryFn: () => getAllStudent({ page: page, limit: 10 }),
+    queryFn: () => getAllStudent({ page: page, limit: 10, name: name, classId: classId }),
+  });
+
+  const { data: classes } = useQuery({
+    queryKey: ['classes'],
+    queryFn: () => getAllClasses(),
   });
 
   useEffect(() => {
@@ -43,6 +70,19 @@ export function StudentsTable() {
     <div className="w-full mb-2">
       <div className="w-full flex flex-row font-normal gap-x-3 justify-between">
         <div className="w-full flex flex-row font-normal gap-x-3">
+          <Input className={"w-[360px]"} placeholder={"Search name ..."} value={name} onChange={(e) => debouncedName(e.target.value)} />
+          <Select value={classId} onValueChange={setClassId}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select class" />
+            </SelectTrigger>
+            <SelectContent>
+              {classes && classes.data.map((e: Class) => (<SelectItem value={e.id} key={e.id}>
+                {e.name}
+              </SelectItem>))
+              }
+              {classes && classes.data.length === 0 && <SelectLabel>No class yet</SelectLabel>}
+            </SelectContent>
+          </Select>
         </div>
         <div>
           <Button size={'sm'}>
@@ -62,7 +102,8 @@ export function StudentsTable() {
             data &&
             data.meta.totalPage > 1 && (
               <div className="flex w-full justify-end">
-                <Pagination page={page} totalPage={data?.meta.totalPage || 1} setPage={setPage} withSearchParams={true} />
+                <Pagination page={page} totalPage={data?.meta.totalPage || 1} setPage={setPage}
+                            withSearchParams={true} />
               </div>
             )
           )}
