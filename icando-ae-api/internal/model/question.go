@@ -15,6 +15,7 @@ type Question struct {
 	AnswerID     int             `gorm:"column:answer_id"`
 	QuizID       uuid.UUID       `gorm:"column:quiz_id"`
 	Competencies []Competency    `gorm:"many2many:question_competencies;"`
+	Order        int             `gorm:"column:order"`
 }
 
 type QuestionChoice struct {
@@ -61,7 +62,7 @@ func (q Question) ToDao() (*dao.QuestionDao, error) {
 	}
 
 	// Convert competencies to a slice of CompetencyDao
-	var competenciesDao []dao.CompetencyDao
+	competenciesDao := make([]dao.CompetencyDao, 0)
 	for _, competency := range q.Competencies {
 		numbering := competency.Numbering
 		name := competency.Name
@@ -82,6 +83,7 @@ func (q Question) ToDao() (*dao.QuestionDao, error) {
 		Choices:      choicesDao,
 		AnswerID:     q.AnswerID,
 		Competencies: competenciesDao,
+		Order:        q.Order,
 	}
 
 	return &daoQuiz, nil

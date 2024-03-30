@@ -10,14 +10,15 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from "./pages";
 import { LoginPage } from "./pages/login.tsx";
-import { NewQuizPage } from "./pages/quiz/new.tsx";
-import { StudentsEdit } from "./pages/students/students-edit.tsx";
-import { StudentsNew } from "./pages/students/students-new.tsx";
-import { Students } from "./pages/students";
 import { Classes } from "./pages/classes";
 import { ClassNew } from "./pages/classes/class-new.tsx";
 import { ClassEdit } from "./pages/classes/class-edit.tsx";
 import { ClassParticipants } from "./pages/classes/class-participants.tsx";
+import { UpdateQuizPage } from "./pages/quiz/update.tsx";
+import { StudentsEdit } from "./pages/students/students-edit.tsx";
+import { StudentsNew } from "./pages/students/students-new.tsx";
+import { Students } from "./pages/students";
+import { Quizzes } from "./pages/quizzes/index.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -39,8 +40,8 @@ function App() {
       element: <Students />,
     },
     {
-      path: "/quiz/new",
-      element: <NewQuizPage />,
+      path: "/quiz/:id/edit",
+      element: <UpdateQuizPage />,
     },
     {
       path: "/students/new",
@@ -65,6 +66,10 @@ function App() {
     {
       path: "/classes/participants/:id",
       element: <ClassParticipants />,
+    },
+    {
+      path: "/quiz",
+      element: <Quizzes />,
     },
   ]);
   return (

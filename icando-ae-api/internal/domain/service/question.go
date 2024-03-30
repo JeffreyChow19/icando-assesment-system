@@ -14,6 +14,7 @@ import (
 type QuestionService interface {
 	CreateQuestion(quizID uuid.UUID, questionDto dto.QuestionDto) (*dao.QuestionDao, *httperror.HttpError)
 	UpdateQuestion(filter dto.GetQuestionFilter, questionDto dto.QuestionDto) (*dao.QuestionDao, *httperror.HttpError)
+	DeleteQuestion(filter dto.GetQuestionFilter) *httperror.HttpError
 }
 
 type QuestionServiceImpl struct {
@@ -40,6 +41,7 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 		Text:     questionDto.Text,
 		AnswerID: questionDto.AnswerID,
 		QuizID:   quizID,
+		Order:    questionDto.Order,
 	}
 	err := question.SetQuestionChoices(questionDto.Choices)
 	if err != nil {
@@ -94,6 +96,7 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 	// Update the question fields
 	question.Text = questionDto.Text
 	question.AnswerID = questionDto.AnswerID
+	question.Order = questionDto.Order
 	err = question.SetQuestionChoices(questionDto.Choices)
 	if err != nil {
 		return nil, ErrUpdateQuestion
@@ -165,4 +168,33 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 	}
 
 	return questionDao, nil
+}
+
+var ErrDeleteQuestion = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when deleting question"),
+}
+
+func (s *QuestionServiceImpl) DeleteQuestion(filter dto.GetQuestionFilter) *httperror.HttpError {
+	question, err := s.questionRepository.GetQuestion(filter)
+	if err != nil {
+		return ErrQuestionNotFound
+	}
+
+	questionCompetencies, errQuestionCompetencies := s.questionCompetencyRepository.GetAll(question.ID)
+	if errQuestionCompetencies != nil {
+		return ErrDeleteQuestion
+	}
+
+	err = s.questionCompetencyRepository.Delete(questionCompetencies)
+	if err != nil {
+		return ErrDeleteQuestion
+	}
+
+	err = s.questionRepository.DeleteQuestion(question)
+	if err != nil {
+		return ErrDeleteQuestion
+	}
+
+	return nil
 }

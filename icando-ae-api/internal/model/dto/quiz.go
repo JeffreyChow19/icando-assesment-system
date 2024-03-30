@@ -7,10 +7,10 @@ import (
 )
 
 type GetQuizFilter struct {
-	ID uuid.UUID
-	WithCreator		bool
-	WithUpdater 	bool
-	WithQuestions	bool
+	ID            uuid.UUID
+	WithCreator   bool
+	WithUpdater   bool
+	WithQuestions bool
 }
 
 type GetAllQuizzesFilter struct {
@@ -25,6 +25,6 @@ type UpdateQuizDto struct {
 	ID           uuid.UUID  `json:"id" binding:"required"`
 	Name         *string    `json:"name"`
 	Subject      *string    `json:"subject"`
-	PassingGrade float64    `json:"passing_grade"`
+	PassingGrade float64    `json:"passingGrade"`
 	Deadline     *time.Time `json:"deadline"`
 }

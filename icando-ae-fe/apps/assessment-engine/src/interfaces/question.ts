@@ -10,6 +10,6 @@ export interface Question {
   choices: Choice[];
   text: string;
   answerId: number;
-  quizId: string;
+  order: number;
   competencies: Competency[];
 }

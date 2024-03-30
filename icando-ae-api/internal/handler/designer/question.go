@@ -15,6 +15,7 @@ import (
 type QuestionHandler interface {
 	Create(c *gin.Context)
 	Update(c *gin.Context)
+	Delete(c *gin.Context)
 }
 
 type QuestionHandlerImpl struct {
@@ -106,4 +107,37 @@ func (h *QuestionHandlerImpl) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *questionResponse))
+}
+
+func (h *QuestionHandlerImpl) Delete(c *gin.Context) {
+	quizID := c.Param("quizId")
+	questionID := c.Param("id")
+
+	quizUUID, err := uuid.Parse(quizID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": "Invalid quizId"})
+		return
+	}
+
+	questionUUID, errQuestionUUID := uuid.Parse(questionID)
+	if errQuestionUUID != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": "Invalid id"})
+		return
+	}
+
+	filter := dto.GetQuestionFilter{
+		ID:     questionUUID,
+		QuizID: quizUUID,
+	}
+
+	errDeleteQuestion := h.questionService.DeleteQuestion(filter)
+
+	if errDeleteQuestion != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": errDeleteQuestion})
+		return
+	}
+
+	msg := "Deleted"
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(&msg, nil))
 }
