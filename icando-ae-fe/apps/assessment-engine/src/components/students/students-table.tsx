@@ -72,12 +72,12 @@ export function StudentsTable() {
         <div className="w-full flex flex-row font-normal gap-x-3">
           <Input className={"w-[360px]"} placeholder={"Search name ..."} value={name} onChange={(e) => debouncedName(e.target.value)} />
           <Select value={classId} onValueChange={setClassId}>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[240px]">
               <SelectValue placeholder="Select class" />
             </SelectTrigger>
             <SelectContent>
               {classes && classes.data.map((e: Class) => (<SelectItem value={e.id} key={e.id}>
-                {e.name}
+                {e.name} - {e.grade}
               </SelectItem>))
               }
               {classes && classes.data.length === 0 && <SelectLabel>No class yet</SelectLabel>}
