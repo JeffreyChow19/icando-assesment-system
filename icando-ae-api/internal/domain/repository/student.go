@@ -53,7 +53,9 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 		TotalPage: int(math.Ceil(float64(totalItem) / float64(filter.Limit))),
 	}
 	Paginate(query, filter.Page, filter.Limit)
-
+	if filter.OrderBy != nil {
+		Sort(query, true, *filter.OrderBy)
+	}
 	var students []model.Student
 	err = query.Session(&gorm.Session{}).Find(&students).Error
 
@@ -97,8 +99,12 @@ func (r *StudentRepository) Delete(student model.Student) error {
 
 func (r *StudentRepository) BatchClassIdUpdate(dto dto.UpdateStudentClassIdDto) error {
 	if dto.ClassID == &uuid.Nil {
-		return r.db.Model(model.Student{}).Where("id in ?", dto.StudentIDs).Updates(map[string]interface{}{"class_id": nil}).Error
+		return r.db.Model(model.Student{}).Where(
+			"id in ?", dto.StudentIDs,
+		).Updates(map[string]interface{}{"class_id": nil}).Error
 	} else {
-		return r.db.Model(model.Student{}).Where("id in ?", dto.StudentIDs).Updates(model.Student{ClassID: dto.ClassID}).Error
+		return r.db.Model(model.Student{}).Where(
+			"id in ?", dto.StudentIDs,
+		).Updates(model.Student{ClassID: dto.ClassID}).Error
 	}
 }

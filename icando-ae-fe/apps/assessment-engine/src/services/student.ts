@@ -1,6 +1,6 @@
-import { api } from '../utils/api.ts';
-import { Meta } from '../interfaces/meta.ts';
-import { Student } from '../interfaces/student.ts';
+import { api } from "../utils/api.ts";
+import { Meta } from "../interfaces/meta.ts";
+import { Student } from "../interfaces/student.ts";
 
 export interface CreateStudentPayload {
   firstName: string;
@@ -20,6 +20,8 @@ export interface GetAllStudentsFilter {
   name?: string;
   page: number;
   limit: number;
+  orderBy?: string;
+  asc?: boolean;
 }
 
 interface GetAllStudentsResponse {
@@ -31,19 +33,22 @@ interface GetStudentResponse {
   data: Student;
 }
 
-
-const path = '/designer/student';
+const path = "/designer/student";
 
 export const createStudent = async (payload: CreateStudentPayload) => {
   await api.post(path, payload);
 };
 
-export const updateStudent = async (payload: UpdateStudentPayload, id: string) => {
+export const updateStudent = async (
+  payload: UpdateStudentPayload,
+  id: string,
+) => {
   await api.patch(`${path}/${id}`, payload);
 };
 
 export const getAllStudent = async (filter: GetAllStudentsFilter) => {
-  return (await api.get(path, { params: filter })).data as GetAllStudentsResponse;
+  return (await api.get(path, { params: filter }))
+    .data as GetAllStudentsResponse;
 };
 
 export const getStudent = async (id: string) => {
