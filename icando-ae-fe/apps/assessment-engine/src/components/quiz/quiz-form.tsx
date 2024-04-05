@@ -16,10 +16,11 @@ import {
 import { getQuiz, updateQuiz } from "../../services/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { onErrorToast } from "../ui/error-toast.tsx";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
+  const queryClient = useQueryClient();
   const form = useForm<z.infer<typeof quizFormSchema>>({
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
@@ -63,6 +64,7 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["quiz", quiz.id] });
       toast({
         description: `Quiz updated`,
       });
