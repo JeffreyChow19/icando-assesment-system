@@ -27,7 +27,8 @@ type Config struct {
 	DatabasePassword string `envconfig:"DB_PASSWORD" required:"true"`
 	DatabaseName     string `envconfig:"DB_NAME" required:"true"`
 
-	JwtSecret string `envconfig:"JWT_SECRET" required:"true"`
+	JwtSecret    string `envconfig:"JWT_SECRET" required:"true"`
+	RedisAddress string `envconfig:"REDIS_ADDRESS" required:"true"`
 }
 
 func NewConfig() (*Config, error) {
