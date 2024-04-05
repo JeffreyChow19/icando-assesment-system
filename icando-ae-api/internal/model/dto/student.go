@@ -12,6 +12,8 @@ type GetAllStudentsFilter struct {
 	Limit              int     `form:"limit"`
 	IncludeInstitution bool
 	IncludeClass       bool
+	OrderBy            *string `form:"orderBy"`
+	Asc                bool    `form:"asc"`
 }
 
 type GetStudentFilter struct {
@@ -23,10 +25,10 @@ type GetStudentFilter struct {
 }
 
 type CreateStudentDto struct {
-	FirstName string    `json:"firstName" binding:"required"`
-	LastName  string    `json:"lastName" binding:"required"`
-	Nisn      string    `json:"nisn" binding:"required"`
-	Email     string    `json:"email" binding:"required,email"`
+	FirstName string     `json:"firstName" binding:"required"`
+	LastName  string     `json:"lastName" binding:"required"`
+	Nisn      string     `json:"nisn" binding:"required"`
+	Email     string     `json:"email" binding:"required,email"`
 	ClassID   *uuid.UUID `json:"classId"`
 }
 
@@ -37,6 +39,6 @@ type UpdateStudentDto struct {
 }
 
 type UpdateStudentClassIdDto struct {
-	StudentIDs 	[]uuid.UUID	`json:"studentIds" binding:"required"`
-	ClassID 		*uuid.UUID		`json:"classId" binding:"required"`
+	StudentIDs []uuid.UUID `json:"studentIds" binding:"required"`
+	ClassID    *uuid.UUID  `json:"classId" binding:"required"`
 }
