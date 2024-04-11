@@ -9,7 +9,8 @@ import (
 
 type StudentQuiz struct {
 	Model
-	TotalScore     int
+	TotalScore     *float32
+	CorrectCount   *int
 	StartedAt      *time.Time `gorm:"type:timestamptz"`
 	CompletedAt    *time.Time `gorm:"type:timestamptz"`
 	Status         enum.QuizStatus
@@ -22,14 +23,15 @@ type StudentQuiz struct {
 
 func (sq *StudentQuiz) ToDao() (*dao.StudentQuizDao, error) {
 	studentQuizDao := dao.StudentQuizDao{
-		ID:          sq.ID,
-		CreatedAt:   sq.CreatedAt,
-		UpdatedAt:   sq.UpdatedAt,
-		TotalScore:  sq.TotalScore,
-		StartedAt:   sq.StartedAt,
-		CompletedAt: sq.CompletedAt,
-		Status:      sq.Status,
-		QuizID:      sq.QuizID,
+		ID:           sq.ID,
+		CreatedAt:    sq.CreatedAt,
+		UpdatedAt:    sq.UpdatedAt,
+		TotalScore:   sq.TotalScore,
+		CorrectCount: sq.CorrectCount,
+		StartedAt:    sq.StartedAt,
+		CompletedAt:  sq.CompletedAt,
+		Status:       sq.Status,
+		QuizID:       sq.QuizID,
 	}
 
 	if sq.Quiz != nil {
