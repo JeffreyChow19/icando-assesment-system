@@ -16,6 +16,7 @@ import (
 
 type QuizHandler interface {
 	Create(c *gin.Context)
+	Publish(c *gin.Context)
 	Get(c *gin.Context)
 	Update(c *gin.Context)
 	GetAll(c *gin.Context)
@@ -55,6 +56,33 @@ func (h *QuizHandlerImpl) Get(c *gin.Context) {
 	}
 
 	quiz, errr := h.quizService.GetQuiz(parsedId)
+
+	if errr != nil {
+		c.AbortWithStatusJSON(errr.StatusCode, gin.H{"errors": errr.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *quiz))
+}
+
+func (h *QuizHandlerImpl) Publish(c *gin.Context) {
+	var publishQuizDto dto.PublishQuizDto
+
+	if err := c.ShouldBindJSON(&publishQuizDto); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid body"})
+		return
+	}
+
+	quiz, errr := h.quizService.PublishQuiz(publishQuizDto)
 
 	if errr != nil {
 		c.AbortWithStatusJSON(errr.StatusCode, gin.H{"errors": errr.Error()})

@@ -31,7 +31,7 @@ type UpdateQuizDto struct {
 }
 
 type PublishQuizDto struct {
-	QuizID          uuid.UUID   `json:"quizID"`
+	QuizID          uuid.UUID   `json:"quizId" binding:"required"`
 	QuizDuration    int         `json:"quizDuration" binding:"required" validate:"gt=0"`
 	StartDate       time.Time   `json:"startDate" binding:"required"`
 	EndDate         time.Time   `json:"endDate" binding:"required"`
