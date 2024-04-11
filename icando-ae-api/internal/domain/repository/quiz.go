@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -116,6 +117,23 @@ func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*mo
 		return nil, err
 	}
 
+	// get all classes in ids
+	var classes []model.Class
+
+	classIds := make([]string, 0)
+
+	for _, classID := range quizDto.AssignedClasses {
+		classIds = append(classIds, classID.String())
+	}
+
+	if err := db.Where("id in ?", classIds).Find(&classes).Error; err != nil {
+		return nil, err
+	}
+
+	if len(classIds) != len(classes) {
+		return nil, errors.New("Some assigned class not found")
+	}
+
 	now := time.Now()
 
 	newQuiz := model.Quiz{
@@ -127,8 +145,8 @@ func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*mo
 		UpdatedBy:    oldQuiz.UpdatedBy,
 		PublishedAt:  &now,
 		Questions:    make([]model.Question, 0),
+		Classes:      classes,
 		// todo assign startdate, duration, and enddate here. wait for other commiter
-		// todo add array of assigned classes
 	}
 
 	for _, question := range oldQuiz.Questions {
