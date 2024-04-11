@@ -28,3 +28,11 @@ type UpdateQuizDto struct {
 	PassingGrade float64    `json:"passingGrade"`
 	Deadline     *time.Time `json:"deadline"`
 }
+
+type PublishQuizDto struct {
+	QuizID          uuid.UUID   `json:"quizID"`
+	QuizDuration    int         `json:"quizDuration" binding:"required" validate:"gt=0"`
+	StartDate       time.Time   `json:"startDate" binding:"required"`
+	EndDate         time.Time   `json:"endDate" binding:"required"`
+	AssignedClasses []uuid.UUID `json:"assignedClasses" binding:"required" validate:"min=1"`
+}

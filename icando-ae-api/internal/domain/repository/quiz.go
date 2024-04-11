@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jinzhu/gorm/dialects/postgres"
 	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -11,6 +12,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
 )
 
 type QuizRepository struct {
@@ -101,4 +103,43 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 	err = query.Session(&gorm.Session{}).Scan(&quizzes).Error
 
 	return quizzes, &meta, err
+}
+
+func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*model.Quiz, error) {
+	var oldQuiz model.Quiz
+
+	if err := db.Preload("Questions.Competencies").Where("id = ?", quizDto.QuizID.String()).First(&oldQuiz).Error; err != nil {
+		return nil, err
+	}
+
+	now := time.Now()
+
+	newQuiz := model.Quiz{
+		Name:         oldQuiz.Name,
+		Subject:      oldQuiz.Subject,
+		PassingGrade: oldQuiz.PassingGrade,
+		ParentQuiz:   &oldQuiz.ID,
+		CreatedBy:    oldQuiz.CreatedBy,
+		UpdatedBy:    oldQuiz.UpdatedBy,
+		PublishedAt:  &now,
+		Questions:    make([]model.Question, 0),
+		// todo assign startdate, duration, and enddate here. wait for other commiter
+		// todo add array of assigned classes
+	}
+
+	for _, question := range oldQuiz.Questions {
+		newQuiz.Questions = append(newQuiz.Questions, model.Question{
+			Text:         question.Text,
+			AnswerID:     question.AnswerID,
+			Competencies: question.Competencies,
+			Order:        question.Order,
+			Choices:      &postgres.Jsonb{RawMessage: question.Choices.RawMessage},
+		})
+	}
+
+	if err := db.Create(&newQuiz).Error; err != nil {
+		return nil, err
+	}
+
+	return &newQuiz, nil
 }

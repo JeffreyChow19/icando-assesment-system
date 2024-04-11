@@ -9,6 +9,7 @@ import (
 	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
 )
@@ -18,15 +19,18 @@ type QuizService interface {
 	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
 	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
+	PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError)
 }
 
 type QuizServiceImpl struct {
 	quizRepository repository.QuizRepository
+	db             *gorm.DB
 }
 
-func NewQuizServiceImpl(quizRepository repository.QuizRepository) *QuizServiceImpl {
+func NewQuizServiceImpl(quizRepository repository.QuizRepository, db *lib.Database) *QuizServiceImpl {
 	return &QuizServiceImpl{
 		quizRepository: quizRepository,
+		db:             db.DB,
 	}
 }
 
@@ -120,4 +124,25 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 	}
 
 	return quizzes, meta, nil
+}
+
+func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
+	tx := s.db.Begin()
+
+	quizClone, err := s.quizRepository.CloneQuiz(tx, quizDto)
+
+	if err != nil {
+		tx.Rollback()
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	// get all student of assigned classes
+	// create student quiz
+	// for each student quiz, enqueue email request
+	// commit
+
+	return nil, nil
 }
