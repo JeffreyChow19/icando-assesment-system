@@ -9,6 +9,7 @@ import (
 	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -129,7 +130,7 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
 	tx := s.db.Begin()
 
-	quizClone, err := s.quizRepository.CloneQuiz(tx, quizDto)
+	quiz, err := s.quizRepository.CloneQuiz(tx, quizDto)
 
 	if err != nil {
 		tx.Rollback()
@@ -139,10 +140,49 @@ func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao,
 		}
 	}
 
-	// get all student of assigned classes
-	// create student quiz
-	// for each student quiz, enqueue email request
-	// commit
+	var students []model.Student
+	classIds := make([]string, 0)
 
-	return nil, nil
+	for _, classId := range quizDto.AssignedClasses {
+		classIds = append(classIds, classId.String())
+	}
+
+	if err := tx.Where("class_id IN ?", classIds).Error; err != nil {
+		tx.Rollback()
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	studentQuizzes := make([]model.StudentQuiz, 0)
+
+	for _, student := range students {
+		studentQuizzes = append(studentQuizzes, model.StudentQuiz{
+			Status:    enum.NOT_STARTED,
+			QuizID:    quiz.ID,
+			StudentID: student.ID,
+		})
+	}
+
+	if err := tx.Create(&studentQuizzes).Error; err != nil {
+		tx.Rollback()
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	// todo for each student quiz, enqueue email request
+
+	if err := tx.Commit().Error; err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	quizDao := quiz.ToDao()
+
+	return &quizDao, nil
 }

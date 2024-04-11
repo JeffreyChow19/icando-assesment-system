@@ -9,7 +9,7 @@ import (
 
 type StudentQuiz struct {
 	Model
-	TotalScore     int
+	TotalScore     *int
 	StartedAt      *time.Time `gorm:"type:timestamptz"`
 	CompletedAt    *time.Time `gorm:"type:timestamptz"`
 	Status         enum.QuizStatus
