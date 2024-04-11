@@ -6,6 +6,7 @@ import (
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 )
 
 type StudentQuizService interface {
@@ -28,7 +29,9 @@ func (s *StudentQuizImpl) CalculateScore(id uuid.UUID) error {
 		return err
 	}
 
-	// todo check status
+	if studentQuiz.Status == enum.NOT_STARTED {
+		return nil // we mark not started quiz as separated
+	}
 
 	answerMap := make(map[string]model.StudentAnswer)
 
@@ -36,7 +39,7 @@ func (s *StudentQuizImpl) CalculateScore(id uuid.UUID) error {
 		answerMap[answer.QuestionID.String()] = answer
 	}
 
-	//questionCount := len(studentQuiz.Quiz.Questions)
+	questionCount := len(studentQuiz.Quiz.Questions)
 	correctCount := 0
 
 	for _, question := range studentQuiz.Quiz.Questions {
@@ -64,8 +67,11 @@ func (s *StudentQuizImpl) CalculateScore(id uuid.UUID) error {
 		} // not ok result mean that the question is not answered
 	}
 
-	// todo set correct count
-	// todo update score
+	score := float32(correctCount) * 100 / float32(questionCount)
 
-	return nil
+	studentQuiz.CorrectCount = &correctCount
+	studentQuiz.TotalScore = &score
+	studentQuiz.Status = enum.SUBMITTED
+
+	return s.db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Quiz").Updates(&studentQuiz).Error
 }
