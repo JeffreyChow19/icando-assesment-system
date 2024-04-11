@@ -16,5 +16,7 @@ type StudentQuizDao struct {
 	Status         enum.QuizStatus    `json:"status"`
 	QuizID         uuid.UUID          `json:"quiz_id"`
 	Quiz           *QuizDao           `json:"quiz,omitempty"`
+	StudentID      uuid.UUID          `json:"studentId"`
+	Student        *StudentDao        `json:"student"`
 	StudentAnswers []StudentAnswerDao `json:"studentAnswers"`
 }

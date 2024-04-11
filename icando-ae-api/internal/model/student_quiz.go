@@ -15,6 +15,8 @@ type StudentQuiz struct {
 	Status         enum.QuizStatus
 	QuizID         uuid.UUID `gorm:"column:quiz_id"`
 	Quiz           *Quiz
+	StudentID      uuid.UUID `gorm:"column:student_id"`
+	Student        *Student
 	StudentAnswers []StudentAnswer
 }
 
@@ -50,6 +52,11 @@ func (sq *StudentQuiz) ToDao() (*dao.StudentQuizDao, error) {
 		}
 
 		studentQuizDao.StudentAnswers = answersDao
+	}
+
+	if sq.Student != nil {
+		studentDao := sq.Student.ToDao()
+		studentQuizDao.Student = &studentDao
 	}
 
 	return &studentQuizDao, nil
