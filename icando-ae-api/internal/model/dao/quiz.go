@@ -15,6 +15,7 @@ type QuizDao struct {
 	Creator      *TeacherDao   `json:"creator,omitempty"`
 	Updater      *TeacherDao   `json:"updater,omitempty"`
 	Questions    []QuestionDao `json:"questions"`
+	Classes      []ClassDao    `json:"classes,omitempty"`
 }
 
 type ParentQuizDao struct {

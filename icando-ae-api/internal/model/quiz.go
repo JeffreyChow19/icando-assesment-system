@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/google/uuid"
 	"icando/internal/model/dao"
+	"icando/internal/model/dto"
 	"time"
 )
 
@@ -19,6 +20,12 @@ type Quiz struct {
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
 	Deadline     *time.Time `gorm:"type:timestamptz"`
 	Questions    []Question
+	Classes      []Class
+}
+
+type QuizClass struct {
+	QuizID  uuid.UUID
+	ClassID uuid.UUID
 }
 
 func (q Quiz) ToDao() dao.QuizDao {
@@ -52,6 +59,16 @@ func (q Quiz) ToDao() dao.QuizDao {
 			questions = append(questions, *questionDao)
 		}
 		daoQuiz.Questions = questions
+	}
+
+	if q.Classes != nil && len(q.Classes) != 0 {
+		classes := make([]dao.ClassDao, 0)
+
+		for _, class := range q.Classes {
+			classes = append(classes, class.ToDao(dto.GetClassFilter{}))
+		}
+
+		daoQuiz.Classes = classes
 	}
 
 	return daoQuiz
