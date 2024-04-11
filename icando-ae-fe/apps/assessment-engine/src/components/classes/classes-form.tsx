@@ -132,6 +132,7 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
               </FormItem>
             )}
           />
+          {/* todo: change to combobox */}
 
           <div className="flex w-full justify-end">
             <Button type="submit" disabled={mutation.isPending}>

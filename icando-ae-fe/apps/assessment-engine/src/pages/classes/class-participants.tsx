@@ -14,7 +14,7 @@ export const ClassParticipants = () => {
   });
 
   return !isLoading && data ? (
-    <Layout pageTitle={"Class Participants"} showTitle={true}>
+    <Layout pageTitle={"Class Participants"} showTitle={true} withBack={true}>
       <ParticipantsTable classData={data.data} refresh={refetch} />
     </Layout>
   ) : (

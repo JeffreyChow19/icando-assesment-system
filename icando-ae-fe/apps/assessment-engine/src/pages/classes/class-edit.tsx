@@ -14,7 +14,7 @@ export const ClassEdit = () => {
   });
 
   return (
-    <Layout pageTitle={"Edit Class"} showTitle={true}>
+    <Layout pageTitle={"Edit Class"} showTitle={true} withBack={true}>
       {isLoading || !data ? (
         <LoadingComponent />
       ) : (
