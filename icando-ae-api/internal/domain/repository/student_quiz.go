@@ -10,10 +10,10 @@ import (
 
 type StudentQuizRepository struct {
 	db             *gorm.DB
-	quizRepository *QuizRepository
+	quizRepository QuizRepository
 }
 
-func NewStudentQuizRepository(db *lib.Database, quizRepository *QuizRepository) StudentQuizRepository {
+func NewStudentQuizRepository(db *lib.Database, quizRepository QuizRepository) StudentQuizRepository {
 	return StudentQuizRepository{
 		db:             db.DB,
 		quizRepository: quizRepository,
