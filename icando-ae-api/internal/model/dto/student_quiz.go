@@ -7,4 +7,5 @@ type GetStudentQuizFilter struct {
 	WithQuizOverview  bool
 	WithQuizQuestions bool
 	WithAnswers       bool
+	WithStudent       bool
 }

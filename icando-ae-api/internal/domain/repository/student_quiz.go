@@ -27,6 +27,10 @@ func (r *StudentQuizRepository) GetStudentQuiz(filter dto.GetStudentQuizFilter) 
 		query.Preload("StudentAnswers")
 	}
 
+	if filter.WithStudent {
+		query.Preload("Student")
+	}
+
 	query = query.Where("id = ?", filter.ID.String())
 
 	var studentQuiz model.StudentQuiz
