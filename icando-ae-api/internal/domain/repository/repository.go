@@ -13,5 +13,6 @@ var Module = fx.Module(
 		fx.Provide(NewQuizRepository),
 		fx.Provide(NewQuestionRepository),
 		fx.Provide(NewQuestionCompetencyRepository),
+		fx.Provide(NewStudentQuizRepository),
 	),
 )
