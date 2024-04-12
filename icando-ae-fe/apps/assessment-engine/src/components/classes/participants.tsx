@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@ui/components/ui/button";
 import {
   Table,
@@ -13,11 +13,10 @@ import { SearchIcon, TrashIcon } from "lucide-react";
 import { Pagination } from "../pagination";
 import { Student } from "../../interfaces/student";
 import { unAssignStudents } from "../../services/classes";
-import { getAllStudent } from "../../services/student";
-import { useQuery } from "@tanstack/react-query";
 import { Class } from "../../interfaces/classes";
 import { Checkbox } from "@ui/components/ui/checkbox";
 import { useConfirm } from "../../context/alert-dialog";
+import { AddParticipantsDialog } from "./participants-add";
 
 export const ParticipantsTable = ({
   classData,
@@ -33,7 +32,6 @@ export const ParticipantsTable = ({
     checked: boolean | "indeterminate",
     student: Student,
   ) => {
-    console.log(checked);
     if (checked === "indeterminate") return;
     if (checked) {
       if (unassignList.length == 0) setIsEditing(true);
@@ -70,27 +68,11 @@ export const ParticipantsTable = ({
     : 0;
 
   const [unassignList, setUnassignList] = useState<string[]>([]);
-  // const [assignList, setAssignList] = useState<string[]>([]);
 
-  // used for adding new students
-  const [addPage, setAddPage] = useState(1);
-  const { data: studentData } = useQuery({
-    queryKey: ["students", addPage],
-    queryFn: () => getAllStudent({ page: addPage, limit: pageSize }),
-  });
-  useEffect(() => {
-    if (studentData) {
-      if (studentData.meta.page != addPage) {
-        setAddPage(studentData.meta.page);
-      }
-    }
-  }, [studentData, addPage]);
-
-  useEffect(() => {
-    console.log(unassignList);
-    console.log(isEditing);
-    // console.log(assignList);
-  });
+  // useEffect(() => {
+  //   console.log(unassignList);
+  //   console.log(isEditing);
+  // });
 
   return (
     <>
@@ -108,9 +90,9 @@ export const ParticipantsTable = ({
                       body: "Are you sure to remove these students from this class?",
                     }).then((confirm) => {
                       if (confirm) {
-                        deleteStudents()
+                        deleteStudents();
                       }
-                    })
+                    });
                   }}
                 >
                   <TrashIcon />
@@ -122,8 +104,10 @@ export const ParticipantsTable = ({
           <div className="w-full flex flex-row font-normal gap-x-3"></div>
           <div className="flex flex-row gap-x-3 justify-between">
             {
-              <Button size={"sm"}>Add Participants</Button>
-              // todo: link to modal
+              <AddParticipantsDialog
+                classId={classData.id}
+                onSuccess={refresh}
+              />
             }
           </div>
         </div>
