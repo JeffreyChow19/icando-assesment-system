@@ -16,6 +16,7 @@ import {
 import { SearchIcon } from "lucide-react";
 import { Pagination } from "../pagination.tsx";
 import { deleteClass, getAllClasses } from "../../services/classes.ts";
+import { ClassTeachersDialog } from "./classes-teachers.tsx";
 
 export function ClassesTable() {
   const [page, setPage] = useState(1);
@@ -78,11 +79,10 @@ export function ClassesTable() {
                   <TableRow key={classes.id}>
                     <TableCell>{classes.name}</TableCell>
                     <TableCell>{classes.grade}</TableCell>
-                    {/* todo: display teacher correctly (not by id?) */}
-                    {/* todo: display participant (student count?) */}
                     <TableCell>
                       <div className="flex space-x-2">
                         <>
+                          <ClassTeachersDialog classId={classes.id} />
                           <Button size={"sm"}>
                             <Link to={`/classes/participants/${classes.id}`}>
                               View Students
@@ -99,8 +99,8 @@ export function ClassesTable() {
                             variant={"destructive"}
                             onClick={() => {
                               confirm({
-                                title: "Are you sure?",
-                                body: "Are you sure want to delete this student?",
+                                title: `Delete Class "${classes.name}"?`,
+                                body: "Are you sure want to delete this class?",
                               }).then((result) => {
                                 if (result) {
                                   deleteClass(classes.id).then(() => {

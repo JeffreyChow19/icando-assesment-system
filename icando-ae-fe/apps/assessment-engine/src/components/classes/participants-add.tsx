@@ -112,7 +112,6 @@ export const AddParticipantsDialog = ({
                     page={page}
                     totalPage={studentData.meta.totalPage || 1}
                     setPage={setPage}
-                    withSearchParams={true}
                   />
                 </div>
               )
