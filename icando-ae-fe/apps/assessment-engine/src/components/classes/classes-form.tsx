@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
@@ -24,26 +24,21 @@ import {
   updateClass,
   UpdateClassPayload,
 } from "../../services/classes.ts";
-
-const SemicolonSeparatedIDsSchema = z
-  .string({ required_error: "Teacher ID can't be empty" })
-  .refine(
-    (value) => {
-      const regex = /^(?:[^,]+(?:,[^,]+)*)?$/; // Regex to match comma-separated strings
-      return regex.test(value);
-    },
-    {
-      message: "Teacher IDs must be separable by comma.",
-    },
-  );
+import { getAllTeachers } from "../../services/teachers.ts";
 
 const classFormSchema = z.object({
   name: z.string({ required_error: "Class name can't be empty" }).min(1),
   grade: z.string({ required_error: "Class grade can't be empty" }).min(1),
-  teacherIds: SemicolonSeparatedIDsSchema,
+  teacherIds: z.array(z.string()).min(1, "Class teachers can't be empty"),
 });
 
-export const ClassesForm = ({ classes }: { classes?: Class }) => {
+export const ClassesForm = ({
+  classes,
+  refresh,
+}: {
+  classes?: Class;
+  refresh?: () => void;
+}) => {
   const navigator = useNavigate();
 
   const form = useForm<z.infer<typeof classFormSchema>>({
@@ -52,12 +47,17 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
       ? {
           name: classes.name,
           grade: classes.grade,
-          teacherIds: classes.teachers!.map((teacher) => teacher.id).join(";"),
-          // todo: refine selection of teacherId
+          teacherIds: classes.teachers!.map((teacher) => teacher.id),
         }
       : {},
   });
   const { toast } = useToast();
+
+  const { data: teacherData } = useQuery({
+    queryKey: ["teachers"],
+    queryFn: () => getAllTeachers(),
+    retry: false,
+  });
 
   const mutation = useMutation({
     mutationFn: (payload: CreateClassPayload) => {
@@ -75,9 +75,13 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
       toast({
         description: `Class successfully ${classes ? "saved" : "created"}!`,
       });
+      if (refresh !== undefined) {
+        refresh();
+      }
       navigator("/classes");
     },
     onError: (err) => {
+      console.log(err);
       onErrorToast(err);
     },
   });
@@ -90,7 +94,7 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
             mutation.mutate({
               name: values.name,
               grade: values.grade,
-              teacherIds: values.teacherIds.split(";"),
+              teacherIds: values.teacherIds,
             }),
           )}
         >
@@ -127,20 +131,34 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
               <FormItem>
                 <FormLabel>Teacher ID*</FormLabel>
                 <FormControl>
-                  <Input placeholder="Teacher IDs" {...field} />
+                  <Multiselect
+                    onChange={(val) => {
+                      console.log(
+                        val.map((item: { value: string }) => item.value),
+                      );
+
+                      field.onChange(
+                        val.map((item: { value: string }) => item.value),
+                      );
+                    }}
+                    defaultValue={classes?.teachers?.map((item) => {
+                      return {
+                        label: `${item.firstName} ${item.lastName}`,
+                        value: item.id,
+                      };
+                    })}
+                    options={teacherData?.data.map((item) => {
+                      return {
+                        label: `${item.firstName} ${item.lastName}`,
+                        value: item.id,
+                      };
+                    })}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          {/* todo: change to combobox */}
-
-          <Multiselect
-            options={[
-              { value: "1", label: "satu" },
-              { value: "2", label: "dua" },
-            ]}
-          ></Multiselect>
 
           <div className="flex w-full justify-end">
             <Button type="submit" disabled={mutation.isPending}>

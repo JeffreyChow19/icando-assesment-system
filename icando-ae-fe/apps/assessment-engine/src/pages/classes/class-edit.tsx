@@ -8,7 +8,7 @@ import { Layout } from "../../layouts/layout.tsx";
 export const ClassEdit = () => {
   const { id } = useParams<{ id: string }>();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["classes", id],
     queryFn: () => getClass({ withTeacher: true, withStudents: false }, id!),
   });
@@ -18,7 +18,7 @@ export const ClassEdit = () => {
       {isLoading || !data ? (
         <LoadingComponent />
       ) : (
-        <ClassesForm classes={data.data} />
+        <ClassesForm classes={data.data} refresh={refetch} />
       )}
     </Layout>
   );
