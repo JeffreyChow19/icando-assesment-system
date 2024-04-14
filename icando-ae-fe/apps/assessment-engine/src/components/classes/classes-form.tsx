@@ -17,6 +17,7 @@ import {
 import { Input } from "@ui/components/ui/input.tsx";
 import { Button } from "@ui/components/ui/button.tsx";
 import { Class } from "../../interfaces/classes.ts";
+import { Multiselect } from "@ui/components/ui/multiselect.tsx";
 import {
   createClass,
   CreateClassPayload,
@@ -133,6 +134,13 @@ export const ClassesForm = ({ classes }: { classes?: Class }) => {
             )}
           />
           {/* todo: change to combobox */}
+
+          <Multiselect
+            options={[
+              { value: "1", label: "satu" },
+              { value: "2", label: "dua" },
+            ]}
+          ></Multiselect>
 
           <div className="flex w-full justify-end">
             <Button type="submit" disabled={mutation.isPending}>
