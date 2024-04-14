@@ -4,6 +4,7 @@ import {
   DialogTrigger,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@ui/components/ui/dialog.tsx";
 import { Button } from "@ui/components/ui/button.tsx";
 import { useEffect, useState } from "react";
@@ -23,6 +24,7 @@ import { Pagination } from "../pagination";
 import { getAllStudent } from "../../services/student";
 import { useQuery } from "@tanstack/react-query";
 import { assignStudents } from "../../services/classes";
+import { Badge } from "@ui/components/ui/badge";
 
 interface AddParticipantsProps {
   classId: string;
@@ -35,12 +37,12 @@ export const AddParticipantsDialog = ({
 }: AddParticipantsProps) => {
   const [open, setOpen] = useState<boolean>(false);
   const [page, setPage] = useState(1);
-  const [assignList, setAssignList] = useState<string[]>([]);
+  const [assignList, setAssignList] = useState<Student[]>([]);
 
   const addStudents = () => {
     if (assignList.length > 0) {
       assignStudents(classId, {
-        studentIds: assignList,
+        studentIds: assignList.map((item) => item.id),
       }).then(() => {
         onSuccess();
       });
@@ -54,9 +56,9 @@ export const AddParticipantsDialog = ({
   ) => {
     if (checked === "indeterminate") return;
     if (checked) {
-      setAssignList([...assignList, student.id]);
+      setAssignList([...assignList, student]);
     } else {
-      setAssignList(assignList.filter((item) => item !== student.id));
+      setAssignList(assignList.filter((item) => item.id !== student.id));
     }
   };
   const pageSize = 8;
@@ -98,16 +100,6 @@ export const AddParticipantsDialog = ({
               studentData &&
               studentData.meta.totalPage > 1 && (
                 <div className="flex w-full justify-end">
-                  <Button
-                    size={"sm"}
-                    disabled={assignList.length == 0}
-                    onClick={() => {
-                      addStudents();
-                      setOpen(false);
-                    }}
-                  >
-                    Add Students
-                  </Button>
                   <Pagination
                     page={page}
                     totalPage={studentData.meta.totalPage || 1}
@@ -119,7 +111,7 @@ export const AddParticipantsDialog = ({
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead>Select</TableHead>
+              <TableHead className="w-[4vw]">Select</TableHead>
               <TableHead>Name</TableHead>
               <TableHead>NISN</TableHead>
             </TableRow>
@@ -139,7 +131,7 @@ export const AddParticipantsDialog = ({
                           }
                           checked={
                             assignList.findIndex(
-                              (item) => item === student.id,
+                              (item) => item.id === student.id,
                             ) != -1
                           }
                         />
@@ -153,6 +145,25 @@ export const AddParticipantsDialog = ({
                 })}
           </TableBody>
         </Table>
+        <div className="flex w-full gap-2 flex-wrap mt-2">
+          {assignList.map((student) => (
+            <Badge key={student.id} variant="outline">
+              {student.nisn} - {student.firstName} {student.lastName}
+            </Badge>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button
+            size={"sm"}
+            disabled={assignList.length == 0}
+            onClick={() => {
+              addStudents();
+              setOpen(false);
+            }}
+          >
+            Add Students
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

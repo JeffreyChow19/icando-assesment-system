@@ -135,7 +135,7 @@ export const ParticipantsTable = ({
             </TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead>Select</TableHead>
+                <TableHead className="w-[4vw]">Select</TableHead>
                 <TableHead>Name</TableHead>
                 <TableHead>NISN</TableHead>
               </TableRow>

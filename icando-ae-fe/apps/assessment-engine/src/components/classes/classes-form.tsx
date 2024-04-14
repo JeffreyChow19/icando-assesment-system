@@ -129,7 +129,7 @@ export const ClassesForm = ({
             name="teacherIds"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Teacher ID*</FormLabel>
+                <FormLabel>Teacher(s)*</FormLabel>
                 <FormControl>
                   <Multiselect
                     onChange={(val) => {
