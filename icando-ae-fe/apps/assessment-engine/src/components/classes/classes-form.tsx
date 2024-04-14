@@ -141,18 +141,18 @@ export const ClassesForm = ({
                         val.map((item: { value: string }) => item.value),
                       );
                     }}
-                    defaultValue={classes?.teachers?.map((item) => {
+                    defaultValue={classes?.teachers? classes?.teachers.map((item) => {
                       return {
                         label: `${item.firstName} ${item.lastName}`,
                         value: item.id,
                       };
-                    })}
-                    options={teacherData?.data.map((item) => {
+                    }) : []}
+                    options={teacherData ? teacherData.data.map((item) => {
                       return {
                         label: `${item.firstName} ${item.lastName}`,
                         value: item.id,
                       };
-                    })}
+                    }) : []}
                   />
                 </FormControl>
                 <FormMessage />
