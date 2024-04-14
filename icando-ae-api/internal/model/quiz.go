@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/google/uuid"
+	"icando/internal/model/base"
 	"icando/internal/model/dao"
 	"time"
 )
@@ -9,7 +10,7 @@ import (
 type Quiz struct {
 	Model
 	Name         *string
-	Subject      *string
+	Subject      base.StringArray `gorm:"type:text[]"`
 	PassingGrade float64
 	ParentQuiz   *uuid.UUID
 	CreatedBy    uuid.UUID  `gorm:"type:uuid;not null"`

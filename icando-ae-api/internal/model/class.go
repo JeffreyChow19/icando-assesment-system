@@ -19,9 +19,9 @@ type Class struct {
 
 func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
 	classDao := dao.ClassDao{
-		ID:           s.ID,
-		Name:         s.Name,
-		Grade:        s.Grade,
+		ID:            s.ID,
+		Name:          s.Name,
+		Grade:         s.Grade,
 		InstitutionID: s.InstitutionID,
 	}
 
