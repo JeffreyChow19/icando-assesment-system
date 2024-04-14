@@ -24,4 +24,5 @@ type ParentQuizDao struct {
 	PassingGrade    float64    `json:"passingGrade"`
 	LastPublishedAt *time.Time `json:"lastPublishedAt"`
 	CreatedBy       string     `json:"createdBy"`
+	UpdatedBy       string     `json:"updatedBy"`
 }
