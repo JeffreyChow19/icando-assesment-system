@@ -16,7 +16,6 @@ import {
 import { SearchIcon } from "lucide-react";
 import { Pagination } from "../pagination.tsx";
 import { deleteClass, getAllClasses } from "../../services/classes.ts";
-import { ClassTeachersDialog } from "./classes-teachers.tsx";
 
 export function ClassesTable() {
   const [page, setPage] = useState(1);
@@ -66,6 +65,7 @@ export function ClassesTable() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Grade</TableHead>
+            <TableHead>Teachers</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -80,9 +80,19 @@ export function ClassesTable() {
                     <TableCell>{classes.name}</TableCell>
                     <TableCell>{classes.grade}</TableCell>
                     <TableCell>
+                      {classes.teachers
+                        ? classes.teachers.map((item) => {
+                            return (
+                              <>
+                                {item.firstName} {item.lastName}<br />
+                              </>
+                            );
+                          })
+                        : "No teachers assigned"}
+                    </TableCell>
+                    <TableCell>
                       <div className="flex space-x-2">
                         <>
-                          <ClassTeachersDialog classId={classes.id} />
                           <Button size={"sm"}>
                             <Link to={`/classes/participants/${classes.id}`}>
                               View Students
