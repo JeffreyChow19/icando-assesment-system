@@ -23,7 +23,10 @@ type QuestionServiceImpl struct {
 	questionCompetencyRepository repository.QuestionCompetencyRepository
 }
 
-func NewQuestionServiceImpl(questionRepository repository.QuestionRepository, competencyRepository repository.CompetencyRepository, questionCompetencyRepository repository.QuestionCompetencyRepository) *QuestionServiceImpl {
+func NewQuestionServiceImpl(
+	questionRepository repository.QuestionRepository, competencyRepository repository.CompetencyRepository,
+	questionCompetencyRepository repository.QuestionCompetencyRepository,
+) *QuestionServiceImpl {
 	return &QuestionServiceImpl{
 		questionRepository:           questionRepository,
 		competencyRepository:         competencyRepository,
@@ -36,7 +39,9 @@ var ErrCreateQuestion = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when creating question"),
 }
 
-func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.QuestionDto) (*dao.QuestionDao, *httperror.HttpError) {
+func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.QuestionDto) (
+	*dao.QuestionDao, *httperror.HttpError,
+) {
 	question := model.Question{
 		Text:     questionDto.Text,
 		AnswerID: questionDto.AnswerID,
@@ -86,7 +91,9 @@ var ErrUpdateQuestion = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when updating question"),
 }
 
-func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, questionDto dto.QuestionDto) (*dao.QuestionDao, *httperror.HttpError) {
+func (s *QuestionServiceImpl) UpdateQuestion(
+	filter dto.GetQuestionFilter, questionDto dto.QuestionDto,
+) (*dao.QuestionDao, *httperror.HttpError) {
 	// Get the existing question
 	question, err := s.questionRepository.GetQuestion(filter)
 	if err != nil {
@@ -133,10 +140,12 @@ func (s *QuestionServiceImpl) UpdateQuestion(filter dto.GetQuestionFilter, quest
 	// Find competencies to be deleted and added
 	for competencyID := range existingCompetencyMap {
 		if _, ok := updatedCompetencyMap[competencyID]; !ok {
-			toBeDeletedCompetencies = append(toBeDeletedCompetencies, model.QuestionCompetency{
-				QuestionID:   question.ID,
-				CompetencyID: competencyID,
-			})
+			toBeDeletedCompetencies = append(
+				toBeDeletedCompetencies, model.QuestionCompetency{
+					QuestionID:   question.ID,
+					CompetencyID: competencyID,
+				},
+			)
 		}
 	}
 	for competencyID, competency := range updatedCompetencyMap {

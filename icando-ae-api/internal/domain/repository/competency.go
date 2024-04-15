@@ -41,7 +41,9 @@ func (r *CompetencyRepository) GetOneCompetency(filter dto.GetOneCompetencyFilte
 	return &competency, nil
 }
 
-func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesFilter) ([]model.Competency, *dao.MetaDao, error) {
+func (r *CompetencyRepository) GetAllCompetencies(filter dto.GetAllCompetenciesFilter) (
+	[]model.Competency, *dao.MetaDao, error,
+) {
 	query := r.db.Model(&model.Competency{})
 
 	if filter.Numbering != nil {

@@ -53,9 +53,11 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 	}
 
 	if filter.WithQuestions {
-		sort.Slice(quiz.Questions, func(i, j int) bool {
-			return quiz.Questions[i].Order < quiz.Questions[j].Order
-		})
+		sort.Slice(
+			quiz.Questions, func(i, j int) bool {
+				return quiz.Questions[i].Order < quiz.Questions[j].Order
+			},
+		)
 	}
 
 	return &quiz, nil
@@ -82,7 +84,7 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 		query.Where("LOWER(name) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Query)))
 	}
 	if filter.Subject != nil {
-		query.Where("LOWER(subject) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Subject)))
+		query.Where("subject @> ?", filter.Subject)
 	}
 
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")
