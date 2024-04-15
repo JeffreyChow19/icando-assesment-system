@@ -25,6 +25,7 @@ import { getAllStudent } from "../../services/student";
 import { useQuery } from "@tanstack/react-query";
 import { assignStudents } from "../../services/classes";
 import { Badge } from "@ui/components/ui/badge";
+import { ScrollArea } from "@ui/components/ui/scroll-area";
 
 interface AddParticipantsProps {
   classId: string;
@@ -85,7 +86,7 @@ export const AddParticipantsDialog = ({
       <DialogTrigger asChild>
         <Button>Add Students</Button>
       </DialogTrigger>
-      <DialogContent className="min-w-[70vw] min-h-[40vh]">
+      <DialogContent className="min-w-[70vw] min-h-[60vh] max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Add Students</DialogTitle>
         </DialogHeader>
@@ -109,49 +110,66 @@ export const AddParticipantsDialog = ({
               )
             )}
           </TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[4vw]">Select</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>NISN</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {studentData &&
-              studentData.data.length > 0 &&
-              studentData.data
-                .filter((student) => student.classId !== classId)
-                .map((student: Student) => {
-                  return (
-                    <TableRow key={student.id}>
-                      <TableCell>
-                        <Checkbox
-                          onCheckedChange={(checked) =>
-                            onCheckedStudents(checked, student)
-                          }
-                          checked={
-                            assignList.findIndex(
-                              (item) => item.id === student.id,
-                            ) != -1
-                          }
-                        />
-                      </TableCell>
-                      <TableCell>
-                        {student.firstName} {student.lastName}
-                      </TableCell>
-                      <TableCell>{student.nisn}</TableCell>
-                    </TableRow>
-                  );
-                })}
-          </TableBody>
+          <ScrollArea className="overflow-y-scroll max-h-[40vh]">
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[4vw]">Select</TableHead>
+                <TableHead>Name</TableHead>
+                <TableHead>NISN</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {studentData &&
+                studentData.data.length > 0 &&
+                studentData.data
+                  .filter((student) => student.classId !== classId)
+                  .map((student: Student) => {
+                    return (
+                      <TableRow key={student.id}>
+                        <TableCell>
+                          <Checkbox
+                            onCheckedChange={(checked) =>
+                              onCheckedStudents(checked, student)
+                            }
+                            checked={
+                              assignList.findIndex(
+                                (item) => item.id === student.id,
+                              ) != -1
+                            }
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {student.firstName} {student.lastName}
+                        </TableCell>
+                        <TableCell>{student.nisn}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+            </TableBody>
+          </ScrollArea>
         </Table>
-        <div className="flex w-full gap-2 flex-wrap mt-2">
-          {assignList.map((student) => (
-            <Badge key={student.id} variant="outline">
-              {student.nisn} - {student.firstName} {student.lastName}
-            </Badge>
-          ))}
-        </div>
+        {assignList.length > 0 ? (
+          <ScrollArea className="max-h-[6vh]">
+            <div className="flex w-full gap-2 flex-wrap mt-2">
+              {assignList.map((student) => (
+                <Badge
+                  key={student.id}
+                  variant="default"
+                  onClick={() => {
+                    setAssignList(
+                      assignList.filter((item) => item.id !== student.id),
+                    );
+                  }}
+                >
+                  {student.nisn} - {student.firstName} {student.lastName}
+                </Badge>
+              ))}
+            </div>
+          </ScrollArea>
+        ) : (
+          ""
+        )}
+
         <DialogFooter>
           <Button
             size={"sm"}
