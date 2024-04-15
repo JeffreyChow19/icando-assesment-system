@@ -118,7 +118,7 @@ export const ParticipantsTable = ({
             {classStudents && classStudents.length === 0 ? (
               <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
                 <SearchIcon className="w-10 h-10" />
-                No participants.
+                No students.
               </div>
             ) : (
               classStudents &&

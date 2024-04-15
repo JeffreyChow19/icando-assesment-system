@@ -95,7 +95,7 @@ export function ClassesTable() {
                         <>
                           <Button size={"sm"}>
                             <Link to={`/classes/participants/${classes.id}`}>
-                              View Students
+                              Manage Students
                             </Link>
                           </Button>
                           <Button size={"sm"}>

@@ -83,18 +83,18 @@ export const AddParticipantsDialog = ({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Participants</Button>
+        <Button>Add Students</Button>
       </DialogTrigger>
       <DialogContent className="min-w-[70vw] min-h-[40vh]">
         <DialogHeader>
-          <DialogTitle>Add Participants</DialogTitle>
+          <DialogTitle>Add Students</DialogTitle>
         </DialogHeader>
         <Table>
           <TableCaption>
             {studentData && studentData.data.length === 0 ? (
               <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
                 <SearchIcon className="w-10 h-10" />
-                No participants.
+                No students available.
               </div>
             ) : (
               studentData &&
