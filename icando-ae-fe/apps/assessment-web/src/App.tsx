@@ -24,7 +24,7 @@ function App() {
     },
     {
       path: "/",
-      element: <TestPage />,
+      element: <Hello />,
     },
   ]);
   return (
