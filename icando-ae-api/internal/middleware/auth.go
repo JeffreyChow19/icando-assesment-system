@@ -18,20 +18,23 @@ import (
 )
 
 type AuthMiddleware struct {
-	studentRepository repository.StudentRepository
-	teacherRepository repository.TeacherRepository
-	config            *lib.Config
+	studentRepository     repository.StudentRepository
+	teacherRepository     repository.TeacherRepository
+	studentQuizRepository repository.StudentQuizRepository
+	config                *lib.Config
 }
 
 func NewAuthMiddleware(
 	config *lib.Config,
 	studentRepository repository.StudentRepository,
 	teacherRepository repository.TeacherRepository,
+	studentQuizRepository repository.StudentQuizRepository,
 ) *AuthMiddleware {
 	return &AuthMiddleware{
-		studentRepository: studentRepository,
-		teacherRepository: teacherRepository,
-		config:            config,
+		studentRepository:     studentRepository,
+		teacherRepository:     teacherRepository,
+		studentQuizRepository: studentQuizRepository,
+		config:                config,
 	}
 }
 
@@ -64,17 +67,31 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 				}
 
 				c.Set(enum.INSTITUTION_ID_CONTEXT_KEY, teacher.InstitutionID)
+				c.Set(enum.USER_CONTEXT_KEY, authorized)
 			} else if role == enum.ROLE_STUDENT {
 				idString := authorized.ID.String()
-				_, err := m.studentRepository.GetOne(dto.GetStudentFilter{ID: &idString})
+
+				idUUID, err := uuid.Parse(idString)
 
 				if err != nil {
-					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": errors.New("Student not found")})
+					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": errors.New("Cannot parse uuid")})
 					return
 				}
+
+				studentQuiz, err := m.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: idUUID})
+
+				if err != nil {
+					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": errors.New("Student quiz not found")})
+					return
+				}
+
+				c.Set(enum.STUDENT_QUIZ_ID_CONTEXT_KEY, studentQuiz.ID)
+				c.Set(enum.USER_CONTEXT_KEY, dao.TokenClaim{
+					ID:  studentQuiz.StudentID,
+					Exp: authorized.Exp,
+				})
 			}
 
-			c.Set(enum.USER_CONTEXT_KEY, authorized)
 			c.Next()
 			return
 		}
