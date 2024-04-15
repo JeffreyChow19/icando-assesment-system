@@ -27,5 +27,5 @@ type UpdateQuizDto struct {
 	Name         *string    `json:"name"`
 	Subject      []string   `json:"subject"`
 	PassingGrade float64    `json:"passingGrade"`
-	Deadline     *time.Time `json:"deadline"`
+	EndAt		     *time.Time `json:"endAt"`
 }

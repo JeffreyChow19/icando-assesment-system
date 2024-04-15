@@ -42,7 +42,7 @@ export interface CreateQuizResponseData {
   subject: string[] | null;
   passingGrade: number;
   publishedAt: string | null;
-  deadline: string | null;
+  endAt: string | null;
 }
 
 export interface UpdateQuizPayload {
@@ -50,7 +50,7 @@ export interface UpdateQuizPayload {
   name: string;
   subject: string[];
   passingGrade: number;
-  deadline?: string | null;
+  endAt?: string | null;
 }
 
 export interface GetAllQuizFilter {

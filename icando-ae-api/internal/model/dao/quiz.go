@@ -12,7 +12,7 @@ type QuizDao struct {
 	Subject      base.StringArray `json:"subject" gorm:"type:text[]"`
 	PassingGrade float64          `json:"passingGrade"`
 	PublishedAt  *time.Time       `json:"publishedAt"`
-	Deadline     *time.Time       `json:"deadline"`
+	EndAt		     *time.Time       `json:"endAt"`
 	Creator      *TeacherDao      `json:"creator,omitempty"`
 	Updater      *TeacherDao      `json:"updater,omitempty"`
 	Questions    []QuestionDao    `json:"questions"`

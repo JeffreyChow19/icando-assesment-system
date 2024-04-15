@@ -19,7 +19,7 @@ type Quiz struct {
 	UpdatedBy    *uuid.UUID `gorm:"type:uuid"`
 	Updater      *Teacher   `gorm:"foreignKey:UpdatedBy"`
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
-	Deadline     *time.Time `gorm:"type:timestamptz"`
+	EndAt		     *time.Time `gorm:"type:timestamptz"`
 	Questions    []Question
 	Classes      []Class		`gorm:"many2many:quiz_classes;"`
 }
@@ -36,7 +36,7 @@ func (q Quiz) ToDao() dao.QuizDao {
 		Subject:      q.Subject,
 		PassingGrade: q.PassingGrade,
 		PublishedAt:  q.PublishedAt,
-		Deadline:     q.Deadline,
+		EndAt:     		q.EndAt,
 	}
 
 	if q.Creator != nil {
