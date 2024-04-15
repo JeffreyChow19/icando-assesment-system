@@ -91,7 +91,7 @@ export const AddParticipantsDialog = ({
         </DialogHeader>
         <Table>
           <TableCaption>
-            {studentData && studentData.data.length === 0 ? (
+            {(studentData && studentData.data.length == 0) || !studentData ? (
               <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
                 <SearchIcon className="w-10 h-10" />
                 No students available.

@@ -17,7 +17,6 @@ import { Class } from "../../interfaces/classes";
 import { Checkbox } from "@ui/components/ui/checkbox";
 import { useConfirm } from "../../context/alert-dialog";
 import { AddParticipantsDialog } from "./participants-add";
-import { Badge } from "@ui/components/ui/badge";
 
 export const ParticipantsTable = ({
   classData,
@@ -106,16 +105,10 @@ export const ParticipantsTable = ({
             <AddParticipantsDialog classId={classData.id} onSuccess={refresh} />
           </div>
         </div>
-        <div className="flex w-full gap-2 flex-wrap mt-2">
-          {unassignList.map((student) => (
-            <Badge key={student.id} variant="destructive">
-              {student.nisn} - {student.firstName} {student.lastName}
-            </Badge>
-          ))}
-        </div>
+
         <Table>
           <TableCaption>
-            {classStudents && classStudents.length === 0 ? (
+            {(classStudents && classStudents.length == 0) || !classStudents ? (
               <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
                 <SearchIcon className="w-10 h-10" />
                 No students.
