@@ -42,6 +42,7 @@ export interface CreateQuizResponseData {
   subject: string[] | null;
   passingGrade: number;
   publishedAt: string | null;
+  startAt: string | null;
   endAt: string | null;
 }
 
@@ -50,6 +51,7 @@ export interface UpdateQuizPayload {
   name: string;
   subject: string[];
   passingGrade: number;
+  startAt?: string | null;
   endAt?: string | null;
 }
 

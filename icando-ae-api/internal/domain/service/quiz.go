@@ -98,6 +98,10 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	if quizDto.PassingGrade != 0 {
 		quiz.PassingGrade = quizDto.PassingGrade
 	}
+	if quizDto.StartAt != nil {
+		quiz.StartAt = quizDto.StartAt
+	}
+	// todo: update duration?
 	if quizDto.EndAt != nil {
 		quiz.EndAt = quizDto.EndAt
 	}
