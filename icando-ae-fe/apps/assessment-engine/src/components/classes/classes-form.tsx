@@ -28,7 +28,10 @@ import { getAllTeachers } from "../../services/teachers.ts";
 
 const classFormSchema = z.object({
   name: z.string({ required_error: "Class name can't be empty" }).min(1),
-  grade: z.string({ required_error: "Class grade can't be empty" }).min(1),
+  grade: z
+    .string({ required_error: "Class grade can't be empty" })
+    .regex(/^[0-9]+$/, "Grade must be numeric")
+    .min(1),
   teacherIds: z.array(z.string()).min(1, "Class teachers can't be empty"),
 });
 
@@ -78,10 +81,9 @@ export const ClassesForm = ({
       if (refresh !== undefined) {
         refresh();
       }
-      navigator(`/classes/${classes?.id}`);
+      navigator(-1);
     },
     onError: (err) => {
-      console.log(err);
       onErrorToast(err);
     },
   });
