@@ -73,12 +73,12 @@ export const ClassesForm = ({
     },
     onSuccess: () => {
       toast({
-        description: `Class successfully ${classes ? "saved" : "created"}!`,
+        description: `Class successfully ${classes ? "updated" : "created"}!`,
       });
       if (refresh !== undefined) {
         refresh();
       }
-      navigator("/classes");
+      navigator(`/classes/${classes?.id}`);
     },
     onError: (err) => {
       console.log(err);
@@ -141,18 +141,26 @@ export const ClassesForm = ({
                         val.map((item: { value: string }) => item.value),
                       );
                     }}
-                    defaultValue={classes?.teachers? classes?.teachers.map((item) => {
-                      return {
-                        label: `${item.firstName} ${item.lastName}`,
-                        value: item.id,
-                      };
-                    }) : []}
-                    options={teacherData ? teacherData.data.map((item) => {
-                      return {
-                        label: `${item.firstName} ${item.lastName}`,
-                        value: item.id,
-                      };
-                    }) : []}
+                    defaultValue={
+                      classes?.teachers
+                        ? classes?.teachers.map((item) => {
+                            return {
+                              label: `${item.firstName} ${item.lastName}`,
+                              value: item.id,
+                            };
+                          })
+                        : []
+                    }
+                    options={
+                      teacherData
+                        ? teacherData.data.map((item) => {
+                            return {
+                              label: `${item.firstName} ${item.lastName}`,
+                              value: item.id,
+                            };
+                          })
+                        : []
+                    }
                   />
                 </FormControl>
                 <FormMessage />

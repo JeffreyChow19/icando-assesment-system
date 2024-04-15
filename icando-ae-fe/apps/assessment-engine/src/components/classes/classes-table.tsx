@@ -94,15 +94,11 @@ export function ClassesTable() {
                       <div className="flex space-x-2">
                         <>
                           <Button size={"sm"}>
-                            <Link to={`/classes/participants/${classes.id}`}>
-                              Manage Students
+                            <Link to={`/classes/${classes.id}`}>
+                              Manage Class
                             </Link>
                           </Button>
-                          <Button size={"sm"}>
-                            <Link to={`/classes/edit/${classes.id}`}>
-                              Edit Class
-                            </Link>
-                          </Button>
+                          
 
                           <Button
                             size={"sm"}
