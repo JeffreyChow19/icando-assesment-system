@@ -6,7 +6,8 @@ import (
 )
 
 type GetTeacherFilter struct {
-	ID    *uuid.UUID
-	Email *string
-	Role  *enum.TeacherRole
+	ID            *uuid.UUID
+	Email         *string
+	Role          *enum.TeacherRole
+	InstitutionID *uuid.UUID
 }

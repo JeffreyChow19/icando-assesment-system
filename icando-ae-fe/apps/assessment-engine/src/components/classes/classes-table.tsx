@@ -65,7 +65,7 @@ export function ClassesTable() {
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Grade</TableHead>
-            <TableHead>Participants</TableHead>
+            <TableHead>Teachers</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -79,29 +79,34 @@ export function ClassesTable() {
                   <TableRow key={classes.id}>
                     <TableCell>{classes.name}</TableCell>
                     <TableCell>{classes.grade}</TableCell>
-                    {/* todo: display teacher correctly (not by id?) */}
-                    {/* todo: display participant (student count?) */}
                     <TableCell>
-                      <Link to={`/classes/participants/${classes.id}`}>
-                        View
-                      </Link>
+                      {classes.teachers
+                        ? classes.teachers.map((item) => {
+                            return (
+                              <>
+                                {item.firstName} {item.lastName}<br />
+                              </>
+                            );
+                          })
+                        : "No teachers assigned"}
                     </TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <>
                           <Button size={"sm"}>
-                            <Link to={`/classes/edit/${classes.id}`}>
-                              Edit Class
+                            <Link to={`/classes/${classes.id}`}>
+                              Manage Class
                             </Link>
                           </Button>
+                          
 
                           <Button
                             size={"sm"}
                             variant={"destructive"}
                             onClick={() => {
                               confirm({
-                                title: "Are you sure?",
-                                body: "Are you sure want to delete this student?",
+                                title: `Delete Class "${classes.name}"?`,
+                                body: "Are you sure want to delete this class?",
                               }).then((result) => {
                                 if (result) {
                                   deleteClass(classes.id).then(() => {

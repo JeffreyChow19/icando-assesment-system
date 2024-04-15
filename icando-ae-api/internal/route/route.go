@@ -1,13 +1,14 @@
 package route
 
 import (
-	"github.com/gin-gonic/gin"
-	"go.uber.org/fx"
 	"icando/internal/middleware"
 	"icando/internal/model/enum"
 	"icando/internal/route/designer"
 	"icando/internal/route/student"
 	"icando/internal/route/teacher"
+
+	"github.com/gin-gonic/gin"
+	"go.uber.org/fx"
 )
 
 type Routes struct {
@@ -31,6 +32,7 @@ var Module = fx.Options(
 	fx.Provide(designer.NewCompetencyRoute),
 	fx.Provide(designer.NewQuizRoute),
 	fx.Provide(designer.NewQuestionRoute),
+	fx.Provide(designer.NewTeacherRoute),
 	fx.Provide(student.NewQuizRoute),
 )
 
@@ -49,11 +51,12 @@ func NewRoutes(
 	competencyRoute *designer.CompetencyRoute,
 	quizRoute *designer.QuizRoute,
 	questionRoute *designer.QuestionRoute,
+	teacherRoute *designer.TeacherRoute,
 	studentQuizRoute *student.QuizRoute,
 	authMiddleware *middleware.AuthMiddleware,
 ) *Routes {
 	publicRoutes := []Route{healthcheckRoute}
-	designerRoutes := []Route{studentRoute, designerClass, competencyRoute, quizRoute, questionRoute}
+	designerRoutes := []Route{studentRoute, designerClass, competencyRoute, quizRoute, questionRoute, teacherRoute}
 	teacherRoutes := []Route{}
 	studentRoutes := []Route{studentQuizRoute}
 	authRoutes := []Route{teacherAuth, designerAuth, studentAuth}
