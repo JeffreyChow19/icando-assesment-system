@@ -11,6 +11,7 @@ type GetQuizFilter struct {
 	WithCreator   bool
 	WithUpdater   bool
 	WithQuestions bool
+	WithClasses   bool
 }
 
 type GetAllQuizzesFilter struct {

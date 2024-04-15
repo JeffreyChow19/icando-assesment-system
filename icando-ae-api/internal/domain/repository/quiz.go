@@ -34,6 +34,10 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 		query = query.Preload("Updater")
 	}
 
+	if filter.WithClasses {
+		query = query.Preload("Classes")
+	}
+
 	if filter.WithQuestions {
 		query = query.Preload("Questions.Competencies")
 	}
