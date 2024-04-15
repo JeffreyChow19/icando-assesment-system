@@ -1,23 +1,21 @@
 package worker
 
 import (
-	"context"
-	"fmt"
 	"github.com/hibiken/asynq"
 	"gorm.io/gorm"
+	"icando/internal/worker/handler"
+	"icando/internal/worker/task"
 	"icando/lib"
-	"icando/utils/logger"
 	"log"
 )
 
 type WorkerServer struct {
 	srv    *asynq.Server
 	router *asynq.ServeMux
-	//paymentHandler *handlers.MakePaymentHandler
-	db *gorm.DB
+	db     *gorm.DB
 }
 
-func NewServer(config *lib.Config, db *lib.Database) *WorkerServer {
+func NewServer(config *lib.Config, db *lib.Database, emailHandler *handler.EmailHandler) *WorkerServer {
 	var server WorkerServer
 	redisConnOpt := asynq.RedisClientOpt{Addr: config.RedisAddress}
 	server.srv = asynq.NewServer(
@@ -29,12 +27,11 @@ func NewServer(config *lib.Config, db *lib.Database) *WorkerServer {
 				"default":  3,
 				"low":      1,
 			},
-			ErrorHandler: asynq.ErrorHandlerFunc(server.HandleError),
 		},
 	)
 
 	server.router = asynq.NewServeMux()
-	//server.router.HandleFunc(tasks.TypeMakePaymentTask, paymentHandler.HandleMakePaymentTask())
+	server.router.HandleFunc(task.TypeSendQuizEmailTask, emailHandler.HandleSendQuizEmailTask())
 	server.db = db.DB
 	return &server
 }
@@ -42,32 +39,5 @@ func NewServer(config *lib.Config, db *lib.Database) *WorkerServer {
 func (s *WorkerServer) Run() {
 	if err := s.srv.Run(s.router); err != nil {
 		log.Fatalf("could not run server: %v", err)
-	}
-}
-
-func (s *WorkerServer) HandleError(ctx context.Context, task *asynq.Task, err error) {
-	retried, _ := asynq.GetRetryCount(ctx)
-	maxRetry, _ := asynq.GetMaxRetry(ctx)
-	logger.Log.Info(fmt.Sprintf("retries:%d, maxretry: %d", retried, maxRetry))
-	if retried >= maxRetry {
-		err = fmt.Errorf("retry exhausted for task %s: %w", task.Type(), err)
-		//if task.Type() == tasks.TypeMakePaymentTask {
-		//	// load manually because injection doesnt work
-		//	config, err := lib.NewConfig()
-		//	if err != nil {
-		//		logger.Log.Error(err.Error())
-		//	}
-		//	db, err := lib.NewDatabase(config)
-		//	if err != nil {
-		//		logger.Log.Error(err.Error())
-		//	}
-		//	ticketingClient := ticketing.NewTicketingClient(config)
-		//	paymentHandler := handlers.NewMakePaymentHandler(db, ticketingClient)
-		//	err = paymentHandler.HandleError(task)
-		//	if err != nil {
-		//		logger.Log.Error(err)
-		//	}
-		//}
-		logger.Log.Error(err)
 	}
 }
