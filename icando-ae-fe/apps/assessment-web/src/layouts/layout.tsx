@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
-import { Navigation, SideBar } from "../layouts/navigation.tsx";
+import { ReactNode } from 'react';
+// import { Navigation, SideBar } from "../layouts/navigation.tsx";
 import { Helmet } from "react-helmet-async";
-import { ProtectedRoute } from "../components/protected-route.tsx";
+// import { ProtectedRoute } from "../components/protected-route.tsx";
 
 type LayoutProps = {
   children: ReactNode;
