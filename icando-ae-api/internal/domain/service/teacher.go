@@ -13,6 +13,7 @@ import (
 )
 
 type TeacherService interface {
+	GetAllTeachers(filter dto.GetTeacherFilter) ([]dao.LearningDesignerDao, *httperror.HttpError)
 	FindTeacherByID(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
 	PutUserInfo(id uuid.UUID, dto dto.PutUserInfoDto) (*dao.LearningDesignerDao, *httperror.HttpError)
 }
@@ -31,6 +32,28 @@ func NewTeacherServiceImpl(
 		config:            config,
 	}
 
+}
+
+func (s *TeacherServiceImpl) GetAllTeachers(filter dto.GetTeacherFilter) ([]dao.LearningDesignerDao, *httperror.HttpError) {
+	teachers, err := s.teacherRepository.GetAllTeacher(filter)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrTeacherNotFound
+		}
+		return nil, httperror.InternalServerError
+	}
+
+	payload := make([]dao.LearningDesignerDao, 0)
+	for _, teacher := range teachers {
+		payload = append(payload, dao.LearningDesignerDao{
+			ID: teacher.ID,
+			FirstName:  teacher.FirstName,
+			LastName: teacher.LastName,
+			Email: teacher.Email,
+		})
+	}
+
+	return payload, nil
 }
 
 func (s *TeacherServiceImpl) FindTeacherByID(id uuid.UUID) (

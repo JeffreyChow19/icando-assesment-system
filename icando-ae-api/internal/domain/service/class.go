@@ -35,7 +35,7 @@ func (s *ClassServiceImpl) GetAllClass(filter dto.GetAllClassFilter) ([]dao.Clas
 	payload := make([]dao.ClassDao, 0)
 
 	for _, cls := range class {
-		payload = append(payload, cls.ToDao(dto.GetClassFilter{}))
+		payload = append(payload, cls.ToDao(dto.GetClassFilter{WithTeacherRelation: true}))
 	}
 
 	return payload, nil
