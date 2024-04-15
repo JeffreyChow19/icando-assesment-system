@@ -15,6 +15,7 @@ type Class struct {
 	Teachers      []Teacher `gorm:"many2many:class_teacher;"`
 	Institution   *Institution
 	Students      []Student
+	Quizzes       []Quiz
 }
 
 func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
@@ -48,6 +49,16 @@ func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
 		}
 
 		classDao.Students = students
+	}
+
+	if option.WithQuizRelation && s.Quizzes != nil && len(s.Quizzes) != 0 {
+		quizzes := make([]dao.QuizDao, 0)
+
+		for _, quiz := range s.Quizzes {
+			quizzes = append(quizzes, quiz.ToDao())
+		}
+
+		classDao.Quizzes = quizzes
 	}
 
 	return classDao

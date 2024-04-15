@@ -21,50 +21,53 @@ type AuthService interface {
 	ChangePassword(id uuid.UUID, role enum.Role, dto dto.ChangePasswordDto) *httperror.HttpError
 	ProfileStudent(id uuid.UUID) (*dao.StudentDao, *httperror.HttpError)
 	ProfileTeacher(id uuid.UUID) (*dao.TeacherDao, *httperror.HttpError)
+	GenerateQuizToken(dto dto.GenerateQuizTokenDto) (*dao.AuthDao, error)
 }
 
 type AuthServiceImpl struct {
-	studentRepository repository.StudentRepository
-	teacherRepository repository.TeacherRepository
-	config            *lib.Config
+	studentRepository     repository.StudentRepository
+	teacherRepository     repository.TeacherRepository
+	studentQuizRepository repository.StudentQuizRepository
+	config                *lib.Config
 }
 
 func NewAuthServiceImpl(
 	studentRepository repository.StudentRepository,
 	teacherRepository repository.TeacherRepository,
+	studentQuizRepository repository.StudentQuizRepository,
 	config *lib.Config,
 ) *AuthServiceImpl {
 	return &AuthServiceImpl{
-		studentRepository: studentRepository,
-		teacherRepository: teacherRepository,
-		config:            config,
+		studentRepository:     studentRepository,
+		teacherRepository:     teacherRepository,
+		studentQuizRepository: studentQuizRepository,
+		config:                config,
 	}
 }
 
+func (s *AuthServiceImpl) GenerateQuizToken(quizTokenDto dto.GenerateQuizTokenDto) (*dao.AuthDao, error) {
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: quizTokenDto.StudentQuizId})
+
+	if err != nil {
+		return nil, err
+	}
+
+	claim := dao.TokenClaim{
+		ID:  studentQuiz.ID,
+		Exp: quizTokenDto.ExpiredAt.Unix(),
+	}
+
+	authDao, err := s.buildAuthDao(claim)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return authDao, nil
+}
+
 func (s *AuthServiceImpl) Login(loginDto dto.LoginDto, role enum.Role) (*dao.AuthDao, *httperror.HttpError) {
-	if role == enum.ROLE_STUDENT {
-		// todo student token should have different expire date (1 week or manually configurable)
-		student, err := s.studentRepository.GetOne(dto.GetStudentFilter{Email: &loginDto.Email})
-
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, ErrStudentNotFound
-			}
-			return nil, httperror.InternalServerError
-		}
-
-		claim := dao.TokenClaim{
-			ID: student.ID,
-		}
-
-		authDao, err := s.buildAuthDao(claim)
-
-		if err != nil {
-			return nil, httperror.InternalServerError
-		}
-
-		return authDao, nil
-	} else if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
+	if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
 		teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{Email: &loginDto.Email})
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {

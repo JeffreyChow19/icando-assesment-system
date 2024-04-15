@@ -195,6 +195,10 @@ func (r *ClassRepository) GetClass(id uuid.UUID, filter dto.GetClassFilter) (*mo
 		query = query.Preload("Teachers")
 	}
 
+	if filter.WithQuizRelation {
+		query = query.Preload("Quizzes")
+	}
+
 	if err := query.Where("id = ?", id.String()).First(&class).Error; err != nil {
 		return nil, err
 	}

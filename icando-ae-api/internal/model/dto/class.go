@@ -10,9 +10,9 @@ type ClassDto struct {
 }
 
 type CreateUpdateClassPayload struct {
-	Name          string      `json:"name" binding:"required"`
-	Grade         string      `json:"grade" binding:"required,numeric"`
-	TeacherIDs    []uuid.UUID `json:"teacherIds" binding:"required"`
+	Name       string      `json:"name" binding:"required"`
+	Grade      string      `json:"grade" binding:"required,numeric"`
+	TeacherIDs []uuid.UUID `json:"teacherIds" binding:"required"`
 }
 
 type GetAllClassFilter struct {
@@ -26,6 +26,7 @@ type GetClassFilter struct {
 	WithTeacherRelation     bool
 	WithInstitutionRelation bool
 	WithStudentRelation     bool
+	WithQuizRelation        bool
 }
 
 type AssignStudentsRequest struct {

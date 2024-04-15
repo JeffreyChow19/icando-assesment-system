@@ -10,4 +10,5 @@ type ClassDao struct {
 	Teachers      []TeacherDao    `json:"teachers,omitempty"`
 	Institution   *InstitutionDao `json:"institution,omitempty"`
 	Students      []StudentDao    `json:"students,omitempty"`
+	Quizzes       []QuizDao       `json:"quizzes,omitempty"`
 }
