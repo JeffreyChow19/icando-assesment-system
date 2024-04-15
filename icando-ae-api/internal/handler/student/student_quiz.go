@@ -6,7 +6,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"icando/internal/domain/service"
+	"icando/internal/model/dao"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
@@ -27,6 +29,9 @@ func NewQuizHandlerImpl(studentQuizService service.StudentQuizService) *QuizHand
 }
 
 func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
+	claim := user.(*dao.TokenClaim)
+
 	studentQuizID := c.Param("studentQuizId")
 	questionID := c.Param("id")
 
@@ -58,7 +63,7 @@ func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
 		return
 	}
 
-	err := h.studentQuizService.UpdateStudentAnswer(studentQuizUUID, questionUUID, quiz)
+	err := h.studentQuizService.UpdateStudentAnswer(claim.ID, studentQuizUUID, questionUUID, quiz)
 
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})

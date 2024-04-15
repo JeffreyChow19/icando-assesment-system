@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
+	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dto"
@@ -11,7 +12,7 @@ import (
 )
 
 type StudentQuizService interface {
-	UpdateStudentAnswer(studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
+	UpdateStudentAnswer(studentID uuid.UUID, studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 }
 
 type StudentQuizServiceImpl struct {
@@ -26,8 +27,16 @@ func NewStudentQuizServiceImpl(studentQuizRepository repository.StudentQuizRepos
 	}
 }
 
+var ErrInvalidUser = &httperror.HttpError{
+	StatusCode: http.StatusBadRequest,
+	Err:        errors.New("Invalid user"),
+}
+var ErrInvalidQuestion = &httperror.HttpError{
+	StatusCode: http.StatusBadRequest,
+	Err:        errors.New("Invalid question"),
+}
 var ErrStudentQuizNotFound = &httperror.HttpError{
-	StatusCode: http.StatusInternalServerError,
+	StatusCode: http.StatusNotFound,
 	Err:        errors.New("Student Quiz Not Found"),
 }
 var ErrUpdateStudentAnswer = &httperror.HttpError{
@@ -35,19 +44,33 @@ var ErrUpdateStudentAnswer = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when updating student answer"),
 }
 
-func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
-	_, errGetStudentQuiz := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
+func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentID uuid.UUID, studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
+	studentQuiz, errGetStudentQuiz := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
 		ID: studentQuizID,
 	})
 	if errGetStudentQuiz != nil {
-		return ErrStudentQuizNotFound
+		if errors.Is(errGetStudentQuiz, gorm.ErrRecordNotFound) {
+			return ErrStudentQuizNotFound
+		}
+		return ErrUpdateStudentAnswer
 	}
 
-	_, errGetQuestion := s.questionRepository.GetQuestion(dto.GetQuestionFilter{
+	if studentQuiz.StudentID != studentID {
+		return ErrInvalidUser
+	}
+
+	question, errGetQuestion := s.questionRepository.GetQuestion(dto.GetQuestionFilter{
 		ID: questionID,
 	})
 	if errGetQuestion != nil {
-		return ErrQuestionNotFound
+		if errors.Is(errGetQuestion, gorm.ErrRecordNotFound) {
+			return ErrQuestionNotFound
+		}
+		return ErrUpdateStudentAnswer
+	}
+
+	if question.QuizID != studentQuiz.QuizID {
+		return ErrInvalidQuestion
 	}
 
 	studentAnswer := model.StudentAnswer{

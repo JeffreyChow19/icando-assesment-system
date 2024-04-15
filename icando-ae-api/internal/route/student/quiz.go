@@ -3,10 +3,12 @@ package student
 import (
 	"github.com/gin-gonic/gin"
 	"icando/internal/handler/student"
+	"icando/internal/middleware"
 )
 
 type QuizRoute struct {
-	quizHandler student.QuizHandler
+	quizHandler    student.QuizHandler
+	authMiddleware middleware.AuthMiddleware
 }
 
 func (r QuizRoute) Setup(group *gin.RouterGroup) {
@@ -16,8 +18,10 @@ func (r QuizRoute) Setup(group *gin.RouterGroup) {
 
 func NewQuizRoute(
 	handler student.QuizHandler,
+	authMiddleware *middleware.AuthMiddleware,
 ) *QuizRoute {
 	return &QuizRoute{
-		quizHandler: handler,
+		quizHandler:    handler,
+		authMiddleware: *authMiddleware,
 	}
 }
