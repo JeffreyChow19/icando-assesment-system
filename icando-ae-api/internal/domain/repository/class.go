@@ -2,13 +2,14 @@ package repository
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"icando/utils"
 	"strings"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ClassRepository struct {
@@ -170,6 +171,8 @@ func (r *ClassRepository) GetAllClass(filter dto.GetAllClassFilter) ([]model.Cla
 	if filter.InstitutionID != nil {
 		query.Where("institution_id = ?", filter.InstitutionID.String())
 	}
+
+	query = query.Preload("Teachers")
 
 	if err := query.Find(&result).Error; err != nil {
 		return nil, err
