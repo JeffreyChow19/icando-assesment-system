@@ -13,6 +13,7 @@ import (
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
+	"time"
 )
 
 type QuizService interface {
@@ -25,13 +26,15 @@ type QuizService interface {
 
 type QuizServiceImpl struct {
 	quizRepository repository.QuizRepository
+	authService    AuthService
 	db             *gorm.DB
 }
 
-func NewQuizServiceImpl(quizRepository repository.QuizRepository, db *lib.Database) *QuizServiceImpl {
+func NewQuizServiceImpl(quizRepository repository.QuizRepository, db *lib.Database, authService AuthService) *QuizServiceImpl {
 	return &QuizServiceImpl{
 		quizRepository: quizRepository,
 		db:             db.DB,
+		authService:    authService,
 	}
 }
 
@@ -174,6 +177,23 @@ func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao,
 	}
 
 	// todo for each student quiz, enqueue email request
+	for _, studentQuiz := range studentQuizzes {
+		// token here
+		_, err := s.authService.GenerateQuizToken(dto.GenerateQuizTokenDto{
+			StudentQuizId: studentQuiz.ID,
+			ExpiredAt:     time.Now().Add(time.Hour * 12), // placeholder. todo change when expiredAt column already implemented
+		})
+
+		// todo access variable quiz and students to get quiz and students information
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+	}
 
 	if err := tx.Commit().Error; err != nil {
 		return nil, &httperror.HttpError{
