@@ -9,3 +9,7 @@ type GetStudentQuizFilter struct {
 	WithAnswers       bool
 	WithStudent       bool
 }
+
+type UpdateStudentAnswerDto struct {
+	AnswerID int `json:"answer_id"`
+}
