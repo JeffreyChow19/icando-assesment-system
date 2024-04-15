@@ -21,7 +21,7 @@ type Quiz struct {
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
 	Deadline     *time.Time `gorm:"type:timestamptz"`
 	Questions    []Question
-	Classes      []Class
+	Classes      []Class		`gorm:"many2many:quiz_classes;"`
 }
 
 type QuizClass struct {
