@@ -7,7 +7,7 @@ import (
 	"icando/internal/domain/repository"
 	"icando/internal/domain/service"
 	"icando/internal/worker"
-	"icando/internal/worker/handlers"
+	"icando/internal/worker/handler"
 	"icando/lib"
 	"icando/utils/logger"
 	"os"
@@ -25,7 +25,7 @@ func main() {
 		lib.Module,
 		service.Module,
 		repository.Module,
-		handlers.Module,
+		handler.Module,
 		worker.Module,
 		fx.Invoke(startServer),
 		fx.NopLogger,
