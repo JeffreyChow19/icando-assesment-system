@@ -1,11 +1,12 @@
 package model
 
 import (
-	"github.com/google/uuid"
 	"icando/internal/model/base"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Quiz struct {
@@ -19,9 +20,11 @@ type Quiz struct {
 	UpdatedBy    *uuid.UUID `gorm:"type:uuid"`
 	Updater      *Teacher   `gorm:"foreignKey:UpdatedBy"`
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
-	Deadline     *time.Time `gorm:"type:timestamptz"`
+	Duration     *int
+	StartAt      *time.Time `gorm:"type:timestamptz"`
+	EndAt        *time.Time `gorm:"type:timestamptz"`
 	Questions    []Question
-	Classes      []Class
+	Classes      []Class `gorm:"many2many:quiz_classes;"`
 }
 
 type QuizClass struct {
@@ -29,14 +32,16 @@ type QuizClass struct {
 	ClassID uuid.UUID
 }
 
-func (q Quiz) ToDao() dao.QuizDao {
+func (q Quiz) ToDao(withAnswer bool) dao.QuizDao {
 	daoQuiz := dao.QuizDao{
 		ID:           q.ID,
 		Name:         q.Name,
 		Subject:      q.Subject,
 		PassingGrade: q.PassingGrade,
 		PublishedAt:  q.PublishedAt,
-		Deadline:     q.Deadline,
+		Duration:     q.Duration,
+		StartAt:      q.StartAt,
+		EndAt:        q.EndAt,
 	}
 
 	if q.Creator != nil {
@@ -52,7 +57,7 @@ func (q Quiz) ToDao() dao.QuizDao {
 	if q.Questions != nil {
 		questions := make([]dao.QuestionDao, 0)
 		for _, question := range q.Questions {
-			questionDao, err := question.ToDao()
+			questionDao, err := question.ToDao(withAnswer)
 			if err != nil {
 				continue
 			}

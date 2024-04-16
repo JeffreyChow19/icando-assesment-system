@@ -10,11 +10,13 @@ import (
 )
 
 type Config struct {
-	ServiceHost  string `envconfig:"SERVICE_HOST" required:"true"`
-	ServiceState int    `envconfig:"SERVICE_STATE" required:"true" default:"0"`
-	ServiceName  string `envconfig:"SERVICE_NAME" required:"true"`
-	ClientHost   string `envconfig:"CLIENT_HOST" required:"true"`
-	Cors         string `envconfig:"CORS" required:"true" default:"https://localhost:5173"`
+	ServiceHost       string `envconfig:"SERVICE_HOST" required:"true"`
+	ServiceState      int    `envconfig:"SERVICE_STATE" required:"true" default:"0"`
+	ServiceName       string `envconfig:"SERVICE_NAME" required:"true"`
+	ClientHost        string `envconfig:"CLIENT_HOST" required:"true"`
+	Cors              string `envconfig:"CORS" required:"true" default:"https://localhost:5173"`
+	AssessmentWebHost string `envconfig:"ASSESMENT_WEB_HOST" required:"true" default:"http://localhost:5002"`
+
 	// environment is either 'dev' or 'prod' or 'test'
 	Environment string `envconfig:"ENVIRONMENT" required:"true" default:"dev"`
 
@@ -29,6 +31,11 @@ type Config struct {
 
 	JwtSecret    string `envconfig:"JWT_SECRET" required:"true"`
 	RedisAddress string `envconfig:"REDIS_ADDRESS" required:"true"`
+	SmtpUser     string `envconfig:"SMTP_USER" required:"true"`
+	SmtpEmail    string `envconfig:"SMTP_EMAIL" required:"true"`
+	SmtpPassword string `envconfig:"SMTP_PASSWORD" required:"true"`
+	SmtpHost     string `envconfig:"SMTP_HOST" required:"true"`
+	SmtpPort     int    `envconfig:"SMTP_PORT" required:"true"`
 }
 
 func NewConfig() (*Config, error) {
