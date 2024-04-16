@@ -63,11 +63,11 @@ export const QuizPublishForm = ({ id }: { id: string }) => {
           mutation.mutate({
             quizId: id,
             quizDuration: values.quizDuration,
-            startDate:
+            startAt:
               values.startAt instanceof Date
                 ? values.startAt.toISOString()
                 : values.startAt,
-            endDate:
+            endAt:
               values.endAt instanceof Date
                 ? values.endAt.toISOString()
                 : values.endAt,

@@ -1,8 +1,9 @@
 package dto
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type GetQuizFilter struct {
@@ -31,7 +32,7 @@ type UpdateQuizDto struct {
 type PublishQuizDto struct {
 	QuizID          uuid.UUID   `json:"quizId" binding:"required"`
 	QuizDuration    int         `json:"quizDuration" binding:"required" validate:"gt=0"`
-	StartDate       time.Time   `json:"startDate" binding:"required"`
-	EndDate         time.Time   `json:"endDate" binding:"required"`
+	StartAt         time.Time   `json:"startAt" binding:"required"`
+	EndAt           time.Time   `json:"endAt" binding:"required"`
 	AssignedClasses []uuid.UUID `json:"assignedClasses" binding:"required" validate:"min=1"`
 }

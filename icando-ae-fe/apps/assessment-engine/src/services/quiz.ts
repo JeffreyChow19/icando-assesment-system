@@ -61,8 +61,8 @@ export interface UpdateQuizPayload {
 export interface PublishQuizPayload {
   quizId: string;
   quizDuration: number;
-  startDate: string;
-  endDate: string;
+  startAt: string;
+  endAt: string;
   assignedClasses: string[];
 }
 
