@@ -11,6 +11,7 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
+	"icando/internal/worker"
 	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
@@ -31,6 +32,7 @@ type QuizServiceImpl struct {
 	authService       AuthService
 	db                *gorm.DB
 	config            *lib.Config
+	workerClient      *worker.WorkerClient
 }
 
 func NewQuizServiceImpl(
@@ -38,6 +40,7 @@ func NewQuizServiceImpl(
 	teacherRepository repository.TeacherRepository,
 	db *lib.Database,
 	config *lib.Config,
+	workerClient *worker.WorkerClient,
 	authService AuthService) *QuizServiceImpl {
 	return &QuizServiceImpl{
 		quizRepository:    quizRepository,
@@ -45,6 +48,7 @@ func NewQuizServiceImpl(
 		authService:       authService,
 		config:            config,
 		teacherRepository: teacherRepository,
+		workerClient:      workerClient,
 	}
 }
 
@@ -224,7 +228,17 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 			StudentEmail: student.Email,
 		}
 
-		_, err = task.NewSendQuizEmailTask(payload)
+		emailTask, err := task.NewSendQuizEmailTask(payload)
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+
+		_, err = s.workerClient.Enqueue(emailTask)
 
 		if err != nil {
 			tx.Rollback()
