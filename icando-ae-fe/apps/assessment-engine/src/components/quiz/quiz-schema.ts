@@ -32,3 +32,11 @@ export const quizFormSchema = z.object({
     .max(100),
   questions: questionSchema.array(),
 });
+
+export const quizPublishFormSchema = z.object({
+  id: z.string(),
+  quizDuration: z.number({required_error: "Quiz duration should not be empty"}).int(),
+  startDate: z.string({required_error: "Quiz start date should not be empty"}).datetime(),
+  endDate: z.string({required_error: "Quiz end date should not be empty"}).datetime(),
+  assignedClasses: z.array(z.string()).min(1, "Select atleast one class"),
+});

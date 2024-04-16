@@ -44,7 +44,10 @@ export interface CreateQuizResponseData {
   publishedAt: string | null;
   startAt: string | null;
   endAt: string | null;
+  duration: number | null;
 }
+
+export interface PublishQuizResponseData extends CreateQuizResponseData {}
 
 export interface UpdateQuizPayload {
   id: string;
@@ -53,6 +56,14 @@ export interface UpdateQuizPayload {
   passingGrade: number;
   startAt?: string | null;
   endAt?: string | null;
+}
+
+export interface PublishQuizPayload {
+  quizId: string;
+  quizDuration: number;
+  startDate: string;
+  endDate: string;
+  assignedClasses: string[];
 }
 
 export interface GetAllQuizFilter {
@@ -97,6 +108,10 @@ export const createQuiz = async () => {
 
 export const updateQuiz = async (payload: UpdateQuizPayload) => {
   await api.patch(path, payload);
+};
+
+export const publishQuiz = async (payload: PublishQuizPayload) => {
+  return (await api.post(path, payload)).data.data as PublishQuizResponseData;
 };
 
 export const getQuiz = async (id: string) => {

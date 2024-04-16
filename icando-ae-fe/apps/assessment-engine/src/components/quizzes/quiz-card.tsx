@@ -51,7 +51,9 @@ export function QuizCard({ quiz }: { quiz: QuizDetail }) {
           <Button variant="outline">
             <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
           </Button>
-          <Button>Publish</Button>
+          <Button>
+            <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
+          </Button>
         </div>
       </CardFooter>
     </Card>
