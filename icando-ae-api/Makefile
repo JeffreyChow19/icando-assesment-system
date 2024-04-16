@@ -10,6 +10,9 @@ run-reset-local:
 	reset-local
 	run-local
 
+run-worker:
+	go run cmd/worker/worker.go
+
 build:
 	go build -o ./main ./cmd/server/server.go
 
