@@ -7,56 +7,77 @@ import (
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"net/http"
+	"time"
 )
 
 type StudentQuizService interface {
-	UpdateStudentAnswer(studentID uuid.UUID, studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
+	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 }
 
 type StudentQuizServiceImpl struct {
 	studentQuizRepository repository.StudentQuizRepository
 	questionRepository    repository.QuestionRepository
+	quizRepository        repository.QuizRepository
 }
 
-func NewStudentQuizServiceImpl(studentQuizRepository repository.StudentQuizRepository, questionRepository repository.QuestionRepository) *StudentQuizServiceImpl {
+func NewStudentQuizServiceImpl(studentQuizRepository repository.StudentQuizRepository, questionRepository repository.QuestionRepository, quizRepository repository.QuizRepository) *StudentQuizServiceImpl {
 	return &StudentQuizServiceImpl{
 		studentQuizRepository: studentQuizRepository,
 		questionRepository:    questionRepository,
+		quizRepository:        quizRepository,
 	}
 }
 
-var ErrInvalidUser = &httperror.HttpError{
-	StatusCode: http.StatusBadRequest,
-	Err:        errors.New("Invalid user"),
-}
 var ErrInvalidQuestion = &httperror.HttpError{
 	StatusCode: http.StatusBadRequest,
 	Err:        errors.New("Invalid question"),
 }
-var ErrStudentQuizNotFound = &httperror.HttpError{
-	StatusCode: http.StatusNotFound,
-	Err:        errors.New("Student Quiz Not Found"),
+var ErrStudentQuizNotStarted = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Student Quiz Not Started"),
+}
+var ErrStudentQuizSubmitted = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Student Quiz Submitted"),
+}
+var ErrInvalidQuizAttemptTime = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Invalid Quiz Attempt Time"),
 }
 var ErrUpdateStudentAnswer = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when updating student answer"),
 }
 
-func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentID uuid.UUID, studentQuizID uuid.UUID, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
-	studentQuiz, errGetStudentQuiz := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
-		ID: studentQuizID,
+func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
+	if studentQuiz.Status == enum.NOT_STARTED {
+		return ErrStudentQuizNotStarted
+	}
+
+	if studentQuiz.Status == enum.SUBMITTED {
+		return ErrStudentQuizSubmitted
+	}
+
+	quiz, errQuiz := s.quizRepository.GetQuiz(dto.GetQuizFilter{
+		ID: studentQuiz.QuizID,
 	})
-	if errGetStudentQuiz != nil {
-		if errors.Is(errGetStudentQuiz, gorm.ErrRecordNotFound) {
-			return ErrStudentQuizNotFound
+
+	if errQuiz != nil {
+		if errors.Is(errQuiz, gorm.ErrRecordNotFound) {
+			return ErrQuizNotFound
 		}
 		return ErrUpdateStudentAnswer
 	}
 
-	if studentQuiz.StudentID != studentID {
-		return ErrInvalidUser
+	currentTime := time.Now()
+	if quiz.EndAt != nil && currentTime.After(*quiz.EndAt) {
+		return ErrInvalidQuizAttemptTime
+	}
+	if quiz.StartAt != nil && currentTime.Before(*quiz.StartAt) {
+		return ErrInvalidQuizAttemptTime
 	}
 
 	question, errGetQuestion := s.questionRepository.GetQuestion(dto.GetQuestionFilter{
@@ -74,7 +95,7 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentID uuid.UUID, studen
 	}
 
 	studentAnswer := model.StudentAnswer{
-		StudentQuizID: studentQuizID,
+		StudentQuizID: studentQuiz.ID,
 		QuestionID:    questionID,
 		AnswerID:      studentAnswerDto.AnswerID,
 	}
