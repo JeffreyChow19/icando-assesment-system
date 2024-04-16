@@ -67,7 +67,7 @@ func (s *QuizServiceImpl) CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.Htt
 		return nil, ErrCreateQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
 }
@@ -96,7 +96,7 @@ func (s *QuizServiceImpl) GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpEr
 		return nil, ErrGetQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 	return &quizDao, nil
 }
 
@@ -126,7 +126,7 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 		return nil, ErrUpdateQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
 }
@@ -256,7 +256,7 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 		}
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
 }

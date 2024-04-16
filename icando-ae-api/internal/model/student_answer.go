@@ -44,7 +44,7 @@ func (a *StudentAnswer) SetCompetencies(competencies []StudentAnswerCompetency) 
 	return nil
 }
 
-func (a *StudentAnswer) ToDao() (*dao.StudentAnswerDao, error) {
+func (a *StudentAnswer) ToDao(withQuestionAnswer bool) (*dao.StudentAnswerDao, error) {
 	competencies, err := a.GetCompetencies()
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (a *StudentAnswer) ToDao() (*dao.StudentAnswerDao, error) {
 	}
 
 	if a.Question != nil {
-		questionDao, err := a.Question.ToDao()
+		questionDao, err := a.Question.ToDao(withQuestionAnswer)
 
 		if err == nil {
 			daoAnswer.Question = questionDao
