@@ -15,7 +15,7 @@ type Class struct {
 	Teachers      []Teacher `gorm:"many2many:class_teacher;"`
 	Institution   *Institution
 	Students      []Student
-	Quizzes       []Quiz
+	Quizzes       []Quiz `gorm:"many2many:quiz_classes;"`
 }
 
 func (s Class) ToDao(option dto.GetClassFilter) dao.ClassDao {
