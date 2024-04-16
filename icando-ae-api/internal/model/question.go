@@ -49,7 +49,7 @@ func (qc QuestionChoice) ToDao() dao.QuestionChoiceDao {
 	}
 }
 
-func (q Question) ToDao() (*dao.QuestionDao, error) {
+func (q Question) ToDao(withAnswer bool) (*dao.QuestionDao, error) {
 	choices, err := q.GetQuestionChoices()
 	if err != nil {
 		return nil, err
@@ -77,13 +77,25 @@ func (q Question) ToDao() (*dao.QuestionDao, error) {
 		competenciesDao = append(competenciesDao, competencyDao)
 	}
 
-	daoQuiz := dao.QuestionDao{
-		ID:           q.ID,
-		Text:         q.Text,
-		Choices:      choicesDao,
-		AnswerID:     q.AnswerID,
-		Competencies: competenciesDao,
-		Order:        q.Order,
+	var daoQuiz dao.QuestionDao
+
+	if withAnswer {
+		daoQuiz = dao.QuestionDao{
+			ID:           q.ID,
+			Text:         q.Text,
+			Choices:      choicesDao,
+			AnswerID:     &q.AnswerID,
+			Competencies: competenciesDao,
+			Order:        q.Order,
+		}
+	} else {
+		daoQuiz = dao.QuestionDao{
+			ID:           q.ID,
+			Text:         q.Text,
+			Choices:      choicesDao,
+			Competencies: competenciesDao,
+			Order:        q.Order,
+		}
 	}
 
 	return &daoQuiz, nil

@@ -32,7 +32,7 @@ type QuizClass struct {
 	ClassID uuid.UUID
 }
 
-func (q Quiz) ToDao() dao.QuizDao {
+func (q Quiz) ToDao(withAnswer bool) dao.QuizDao {
 	daoQuiz := dao.QuizDao{
 		ID:           q.ID,
 		Name:         q.Name,
@@ -57,7 +57,7 @@ func (q Quiz) ToDao() dao.QuizDao {
 	if q.Questions != nil {
 		questions := make([]dao.QuestionDao, 0)
 		for _, question := range q.Questions {
-			questionDao, err := question.ToDao()
+			questionDao, err := question.ToDao(withAnswer)
 			if err != nil {
 				continue
 			}

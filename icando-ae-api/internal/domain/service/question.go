@@ -73,7 +73,7 @@ func (s *QuestionServiceImpl) CreateQuestion(quizID uuid.UUID, questionDto dto.Q
 		return nil, ErrCreateQuestion
 	}
 
-	questionDao, errDao := question.ToDao()
+	questionDao, errDao := question.ToDao(true)
 	if errDao != nil {
 		return nil, ErrCreateQuestion
 	}
@@ -171,7 +171,7 @@ func (s *QuestionServiceImpl) UpdateQuestion(
 
 	question.Competencies = updatedCompetencies
 
-	questionDao, errDao := question.ToDao()
+	questionDao, errDao := question.ToDao(true)
 	if errDao != nil {
 		return nil, ErrUpdateQuestion
 	}
