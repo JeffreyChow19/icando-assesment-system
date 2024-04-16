@@ -9,7 +9,7 @@ export type Options = {
 
 export type MultiselectProps = {
   options: Options[];
-  defaultValue: Options[];
+  defaultValue?: Options[];
   ref?: ForwardedRef<SelectInstance>;
   // eslint-disable-next-line no-unused-vars
   onChange: (selectedItem: Options[]) => void;
