@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/hibiken/asynq"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
 	"gorm.io/gorm"
@@ -247,6 +248,28 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 		}
 
 		_, err = s.workerClient.Enqueue(emailTask)
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+
+		calculateTask, err := task.NewCalcualteStudentQuizTask(task.CalculateStudentQuizPayload{
+			StudentQuizID: studentQuiz.ID,
+		})
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+
+		_, err = s.workerClient.Enqueue(calculateTask, asynq.ProcessAt(*quiz.EndAt))
 
 		if err != nil {
 			tx.Rollback()
