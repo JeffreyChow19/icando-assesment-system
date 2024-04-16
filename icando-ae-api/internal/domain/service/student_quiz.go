@@ -17,6 +17,7 @@ import (
 
 type StudentQuizService interface {
 	StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
+	SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
 }
@@ -67,6 +68,37 @@ func (s *StudentQuizServiceImpl) StartQuiz(studentQuiz *model.StudentQuiz) (*dao
 	resp, errResp := studentQuiz.ToDao(false)
 	if errResp != nil {
 		return nil, ErrStartQuiz
+	}
+
+	return resp, nil
+}
+
+var ErrSubmitQuiz = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Error to submit quiz"),
+}
+
+func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	if studentQuiz.Status == enum.NOT_STARTED {
+		return nil, ErrStudentQuizNotStarted
+	}
+
+	if studentQuiz.Status == enum.SUBMITTED {
+		return nil, ErrStudentQuizSubmitted
+	}
+
+	currentTime := time.Now()
+	studentQuiz.CompletedAt = &currentTime
+	studentQuiz.Status = enum.SUBMITTED
+
+	err := s.studentQuizRepository.UpdateStudentQuiz(*studentQuiz)
+	if err != nil {
+		return nil, ErrSubmitQuiz
+	}
+
+	resp, errResp := studentQuiz.ToDao(false)
+	if errResp != nil {
+		return nil, ErrSubmitQuiz
 	}
 
 	return resp, nil
