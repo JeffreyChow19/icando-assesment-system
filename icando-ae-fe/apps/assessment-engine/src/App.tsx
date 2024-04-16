@@ -13,7 +13,7 @@ import { LoginPage } from "./pages/login.tsx";
 import { Classes } from "./pages/classes";
 import { ClassNew } from "./pages/classes/class-new.tsx";
 import { ClassEdit } from "./pages/classes/class-edit.tsx";
-import { ClassParticipants } from "./pages/classes/class-participants.tsx";
+import { ClassDetailPage } from "./pages/classes/class-detail.tsx";
 import { UpdateQuizPage } from "./pages/quiz/update.tsx";
 import { StudentsEdit } from "./pages/students/students-edit.tsx";
 import { StudentsNew } from "./pages/students/students-new.tsx";
@@ -64,8 +64,8 @@ function App() {
       element: <ClassEdit />,
     },
     {
-      path: "/classes/participants/:id",
-      element: <ClassParticipants />,
+      path: "/classes/:id",
+      element: <ClassDetailPage />,
     },
     {
       path: "/quiz",

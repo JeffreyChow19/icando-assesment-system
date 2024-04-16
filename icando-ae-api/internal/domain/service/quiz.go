@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/rs/zerolog/log"
@@ -10,6 +11,8 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
+	"icando/internal/worker/client"
+	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -20,18 +23,32 @@ type QuizService interface {
 	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
 	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
-	PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError)
+	PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError)
 }
 
 type QuizServiceImpl struct {
-	quizRepository repository.QuizRepository
-	db             *gorm.DB
+	quizRepository    repository.QuizRepository
+	teacherRepository repository.TeacherRepository
+	authService       AuthService
+	db                *gorm.DB
+	config            *lib.Config
+	workerClient      *client.WorkerClient
 }
 
-func NewQuizServiceImpl(quizRepository repository.QuizRepository, db *lib.Database) *QuizServiceImpl {
+func NewQuizServiceImpl(
+	quizRepository repository.QuizRepository,
+	teacherRepository repository.TeacherRepository,
+	db *lib.Database,
+	config *lib.Config,
+	workerClient *client.WorkerClient,
+	authService AuthService) *QuizServiceImpl {
 	return &QuizServiceImpl{
-		quizRepository: quizRepository,
-		db:             db.DB,
+		quizRepository:    quizRepository,
+		db:                db.DB,
+		authService:       authService,
+		config:            config,
+		teacherRepository: teacherRepository,
+		workerClient:      workerClient,
 	}
 }
 
@@ -50,7 +67,7 @@ func (s *QuizServiceImpl) CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.Htt
 		return nil, ErrCreateQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
 }
@@ -79,7 +96,7 @@ func (s *QuizServiceImpl) GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpEr
 		return nil, ErrGetQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 	return &quizDao, nil
 }
 
@@ -103,16 +120,13 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	if quizDto.PassingGrade != 0 {
 		quiz.PassingGrade = quizDto.PassingGrade
 	}
-	if quizDto.Deadline != nil {
-		quiz.Deadline = quizDto.Deadline
-	}
 
 	err = s.quizRepository.UpdateQuiz(*quiz)
 	if err != nil {
 		return nil, ErrUpdateQuiz
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
 }
@@ -127,7 +141,18 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 	return quizzes, meta, nil
 }
 
-func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
+func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
+	teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{
+		ID: &teacherID,
+	})
+
+	if err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
 	tx := s.db.Begin()
 
 	quiz, err := s.quizRepository.CloneQuiz(tx, quizDto)
@@ -173,7 +198,56 @@ func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao,
 		}
 	}
 
-	// todo for each student quiz, enqueue email request
+	for i, studentQuiz := range studentQuizzes {
+		// token here
+		token, err := s.authService.GenerateQuizToken(dto.GenerateQuizTokenDto{
+			StudentQuizId: studentQuiz.ID,
+			ExpiredAt:     *quiz.EndAt,
+		})
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+
+		student := students[i]
+
+		payload := task.SendQuizEmailPayload{
+			QuizName:     *quiz.Name,
+			QuizSubjects: quiz.Subject,
+			QuizDuration: *quiz.Duration,
+			QuizEndAt:    *quiz.EndAt,
+			QuizStartAt:  *quiz.StartAt,
+			QuizUrl:      s.BuildUrl(token.Token),
+			TeacherName:  fmt.Sprintf("%s %s", teacher.FirstName, teacher.LastName),
+			TeacherEmail: teacher.Email,
+			StudentName:  fmt.Sprintf("%s %s", student.FirstName, student.LastName),
+			StudentEmail: student.Email,
+		}
+
+		emailTask, err := task.NewSendQuizEmailTask(payload)
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+
+		_, err = s.workerClient.Enqueue(emailTask)
+
+		if err != nil {
+			tx.Rollback()
+			return nil, &httperror.HttpError{
+				StatusCode: http.StatusInternalServerError,
+				Err:        err,
+			}
+		}
+	}
 
 	if err := tx.Commit().Error; err != nil {
 		return nil, &httperror.HttpError{
@@ -182,7 +256,11 @@ func (s *QuizServiceImpl) PublishQuiz(quizDto dto.PublishQuizDto) (*dao.QuizDao,
 		}
 	}
 
-	quizDao := quiz.ToDao()
+	quizDao := quiz.ToDao(true)
 
 	return &quizDao, nil
+}
+
+func (s *QuizServiceImpl) BuildUrl(token string) string {
+	return fmt.Sprintf("%s/quiz?token=%s", s.config.AssessmentWebHost, token)
 }

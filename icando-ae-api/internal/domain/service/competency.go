@@ -34,7 +34,9 @@ var ErrGetAllCompetencies = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when getting all competencies"),
 }
 
-func (s *CompetencyServiceImpl) GetAllCompetencies(filter dto.GetAllCompetenciesFilter) ([]dao.CompetencyDao, *dao.MetaDao, *httperror.HttpError) {
+func (s *CompetencyServiceImpl) GetAllCompetencies(filter dto.GetAllCompetenciesFilter) (
+	[]dao.CompetencyDao, *dao.MetaDao, *httperror.HttpError,
+) {
 	competencies, meta, err := s.competencyRepository.GetAllCompetencies(filter)
 	if err != nil {
 		return nil, nil, ErrGetAllCompetencies
@@ -58,10 +60,14 @@ var ErrCreateCompetency = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when creating competency"),
 }
 
-func (s *CompetencyServiceImpl) CreateCompetency(competencyDto dto.CreateCompetencyDto) (*dao.CompetencyDao, *httperror.HttpError) {
-	existing, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-		Numbering: &competencyDto.Numbering,
-	})
+func (s *CompetencyServiceImpl) CreateCompetency(competencyDto dto.CreateCompetencyDto) (
+	*dao.CompetencyDao, *httperror.HttpError,
+) {
+	existing, err := s.competencyRepository.GetOneCompetency(
+		dto.GetOneCompetencyFilter{
+			Numbering: &competencyDto.Numbering,
+		},
+	)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, ErrCreateCompetency
 	}
@@ -95,11 +101,15 @@ var ErrUpdateCompetency = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when updating competency"),
 }
 
-func (s *CompetencyServiceImpl) UpdateCompetency(competencyDto dto.UpdateCompetencyDto) (*dao.CompetencyDao, *httperror.HttpError) {
+func (s *CompetencyServiceImpl) UpdateCompetency(competencyDto dto.UpdateCompetencyDto) (
+	*dao.CompetencyDao, *httperror.HttpError,
+) {
 	if competencyDto.Numbering != nil {
-		existing, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-			Numbering: competencyDto.Numbering,
-		})
+		existing, err := s.competencyRepository.GetOneCompetency(
+			dto.GetOneCompetencyFilter{
+				Numbering: competencyDto.Numbering,
+			},
+		)
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrUpdateCompetency
 		}
@@ -108,9 +118,11 @@ func (s *CompetencyServiceImpl) UpdateCompetency(competencyDto dto.UpdateCompete
 		}
 	}
 
-	competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-		Id: competencyDto.ID,
-	})
+	competency, err := s.competencyRepository.GetOneCompetency(
+		dto.GetOneCompetencyFilter{
+			Id: competencyDto.ID,
+		},
+	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrCompetencyNotFound
@@ -144,9 +156,11 @@ var ErrDeleteCompetency = &httperror.HttpError{
 }
 
 func (s *CompetencyServiceImpl) DeleteCompetency(competencyId uuid.UUID) (*dao.CompetencyDao, *httperror.HttpError) {
-	competency, err := s.competencyRepository.GetOneCompetency(dto.GetOneCompetencyFilter{
-		Id: competencyId,
-	})
+	competency, err := s.competencyRepository.GetOneCompetency(
+		dto.GetOneCompetencyFilter{
+			Id: competencyId,
+		},
+	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrCompetencyNotFound

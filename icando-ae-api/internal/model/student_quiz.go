@@ -21,7 +21,7 @@ type StudentQuiz struct {
 	StudentAnswers []StudentAnswer
 }
 
-func (sq *StudentQuiz) ToDao() (*dao.StudentQuizDao, error) {
+func (sq *StudentQuiz) ToDao(withQuestionAnswer bool) (*dao.StudentQuizDao, error) {
 	studentQuizDao := dao.StudentQuizDao{
 		ID:           sq.ID,
 		CreatedAt:    sq.CreatedAt,
@@ -35,7 +35,7 @@ func (sq *StudentQuiz) ToDao() (*dao.StudentQuizDao, error) {
 	}
 
 	if sq.Quiz != nil {
-		quizDao := sq.Quiz.ToDao()
+		quizDao := sq.Quiz.ToDao(withQuestionAnswer)
 
 		studentQuizDao.Quiz = &quizDao
 	}
@@ -44,7 +44,7 @@ func (sq *StudentQuiz) ToDao() (*dao.StudentQuizDao, error) {
 		answersDao := make([]dao.StudentAnswerDao, 0)
 
 		for _, answer := range sq.StudentAnswers {
-			answerDao, err := answer.ToDao()
+			answerDao, err := answer.ToDao(withQuestionAnswer)
 
 			if err != nil {
 				return nil, err

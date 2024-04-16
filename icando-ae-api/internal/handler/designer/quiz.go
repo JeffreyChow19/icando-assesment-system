@@ -82,7 +82,10 @@ func (h *QuizHandlerImpl) Publish(c *gin.Context) {
 		return
 	}
 
-	quiz, errr := h.quizService.PublishQuiz(publishQuizDto)
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
+	claim := user.(*dao.TokenClaim)
+
+	quiz, errr := h.quizService.PublishQuiz(claim.ID, publishQuizDto)
 
 	if errr != nil {
 		c.AbortWithStatusJSON(errr.StatusCode, gin.H{"errors": errr.Error()})

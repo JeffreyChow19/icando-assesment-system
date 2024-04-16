@@ -1,34 +1,37 @@
-import { ReactNode } from "react";
-import { Navigation, SideBar } from "../layouts/navigation.tsx";
+import { ReactNode } from 'react';
+// import { Navigation, SideBar } from "../layouts/navigation.tsx";
 import { Helmet } from "react-helmet-async";
-import { ProtectedRoute } from "../components/protected-route.tsx";
+// import { ProtectedRoute } from "../components/protected-route.tsx";
 
-export const Layout = ({
-  children,
-  pageTitle,
-  showTitle,
-}: {
+type LayoutProps = {
   children: ReactNode;
   pageTitle: string;
   showTitle: boolean;
-}) => {
+};
+
+export const Layout = ({ children, pageTitle, showTitle }: LayoutProps) => {
   return (
-    <ProtectedRoute>
+    // <ProtectedRoute>
+    <>
       <Helmet>
         <title>{pageTitle}</title>
       </Helmet>
-      <div className="relative min-h-screen flex flex-col">
-        <Navigation />
-        <div className="flex flex-grow w-full">
-          <SideBar />
-          <div className="flex flex-col py-8 px-4 lg:px-16 min-h-full w-full">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-screen bg-primary overflow-hidden">
+        <header className="w-full p-2.5 bg-primary text-white text-center text-2xl font-bold ">
+          {pageTitle}
+        </header>
+        <div className="w-full flex-grow bg-[#EDF3FF] overflow-hidden p-5 rounded-t-3xl">
+          <main className="w-full p-5 rounded-t-3xl">
             {showTitle && (
-              <h1 className="font-bold text-lg mb-2">{pageTitle}</h1>
+              <h1 className="text-lg font-bold mb-2">{pageTitle}</h1>
             )}
             {children}
-          </div>
+          </main>
         </div>
       </div>
-    </ProtectedRoute>
+    </>
+    // </ProtectedRoute>
   );
 };
+
+export default Layout;

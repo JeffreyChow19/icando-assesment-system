@@ -8,6 +8,7 @@ import (
 	"icando/internal/middleware"
 	"icando/internal/migrations"
 	"icando/internal/route"
+	server2 "icando/internal/worker/client"
 	"icando/lib"
 	"icando/server"
 )
@@ -24,6 +25,7 @@ func StartApp() {
 		handler.Module,
 		service.Module,
 		repository.Module,
+		server2.Module,
 		route.Module,
 		server.Module,
 		fx.Invoke(RunServer),
