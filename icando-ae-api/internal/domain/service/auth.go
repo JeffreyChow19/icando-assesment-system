@@ -46,14 +46,8 @@ func NewAuthServiceImpl(
 }
 
 func (s *AuthServiceImpl) GenerateQuizToken(quizTokenDto dto.GenerateQuizTokenDto) (*dao.AuthDao, error) {
-	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: quizTokenDto.StudentQuizId})
-
-	if err != nil {
-		return nil, err
-	}
-
 	claim := dao.TokenClaim{
-		ID:  studentQuiz.ID,
+		ID:  quizTokenDto.StudentQuizId,
 		Exp: quizTokenDto.ExpiredAt.Unix(),
 	}
 
