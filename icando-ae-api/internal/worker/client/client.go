@@ -1,11 +1,12 @@
-package worker
+package client
 
 import (
 	"github.com/hibiken/asynq"
+	"go.uber.org/fx"
 	"icando/lib"
 )
 
-//var Module = fx.Module("workerClient", fx.Options(fx.Provide(NewWorkerClient)))
+var Module = fx.Module("worker_client", fx.Options(fx.Provide(NewWorkerClient)))
 
 type WorkerClient struct {
 	client *asynq.Client

@@ -1,7 +1,8 @@
-package worker
+package server
 
 import (
 	"github.com/hibiken/asynq"
+	"go.uber.org/fx"
 	"gorm.io/gorm"
 	"icando/internal/worker/handler"
 	"icando/internal/worker/task"
@@ -41,3 +42,5 @@ func (s *WorkerServer) Run() {
 		log.Fatalf("could not run server: %v", err)
 	}
 }
+
+var Module = fx.Module("worker_server", fx.Options(fx.Provide(NewServer)))

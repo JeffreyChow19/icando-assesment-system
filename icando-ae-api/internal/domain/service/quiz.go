@@ -11,7 +11,7 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
-	"icando/internal/worker"
+	"icando/internal/worker/client"
 	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
@@ -32,7 +32,7 @@ type QuizServiceImpl struct {
 	authService       AuthService
 	db                *gorm.DB
 	config            *lib.Config
-	workerClient      *worker.WorkerClient
+	workerClient      *client.WorkerClient
 }
 
 func NewQuizServiceImpl(
@@ -40,7 +40,7 @@ func NewQuizServiceImpl(
 	teacherRepository repository.TeacherRepository,
 	db *lib.Database,
 	config *lib.Config,
-	workerClient *worker.WorkerClient,
+	workerClient *client.WorkerClient,
 	authService AuthService) *QuizServiceImpl {
 	return &QuizServiceImpl{
 		quizRepository:    quizRepository,
