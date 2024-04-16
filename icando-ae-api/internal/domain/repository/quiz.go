@@ -3,6 +3,8 @@ package repository
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -11,6 +13,7 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
 )
 
 type QuizRepository struct {
@@ -107,4 +110,62 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 	err = query.Session(&gorm.Session{}).Scan(&quizzes).Error
 
 	return quizzes, &meta, err
+}
+
+func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*model.Quiz, error) {
+	var oldQuiz model.Quiz
+
+	if err := db.Preload("Questions.Competencies").Where("id = ?", quizDto.QuizID.String()).First(&oldQuiz).Error; err != nil {
+		return nil, err
+	}
+
+	// get all classes in ids
+	var classes []model.Class
+
+	classIds := make([]string, 0)
+
+	for _, classID := range quizDto.AssignedClasses {
+		classIds = append(classIds, classID.String())
+	}
+
+	if err := db.Where("id in ?", classIds).Find(&classes).Error; err != nil {
+		return nil, err
+	}
+
+	if len(classIds) != len(classes) {
+		return nil, errors.New("Some assigned class not found")
+	}
+
+	now := time.Now()
+
+	newQuiz := model.Quiz{
+		Name:         oldQuiz.Name,
+		Subject:      oldQuiz.Subject,
+		PassingGrade: oldQuiz.PassingGrade,
+		ParentQuiz:   &oldQuiz.ID,
+		CreatedBy:    oldQuiz.CreatedBy,
+		UpdatedBy:    oldQuiz.UpdatedBy,
+		PublishedAt:  &now,
+		Questions:    make([]model.Question, 0),
+		Classes:      classes,
+		Duration:     &quizDto.QuizDuration,
+		StartAt:      &quizDto.StartDate,
+		EndAt:        &quizDto.EndDate,
+	}
+
+	for _, question := range oldQuiz.Questions {
+		newQuiz.Questions = append(newQuiz.Questions, model.Question{
+			Text:         question.Text,
+			AnswerID:     question.AnswerID,
+			Competencies: question.Competencies,
+			Order:        question.Order,
+			Choices:      &postgres.Jsonb{RawMessage: question.Choices.RawMessage},
+		})
+	}
+
+	if err := db.Create(&newQuiz).Error; err != nil {
+		return nil, err
+	}
+
+	return &newQuiz, nil
 }

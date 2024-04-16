@@ -6,15 +6,15 @@ import (
 	"go.uber.org/fx"
 	"icando/internal/domain/repository"
 	"icando/internal/domain/service"
-	"icando/internal/worker"
 	"icando/internal/worker/handler"
+	"icando/internal/worker/server"
 	"icando/lib"
 	"icando/utils/logger"
 	"os"
 )
 
 // consumer server
-func startServer(server *worker.WorkerServer) {
+func startServer(server *server.WorkerServer) {
 	logger.Log.Info("Starting worker server")
 	server.Run()
 }
@@ -26,7 +26,7 @@ func main() {
 		service.Module,
 		repository.Module,
 		handler.Module,
-		worker.Module,
+		server.Module,
 		fx.Invoke(startServer),
 		fx.NopLogger,
 	)
