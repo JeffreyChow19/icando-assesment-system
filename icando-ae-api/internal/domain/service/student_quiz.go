@@ -25,7 +25,11 @@ type StudentQuizServiceImpl struct {
 	db                    *gorm.DB
 }
 
-func NewStudentQuizServiceImpl(studentQuizRepository repository.StudentQuizRepository, questionRepository repository.QuestionRepository, quizRepository repository.QuizRepository, db *gorm.DB) *StudentQuizServiceImpl {
+func NewStudentQuizServiceImpl(
+	studentQuizRepository repository.StudentQuizRepository,
+	questionRepository repository.QuestionRepository,
+	quizRepository repository.QuizRepository,
+	db *gorm.DB) *StudentQuizServiceImpl {
 	return &StudentQuizServiceImpl{
 		studentQuizRepository: studentQuizRepository,
 		questionRepository:    questionRepository,
@@ -111,7 +115,7 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 	return nil
 }
 
-func (s *StudentQuizImpl) CalculateScore(id uuid.UUID) error {
+func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
 		WithQuizQuestions: true,
 		WithAnswers:       true,
