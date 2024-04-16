@@ -172,7 +172,7 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 		classIds = append(classIds, classId.String())
 	}
 
-	if err := tx.Where("class_id IN ?", classIds).Error; err != nil {
+	if err := tx.Where("class_id IN ?", classIds).Find(&students).Error; err != nil {
 		tx.Rollback()
 		return nil, &httperror.HttpError{
 			StatusCode: http.StatusInternalServerError,
@@ -188,6 +188,14 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 			QuizID:    quiz.ID,
 			StudentID: student.ID,
 		})
+	}
+
+	if len(studentQuizzes) == 0 {
+		tx.Rollback()
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusBadRequest,
+			Err:        errors.New("Cannot publish because no student to assign to"),
+		}
 	}
 
 	if err := tx.Create(&studentQuizzes).Error; err != nil {
