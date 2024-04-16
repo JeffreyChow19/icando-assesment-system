@@ -16,7 +16,10 @@ type WorkerServer struct {
 	db     *gorm.DB
 }
 
-func NewServer(config *lib.Config, db *lib.Database, emailHandler *handler.EmailHandler) *WorkerServer {
+func NewServer(config *lib.Config,
+	db *lib.Database,
+	emailHandler *handler.EmailHandler,
+	scoreHandler *handler.ScoreHandler) *WorkerServer {
 	var server WorkerServer
 	redisConnOpt := asynq.RedisClientOpt{Addr: config.RedisAddress}
 	server.srv = asynq.NewServer(
@@ -33,6 +36,7 @@ func NewServer(config *lib.Config, db *lib.Database, emailHandler *handler.Email
 
 	server.router = asynq.NewServeMux()
 	server.router.HandleFunc(task.TypeSendQuizEmailTask, emailHandler.HandleSendQuizEmailTask())
+	server.router.HandleFunc(task.TypeCalculateStudentQuizTask, scoreHandler.HandleCalculateScoreTask())
 	server.db = db.DB
 	return &server
 }
