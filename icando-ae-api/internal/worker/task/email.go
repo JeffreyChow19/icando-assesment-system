@@ -16,6 +16,7 @@ type SendQuizEmailPayload struct {
 	QuizSubjects base.StringArray
 	QuizDuration int
 	QuizEndAt    time.Time
+	QuizStartAt  time.Time
 	QuizUrl      string
 	TeacherName  string
 	TeacherEmail string

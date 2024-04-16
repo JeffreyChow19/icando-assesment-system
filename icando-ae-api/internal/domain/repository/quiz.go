@@ -148,7 +148,9 @@ func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*mo
 		PublishedAt:  &now,
 		Questions:    make([]model.Question, 0),
 		Classes:      classes,
-		// todo assign startdate, duration, and enddate here. wait for other commiter
+		Duration:     &quizDto.QuizDuration,
+		StartAt:      &quizDto.StartDate,
+		EndAt:        &quizDto.EndDate,
 	}
 
 	for _, question := range oldQuiz.Questions {
