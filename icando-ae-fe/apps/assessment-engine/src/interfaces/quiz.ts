@@ -7,7 +7,8 @@ export interface QuizDetail {
   subject: string[] | null;
   passingGrade: number;
   publishedAt: string | null;
-  deadline: string | null;
+  startAt: string | null;
+  endAt: string | null;
   creator: Teacher;
   updater: Teacher;
   questions: Question[];
