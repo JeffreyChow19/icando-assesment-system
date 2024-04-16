@@ -8,6 +8,7 @@ import (
 	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
+	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
 	"time"
@@ -29,12 +30,12 @@ func NewStudentQuizServiceImpl(
 	studentQuizRepository repository.StudentQuizRepository,
 	questionRepository repository.QuestionRepository,
 	quizRepository repository.QuizRepository,
-	db *gorm.DB) *StudentQuizServiceImpl {
+	db *lib.Database) *StudentQuizServiceImpl {
 	return &StudentQuizServiceImpl{
 		studentQuizRepository: studentQuizRepository,
 		questionRepository:    questionRepository,
 		quizRepository:        quizRepository,
-		db:                    db,
+		db:                    db.DB,
 	}
 }
 
