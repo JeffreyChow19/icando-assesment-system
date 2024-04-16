@@ -29,5 +29,8 @@ var Module = fx.Module(
 		fx.Provide(
 			fx.Annotate(designer.NewQuestionHandlerImpl, fx.As(new(designer.QuestionHandler))),
 		),
+		fx.Provide(
+			fx.Annotate(designer.NewTeacherHandlerImpl, fx.As(new(designer.TeacherHandler))),
+		),
 	),
 )

@@ -1,16 +1,18 @@
 package model
 
 import (
-	"github.com/google/uuid"
+	"icando/internal/model/base"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Quiz struct {
 	Model
 	Name         *string
-	Subject      *string
+	Subject      base.StringArray `gorm:"type:text[]"`
 	PassingGrade float64
 	ParentQuiz   *uuid.UUID
 	CreatedBy    uuid.UUID  `gorm:"type:uuid;not null"`
@@ -18,9 +20,11 @@ type Quiz struct {
 	UpdatedBy    *uuid.UUID `gorm:"type:uuid"`
 	Updater      *Teacher   `gorm:"foreignKey:UpdatedBy"`
 	PublishedAt  *time.Time `gorm:"type:timestamptz"`
-	Deadline     *time.Time `gorm:"type:timestamptz"`
+	Duration     *int
+	StartAt      *time.Time `gorm:"type:timestamptz"`
+	EndAt        *time.Time `gorm:"type:timestamptz"`
 	Questions    []Question
-	Classes      []Class
+	Classes      []Class `gorm:"many2many:quiz_classes;"`
 }
 
 type QuizClass struct {
@@ -35,7 +39,9 @@ func (q Quiz) ToDao() dao.QuizDao {
 		Subject:      q.Subject,
 		PassingGrade: q.PassingGrade,
 		PublishedAt:  q.PublishedAt,
-		Deadline:     q.Deadline,
+		Duration:     q.Duration,
+		StartAt:      q.StartAt,
+		EndAt:        q.EndAt,
 	}
 
 	if q.Creator != nil {

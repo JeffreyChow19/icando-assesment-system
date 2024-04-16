@@ -4,10 +4,11 @@ import { Teacher } from "./user";
 export interface QuizDetail {
   id: string;
   name: string | null;
-  subject: string | null;
+  subject: string[] | null;
   passingGrade: number;
   publishedAt: string | null;
-  deadline: string | null;
+  startAt: string | null;
+  endAt: string | null;
   creator: Teacher;
   updater: Teacher;
   questions: Question[];

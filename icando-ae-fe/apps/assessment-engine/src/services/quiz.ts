@@ -39,18 +39,20 @@ export interface UpdateQuestionResponse {
 export interface CreateQuizResponseData {
   id: string;
   name: string | null;
-  subject: string | null;
+  subject: string[] | null;
   passingGrade: number;
   publishedAt: string | null;
-  deadline: string | null;
+  startAt: string | null;
+  endAt: string | null;
 }
 
 export interface UpdateQuizPayload {
   id: string;
   name: string;
-  subject: string;
+  subject: string[];
   passingGrade: number;
-  deadline?: string | null;
+  startAt?: string | null;
+  endAt?: string | null;
 }
 
 export interface GetAllQuizFilter {

@@ -106,9 +106,6 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	if quizDto.PassingGrade != 0 {
 		quiz.PassingGrade = quizDto.PassingGrade
 	}
-	if quizDto.Deadline != nil {
-		quiz.Deadline = quizDto.Deadline
-	}
 
 	err = s.quizRepository.UpdateQuiz(*quiz)
 	if err != nil {

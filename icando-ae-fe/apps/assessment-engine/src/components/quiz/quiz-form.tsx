@@ -25,7 +25,7 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
     resolver: zodResolver(quizFormSchema),
     defaultValues: {
       name: quiz.name || "",
-      subject: quiz.subject || "",
+      subject: quiz.subject || [],
       passingGrade: quiz.passingGrade,
       questions: quiz.questions || [],
     },
@@ -55,7 +55,6 @@ export const QuizForm = ({ quiz }: { quiz: QuizDetail }) => {
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof quizFormSchema>) => {
-      console.log(payload);
       await updateQuiz({
         id: quiz.id,
         name: payload.name,
