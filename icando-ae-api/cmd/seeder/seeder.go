@@ -91,6 +91,13 @@ func main() {
 				for i := 0; i < 2; i++ {
 					firstName, lastName, email := generateAccount()
 
+					var role enum.TeacherRole
+					if i == 0 {
+						role = enum.TEACHER_ROLE_LEARNING_DESIGNER
+					} else {
+						role = enum.TEACHER_ROLE_REGULAR
+					}
+
 					teacher := model.Teacher{
 						Model: model.Model{
 							ID: uuid.New(),
@@ -100,7 +107,7 @@ func main() {
 						Email:         email,
 						Password:      string(hashedPassword),
 						InstitutionID: institution.ID,
-						Role:          enum.TEACHER_ROLE_REGULAR,
+						Role:          role,
 					}
 
 					if err := tx.Create(&teacher).Error; err != nil {
