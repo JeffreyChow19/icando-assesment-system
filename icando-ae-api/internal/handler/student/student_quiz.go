@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"icando/internal/domain/service"
-	"icando/internal/model/dao"
+	"icando/internal/model"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/utils/httperror"
@@ -29,27 +29,17 @@ func NewQuizHandlerImpl(studentQuizService service.StudentQuizService) *QuizHand
 }
 
 func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
-	user, _ := c.Get(enum.USER_CONTEXT_KEY)
-	claim := user.(*dao.TokenClaim)
-
-	studentQuizID := c.Param("studentQuizId")
 	questionID := c.Param("id")
 
 	// Convert string params to uuid.UUID
-	studentQuizUUID, errStudentQuizUUID := uuid.Parse(studentQuizID)
-	if errStudentQuizUUID != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": "Invalid studentQuizID"})
-		return
-	}
-
 	questionUUID, errQuestionUUID := uuid.Parse(questionID)
 	if errQuestionUUID != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": "Invalid id"})
 		return
 	}
 
-	var quiz dto.UpdateStudentAnswerDto
-	if errBind := c.ShouldBindJSON(&quiz); errBind != nil {
+	var req dto.UpdateStudentAnswerDto
+	if errBind := c.ShouldBindJSON(&req); errBind != nil {
 		var ve validator.ValidationErrors
 		if errors.As(errBind, &ve) {
 			out := make([]httperror.FieldError, len(ve))
@@ -63,7 +53,19 @@ func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
 		return
 	}
 
-	err := h.studentQuizService.UpdateStudentAnswer(claim.ID, studentQuizUUID, questionUUID, quiz)
+	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		return
+	}
+
+	studentQuiz, okStudentQuiz := value.(*model.StudentQuiz)
+	if !okStudentQuiz {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz"})
+		return
+	}
+
+	err := h.studentQuizService.UpdateStudentAnswer(studentQuiz, questionUUID, req)
 
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
