@@ -6,9 +6,11 @@ export interface QuizDetail {
   name: string | null;
   subject: string[] | null;
   passingGrade: number;
-  publishedAt: string | null;
+  lastPublishedAt: Date | null;
   startAt: string | null;
   endAt: string | null;
+  createdBy: string;
+  updatedBy: string;
   creator: Teacher;
   updater: Teacher;
   questions: Question[];
