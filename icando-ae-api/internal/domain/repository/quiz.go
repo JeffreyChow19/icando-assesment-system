@@ -2,10 +2,6 @@ package repository
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/jinzhu/gorm/dialects/postgres"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
@@ -14,6 +10,11 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 type QuizRepository struct {
@@ -149,8 +150,8 @@ func (r *QuizRepository) CloneQuiz(db *gorm.DB, quizDto dto.PublishQuizDto) (*mo
 		Questions:    make([]model.Question, 0),
 		Classes:      classes,
 		Duration:     &quizDto.QuizDuration,
-		StartAt:      &quizDto.StartDate,
-		EndAt:        &quizDto.EndDate,
+		StartAt:      &quizDto.StartAt,
+		EndAt:        &quizDto.EndAt,
 	}
 
 	for _, question := range oldQuiz.Questions {

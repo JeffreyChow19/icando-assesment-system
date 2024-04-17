@@ -4,7 +4,7 @@ import { Layout } from "../../layouts/layout";
 export const ClassNew = () => {
   return (
     <>
-      <Layout pageTitle="New Class" showTitle={true}>
+      <Layout pageTitle="New Class" showTitle={true} withBack={true}>
         <ClassesForm />
       </Layout>
     </>

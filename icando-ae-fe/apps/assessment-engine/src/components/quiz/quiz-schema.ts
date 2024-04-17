@@ -32,3 +32,27 @@ export const quizFormSchema = z.object({
     .max(100),
   questions: questionSchema.array(),
 });
+
+export const quizPublishFormSchema = z
+  .object({
+    quizId: z.string(),
+    quizDuration: z.coerce
+      .number({ required_error: "Quiz duration should not be empty" })
+      .int(),
+    startAt: z.coerce.date({
+      required_error: "Quiz start time should not be empty",
+    }),
+    endAt: z.coerce.date({
+      required_error: "Quiz end time should not be empty",
+    }),
+    assignedClasses: z.array(z.string()).min(1, "Select at least one class"),
+  })
+  .refine(
+    (data) => {
+      return data.endAt > data.startAt;
+    },
+    {
+      message: "Quiz end time should be greater than start time",
+      path: ["endAt"],
+    },
+  );

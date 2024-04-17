@@ -19,6 +19,7 @@ import { StudentsEdit } from "./pages/students/students-edit.tsx";
 import { StudentsNew } from "./pages/students/students-new.tsx";
 import { Students } from "./pages/students";
 import { Quizzes } from "./pages/quizzes/index.tsx";
+import { PublishQuizPage } from "./pages/quiz/publish.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -38,10 +39,6 @@ function App() {
     {
       path: "/students",
       element: <Students />,
-    },
-    {
-      path: "/quiz/:id/edit",
-      element: <UpdateQuizPage />,
     },
     {
       path: "/students/new",
@@ -70,6 +67,14 @@ function App() {
     {
       path: "/quiz",
       element: <Quizzes />,
+    },
+    {
+      path: "/quiz/:id/edit",
+      element: <UpdateQuizPage />,
+    },
+    {
+      path: "/quiz/:id/publish",
+      element: <PublishQuizPage />,
     },
   ]);
   return (
