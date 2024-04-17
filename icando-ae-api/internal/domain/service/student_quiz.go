@@ -21,6 +21,7 @@ type StudentQuizService interface {
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
 	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
+	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 }
 
 type StudentQuizServiceImpl struct {
@@ -124,6 +125,10 @@ var ErrInvalidQuizAttemptTime = &httperror.HttpError{
 var ErrUpdateStudentAnswer = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when updating student answer"),
+}
+var ErrGetQuizDetail = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when getting quiz detail"),
 }
 
 func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
@@ -264,4 +269,26 @@ func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQ
 	quizDao := quiz.ToDao(false)
 
 	return &quizDao, nil
+}
+
+func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: studentQuiz.ID, WithQuizOverview: true, WithQuizQuestions: true, WithStudent: true})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	currentTime := time.Now()
+	if currentTime.Before(*studentQuiz.Quiz.StartAt) || currentTime.After(*studentQuiz.Quiz.EndAt) {
+		return nil, ErrInvalidQuizAttemptTime
+	}
+
+	quizDao, err := studentQuiz.ToDao(false)
+	if err != nil {
+		return nil, ErrGetQuizDetail
+	}
+
+	return quizDao, nil
 }
