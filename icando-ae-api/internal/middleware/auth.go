@@ -85,7 +85,7 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 					return
 				}
 
-				c.Set(enum.STUDENT_QUIZ_ID_CONTEXT_KEY, studentQuiz.ID)
+				c.Set(enum.STUDENT_QUIZ_ID_CONTEXT_KEY, studentQuiz)
 				c.Set(enum.USER_CONTEXT_KEY, dao.TokenClaim{
 					ID:  studentQuiz.StudentID,
 					Exp: authorized.Exp,

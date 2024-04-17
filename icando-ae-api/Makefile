@@ -19,10 +19,13 @@ build:
 run-database:
 	docker-compose up -d database
 
+run-redis:
+	docker-compose up -d redis
+
 run-server:
 	go run cmd/server/server.go
 
-run: run-database run-server
+run: run-database run-redis run-server
 
 run-test-database:
 	docker-compose up -d test_database
