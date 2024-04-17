@@ -5,13 +5,15 @@ import (
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm/dialects/postgres"
 	"icando/internal/model/dao"
+	"time"
 )
 
 type StudentAnswer struct {
-	Model
-	QuestionID    uuid.UUID `gorm:"column:question_id"`
+	CreatedAt     time.Time `json:"createdAt" gorm:"type:timestamptz"`
+	UpdatedAt     time.Time `json:"updatedAt" gorm:"type:timestamptz"`
+	QuestionID    uuid.UUID `gorm:"primarykey;column:question_id"`
 	Question      *Question
-	StudentQuizID uuid.UUID `gorm:"column:student_quiz_id"`
+	StudentQuizID uuid.UUID `gorm:"primarykey;column:student_quiz_id"`
 	StudentQuiz   StudentQuiz
 	AnswerID      int `gorm:"column:answer_id"`
 	IsCorrect     *bool
@@ -56,7 +58,6 @@ func (a *StudentAnswer) ToDao(withQuestionAnswer bool) (*dao.StudentAnswerDao, e
 	}
 
 	daoAnswer := dao.StudentAnswerDao{
-		ID:            a.ID,
 		CreatedAt:     a.CreatedAt,
 		UpdatedAt:     a.UpdatedAt,
 		QuestionID:    a.QuestionID,

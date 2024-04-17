@@ -198,8 +198,15 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 		} // not ok result mean that the question is not answered
 	}
 
+	updatedAnswers := make([]model.StudentAnswer, 0)
+
+	for _, answer := range answerMap {
+		updatedAnswers = append(updatedAnswers, answer)
+	}
+
 	score := float32(correctCount) * 100 / float32(questionCount)
 
+	studentQuiz.StudentAnswers = updatedAnswers
 	studentQuiz.CorrectCount = &correctCount
 	studentQuiz.TotalScore = &score
 	studentQuiz.Status = enum.SUBMITTED
