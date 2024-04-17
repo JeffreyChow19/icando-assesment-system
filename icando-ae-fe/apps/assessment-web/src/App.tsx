@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Hello } from "./pages/hello.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
+import { Quiz } from "./pages/quiz.tsx";
 // import { TestPage } from "./pages/test.tsx";
 
 dayjs.locale("id");
@@ -19,8 +20,8 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/hello",
-      element: <Hello />,
+      path: "/quiz",
+      element: <Quiz />,
     },
     {
       path: "/",

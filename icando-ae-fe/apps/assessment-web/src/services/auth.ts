@@ -18,3 +18,7 @@ export const checkAuth = async (): Promise<User> => {
 
   return response.data;
 };
+
+export const saveQuizToken = async (token: string) => {
+  setToken(token);
+};

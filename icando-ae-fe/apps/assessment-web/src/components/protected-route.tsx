@@ -1,16 +1,31 @@
 import { useUser } from "../context/user-context.tsx";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { ReactNode } from "react";
 import { LoadingPage } from "../pages/loading.tsx";
+import { saveQuizToken } from "../services/auth.ts";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { user, loading } = useUser();
-  const navigate = useNavigate();
+  const { user, loading, refresh } = useUser();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // fetch token from param
+  const token = searchParams.get("token");
+
+  // save token
+  if (token !== null) {
+    saveQuizToken(token).then(() => {
+      refresh();
+      searchParams.delete("token");
+      setSearchParams(searchParams);
+    });
+    // console.log(token);
+  }
+
   if (loading) {
     return <LoadingPage />;
   }
   if (user) {
     return children;
   }
-  navigate("/login");
+  return <Navigate to={"/"} />;
 };
