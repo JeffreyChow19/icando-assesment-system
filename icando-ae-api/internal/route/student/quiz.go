@@ -13,6 +13,7 @@ type QuizRoute struct {
 
 func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/quiz")
+	group.GET("", r.quizHandler.GetQuiz)
 	group.POST("/question/:id", r.quizHandler.UpdateAnswer)
 	group.PATCH("/start", r.quizHandler.StartQuiz)
 }
