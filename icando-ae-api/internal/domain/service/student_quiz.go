@@ -118,9 +118,17 @@ var ErrStudentQuizSubmitted = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
 	Err:        errors.New("Student Quiz Submitted"),
 }
-var ErrInvalidQuizAttemptTime = &httperror.HttpError{
+var ErrQuizHasNotStarted = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
-	Err:        errors.New("Invalid Quiz Attempt Time"),
+	Err:        errors.New("Quiz hasn't started yet"),
+}
+var ErrQuizHasEnded = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Quiz has ended"),
+}
+var ErrQuizDurationHasEnded = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Quiz duration has ended"),
 }
 var ErrUpdateStudentAnswer = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
@@ -152,11 +160,14 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 	}
 
 	currentTime := time.Now()
+	if studentQuiz.StartedAt != nil && currentTime.After(studentQuiz.StartedAt.Add(time.Minute*time.Duration(*quiz.Duration))) {
+		return ErrQuizDurationHasEnded
+	}
 	if quiz.EndAt != nil && currentTime.After(*quiz.EndAt) {
-		return ErrInvalidQuizAttemptTime
+		return ErrQuizHasEnded
 	}
 	if quiz.StartAt != nil && currentTime.Before(*quiz.StartAt) {
-		return ErrInvalidQuizAttemptTime
+		return ErrQuizHasNotStarted
 	}
 
 	question, errGetQuestion := s.questionRepository.GetQuestion(dto.GetQuestionFilter{
@@ -261,17 +272,20 @@ func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQ
 		return nil, ErrGetQuiz
 	}
 
-	currentTime := time.Now()
-	if currentTime.Before(*quiz.StartAt) || currentTime.After(*quiz.EndAt) {
-		return nil, ErrInvalidQuizAttemptTime
-	}
-
 	quizDao := quiz.ToDao(false)
 
 	return &quizDao, nil
 }
 
 func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	if studentQuiz.Status == enum.NOT_STARTED {
+		return nil, ErrStudentQuizNotStarted
+	}
+
+	if studentQuiz.Status == enum.SUBMITTED {
+		return nil, ErrStudentQuizSubmitted
+	}
+
 	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: studentQuiz.ID, WithQuizOverview: true, WithQuizQuestions: true, WithStudent: true})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -281,8 +295,17 @@ func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
 	}
 
 	currentTime := time.Now()
-	if currentTime.Before(*studentQuiz.Quiz.StartAt) || currentTime.After(*studentQuiz.Quiz.EndAt) {
-		return nil, ErrInvalidQuizAttemptTime
+
+	if studentQuiz.StartedAt != nil && currentTime.After(studentQuiz.StartedAt.Add(time.Minute*time.Duration(*studentQuiz.Quiz.Duration))) {
+		return nil, ErrQuizDurationHasEnded
+	}
+
+	if studentQuiz.Quiz.StartAt != nil && currentTime.Before(*studentQuiz.Quiz.StartAt) {
+		return nil, ErrQuizHasNotStarted
+	}
+
+	if studentQuiz.Quiz.EndAt != nil && currentTime.After(*studentQuiz.Quiz.EndAt) {
+		return nil, ErrQuizHasEnded
 	}
 
 	quizDao, err := studentQuiz.ToDao(false)
