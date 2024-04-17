@@ -9,6 +9,8 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
+	"icando/internal/worker/client"
+	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -28,18 +30,21 @@ type StudentQuizServiceImpl struct {
 	questionRepository    repository.QuestionRepository
 	quizRepository        repository.QuizRepository
 	db                    *gorm.DB
+	workerClient          *client.WorkerClient
 }
 
 func NewStudentQuizServiceImpl(
 	studentQuizRepository repository.StudentQuizRepository,
 	questionRepository repository.QuestionRepository,
 	quizRepository repository.QuizRepository,
+	workerClient *client.WorkerClient,
 	db *lib.Database) *StudentQuizServiceImpl {
 	return &StudentQuizServiceImpl{
 		studentQuizRepository: studentQuizRepository,
 		questionRepository:    questionRepository,
 		quizRepository:        quizRepository,
 		db:                    db.DB,
+		workerClient:          workerClient,
 	}
 }
 
@@ -95,6 +100,26 @@ func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (*da
 	err := s.studentQuizRepository.UpdateStudentQuiz(*studentQuiz)
 	if err != nil {
 		return nil, ErrSubmitQuiz
+	}
+
+	calculateTask, err := task.NewCalcualteStudentQuizTask(task.CalculateStudentQuizPayload{
+		StudentQuizID: studentQuiz.ID,
+	})
+
+	if err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
+	}
+
+	_, err = s.workerClient.Enqueue(calculateTask)
+
+	if err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        err,
+		}
 	}
 
 	resp, errResp := studentQuiz.ToDao(false)
