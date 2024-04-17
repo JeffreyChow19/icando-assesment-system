@@ -111,7 +111,8 @@ export const updateQuiz = async (payload: UpdateQuizPayload) => {
 };
 
 export const publishQuiz = async (payload: PublishQuizPayload) => {
-  return (await api.post(path, payload)).data.data as PublishQuizResponseData;
+  return (await api.post(`${path}/publish`, payload)).data
+    .data as PublishQuizResponseData;
 };
 
 export const getQuiz = async (id: string) => {
