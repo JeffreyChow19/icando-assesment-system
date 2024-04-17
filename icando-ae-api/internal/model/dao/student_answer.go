@@ -11,7 +11,6 @@ type StudentAnswerCompetencyDao struct {
 }
 
 type StudentAnswerDao struct {
-	ID            uuid.UUID                    `json:"id"`
 	CreatedAt     time.Time                    `json:"createdAt"`
 	UpdatedAt     time.Time                    `json:"updatedAt"`
 	QuestionID    uuid.UUID                    `json:"questionId"`
