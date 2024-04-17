@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
+	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/lib"
@@ -15,6 +16,7 @@ import (
 )
 
 type StudentQuizService interface {
+	StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
 }
@@ -37,6 +39,37 @@ func NewStudentQuizServiceImpl(
 		quizRepository:        quizRepository,
 		db:                    db.DB,
 	}
+}
+
+var ErrStartQuiz = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Error to start quiz"),
+}
+var ErrQuizStarted = &httperror.HttpError{
+	StatusCode: http.StatusConflict,
+	Err:        errors.New("Quiz started"),
+}
+
+func (s *StudentQuizServiceImpl) StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	if studentQuiz.Status != enum.NOT_STARTED || studentQuiz.StartedAt != nil {
+		return nil, ErrQuizStarted
+	}
+
+	currentTime := time.Now()
+	studentQuiz.StartedAt = &currentTime
+	studentQuiz.Status = enum.STARTED
+
+	err := s.studentQuizRepository.UpdateStudentQuiz(*studentQuiz)
+	if err != nil {
+		return nil, ErrStartQuiz
+	}
+
+	resp, errResp := studentQuiz.ToDao(false)
+	if errResp != nil {
+		return nil, ErrStartQuiz
+	}
+
+	return resp, nil
 }
 
 var ErrInvalidQuestion = &httperror.HttpError{
