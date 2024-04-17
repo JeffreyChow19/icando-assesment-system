@@ -8,8 +8,8 @@ import React, {
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { removeToken } from "../utils/local-storage.ts";
-import { checkQuizAvailability } from "../services/auth.ts";
 import { StudentQuiz } from "../interfaces/quiz.ts";
+import { getQuizAvailability } from "../services/quiz.ts";
 
 interface UserContextValue {
   studentQuiz: StudentQuiz | undefined;
@@ -31,7 +31,7 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["studentquiz"],
-    queryFn: () => checkQuizAvailability(),
+    queryFn: () => getQuizAvailability(),
     retry: false,
   });
 
