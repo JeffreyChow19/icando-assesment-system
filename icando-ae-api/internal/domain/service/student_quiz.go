@@ -19,6 +19,7 @@ type StudentQuizService interface {
 	StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
+	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
 }
 
 type StudentQuizServiceImpl struct {
@@ -212,4 +213,23 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	studentQuiz.Status = enum.SUBMITTED
 
 	return s.db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Quiz").Updates(&studentQuiz).Error
+}
+
+func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError) {
+	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: studentQuiz.QuizID})
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	currentTime := time.Now()
+	if currentTime.Before(*quiz.StartAt) || currentTime.After(*quiz.EndAt) {
+		return nil, ErrInvalidQuizAttemptTime
+	}
+
+	quizDao := quiz.ToDao(false)
+
+	return &quizDao, nil
 }

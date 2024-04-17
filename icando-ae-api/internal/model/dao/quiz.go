@@ -17,7 +17,7 @@ type QuizDao struct {
 	EndAt        *time.Time       `json:"endAt"`
 	Creator      *TeacherDao      `json:"creator,omitempty"`
 	Updater      *TeacherDao      `json:"updater,omitempty"`
-	Questions    []QuestionDao    `json:"questions"`
+	Questions    []QuestionDao    `json:"questions,omitempty"`
 	Classes      []ClassDao       `json:"classes,omitempty"`
 }
 
