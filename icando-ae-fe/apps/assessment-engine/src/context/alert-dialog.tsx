@@ -151,7 +151,7 @@ export function AlertDialogProvider({
               />
             )}
             <AlertDialogFooter>
-              <Button type="button" onClick={close}>
+              <Button type="button" variant="outline" onClick={close}>
                 {state.cancelButton}
               </Button>
               {state.type === "alert" ? null : (
