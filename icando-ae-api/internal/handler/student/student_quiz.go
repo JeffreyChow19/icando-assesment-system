@@ -19,6 +19,7 @@ type QuizHandler interface {
 	SubmitQuiz(c *gin.Context)
 	UpdateAnswer(c *gin.Context)
 	GetQuiz(c *gin.Context)
+	GetQuizDetail(c *gin.Context)
 }
 
 type QuizHandlerImpl struct {
@@ -138,6 +139,28 @@ func (h *QuizHandlerImpl) GetQuiz(c *gin.Context) {
 	}
 
 	quiz, err := h.studentQuizService.GetQuizAvailability(studentQuiz)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *quiz))
+}
+
+func (h *QuizHandlerImpl) GetQuizDetail(c *gin.Context) {
+	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		return
+	}
+
+	studentQuiz, okStudentQuiz := value.(*model.StudentQuiz)
+	if !okStudentQuiz {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz"})
+		return
+	}
+
+	quiz, err := h.studentQuizService.GetQuizDetail(studentQuiz)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
 		return
