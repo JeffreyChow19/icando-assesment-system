@@ -160,6 +160,7 @@ func main() {
 						Subject:      base.StringArray{"Math", "Science"},
 						PassingGrade: 70.0,
 						CreatedBy:    class.Teachers[0].ID,
+						UpdatedBy:    &class.Teachers[0].ID,
 					}
 
 					if err := tx.Create(&quiz).Error; err != nil {

@@ -61,6 +61,7 @@ var ErrCreateQuiz = &httperror.HttpError{
 func (s *QuizServiceImpl) CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError) {
 	quiz := model.Quiz{
 		CreatedBy: id,
+		UpdatedBy: &id,
 	}
 	quiz, err := s.quizRepository.CreateQuiz(quiz)
 
