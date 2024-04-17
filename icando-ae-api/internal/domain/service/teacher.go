@@ -46,10 +46,10 @@ func (s *TeacherServiceImpl) GetAllTeachers(filter dto.GetTeacherFilter) ([]dao.
 	payload := make([]dao.LearningDesignerDao, 0)
 	for _, teacher := range teachers {
 		payload = append(payload, dao.LearningDesignerDao{
-			ID: teacher.ID,
-			FirstName:  teacher.FirstName,
-			LastName: teacher.LastName,
-			Email: teacher.Email,
+			ID:        teacher.ID,
+			FirstName: teacher.FirstName,
+			LastName:  teacher.LastName,
+			Email:     teacher.Email,
 		})
 	}
 
