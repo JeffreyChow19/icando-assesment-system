@@ -5,7 +5,7 @@ import { LoadingPage } from "../pages/loading.tsx";
 import { saveQuizToken } from "../services/auth.ts";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { user, loading, refresh } = useUser();
+  const { studentQuiz: user, loading, refresh } = useUser();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // fetch token from param

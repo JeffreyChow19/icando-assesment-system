@@ -1,20 +1,13 @@
 import { setToken } from "../utils/local-storage.ts";
-import { User } from "../interfaces/user.ts";
 import { api } from "../utils/api.ts";
+import { StudentQuiz } from "src/interfaces/quiz.ts";
 
-interface CheckAuthResponse {
-  data: User;
-  token?: string;
+interface CheckQuizAvailabilityResponse {
+  data: StudentQuiz;
 }
 
-const path = "/auth/student";
-
-export const checkAuth = async (): Promise<User> => {
-  const response = (await api.get(`${path}/profile`)).data as CheckAuthResponse;
-
-  if (response.token) {
-    setToken(response.token);
-  }
+export const checkQuizAvailability = async (): Promise<StudentQuiz> => {
+  const response = (await api.get(`student/quiz`)).data as CheckQuizAvailabilityResponse;
 
   return response.data;
 };

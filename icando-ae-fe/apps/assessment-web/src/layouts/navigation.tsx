@@ -35,7 +35,7 @@ const navItems: NavItemLink[] = [
 
 const UserDropdown = () => {
   const navigate = useNavigate();
-  const { user, setUser } = useUser();
+  const { studentQuiz: user, setStudentQuiz: setUser } = useUser();
   const logout = () => {
     removeToken();
     setUser(undefined);

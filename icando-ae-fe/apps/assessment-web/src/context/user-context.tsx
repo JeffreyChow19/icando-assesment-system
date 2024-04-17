@@ -6,32 +6,32 @@ import React, {
   useState,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "../interfaces/user.tsx";
 import { AxiosError } from "axios";
 import { removeToken } from "../utils/local-storage.ts";
-import { checkAuth } from "../services/auth.ts";
+import { checkQuizAvailability } from "../services/auth.ts";
+import { StudentQuiz } from "../interfaces/quiz.ts";
 
 interface UserContextValue {
-  user: User | undefined;
+  studentQuiz: StudentQuiz | undefined;
   loading: boolean;
-  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+  setStudentQuiz: React.Dispatch<React.SetStateAction<StudentQuiz | undefined>>;
   refresh: () => void;
 }
 
 export const UserContext = createContext<UserContextValue>({
-  user: undefined,
+  studentQuiz: undefined,
   loading: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setUser: () => {},
+  setStudentQuiz: () => {},
   refresh: () => {},
 });
 
 export const UserProvider = ({ children }: { children: ReactElement }) => {
-  const [user, setUser] = useState<User>();
+  const [studentQuiz, setStudentQuiz] = useState<StudentQuiz>();
   const [loading, setLoading] = useState<boolean>(true);
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => checkAuth(),
+    queryKey: ["studentquiz"],
+    queryFn: () => checkQuizAvailability(),
     retry: false,
   });
 
@@ -43,18 +43,23 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
     setLoading(false);
     if (error && error instanceof AxiosError && error.response?.status == 401) {
       removeToken();
-      setUser(undefined);
+      setStudentQuiz(undefined);
       return;
     }
 
     if (!error && data) {
-      setUser(data);
+      setStudentQuiz(data);
     }
   }, [isLoading, data, error]);
 
   return (
     <UserContext.Provider
-      value={{ user, loading, setUser, refresh: () => refetch() }}
+      value={{
+        studentQuiz: studentQuiz,
+        loading,
+        setStudentQuiz: setStudentQuiz,
+        refresh: () => refetch(),
+      }}
     >
       {children}
     </UserContext.Provider>
