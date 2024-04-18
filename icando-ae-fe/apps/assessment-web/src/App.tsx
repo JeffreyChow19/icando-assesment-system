@@ -9,6 +9,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { Hello } from "./pages/hello.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
+import { Home } from "./pages/home/index.tsx";
 // import { TestPage } from "./pages/test.tsx";
 
 dayjs.locale("id");
@@ -24,7 +25,7 @@ function App() {
     },
     {
       path: "/",
-      element: <Hello />,
+      element: <Home />,
     },
   ]);
   return (
