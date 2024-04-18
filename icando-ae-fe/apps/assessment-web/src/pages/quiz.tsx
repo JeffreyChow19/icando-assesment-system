@@ -1,17 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
 import { Layout } from "../layouts/layout.tsx";
-import { getQuizAvailability } from "../services/quiz.ts";
+import { useStudentQuiz } from "../context/user-context.tsx";
 
 export const Quiz = () => {
-  const { data: quizData } = useQuery({
-    queryKey: ["quiz"],
-    queryFn: () => getQuizAvailability(),
-  });
+  const { studentQuiz } = useStudentQuiz()
   return (
     <Layout pageTitle="Quiz" showTitle={true}>
       {/* todo: quiz layout */}
       <p>
-        {quizData ? `${quizData.startAt} ${quizData.endAt}` : "Quiz invalid"}
+        {studentQuiz ? `${studentQuiz.startAt} ${studentQuiz.endAt}` : "Quiz invalid"}
       </p>
     </Layout>
   );
