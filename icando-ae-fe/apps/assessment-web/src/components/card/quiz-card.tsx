@@ -34,18 +34,6 @@ export function QuizCard({ quiz }: { quiz: QuizDetail | null }) {
         <Badge key={"subject"}>{"subject"}</Badge>
       </CardHeader>
       <CardContent>
-        {/* <CardDescription className="flex flex-row space-x-2">
-          <div className="text-black">Jumlah Soal: </div>
-          <div className="text-black"><b>50</b></div>
-        </CardDescription>
-        <CardDescription className="flex flex-row space-x-2">
-          <div className="text-black">Durasi: </div>
-          <div className="text-black"><b>50</b> Menit</div>
-        </CardDescription>
-        <CardDescription className="flex flex-row space-x-2">
-          <div className="text-black">Batas Pengerjaan: </div>
-          <div className="text-black"><b>50</b></div>
-        </CardDescription> */}
         <div className="grid grid-cols-2 gap-x-4 py-2"> {/* Creates a two-column grid layout with a gap */}
           <div className="text-left font-medium text-gray-700">Jumlah Soal:</div>
           <div className="text-left text-lg font-semibold text-black">50 soal</div>
