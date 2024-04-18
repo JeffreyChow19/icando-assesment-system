@@ -11,14 +11,14 @@ import { removeToken } from "../utils/local-storage.ts";
 import { StudentQuiz } from "../interfaces/quiz.ts";
 import { getQuizAvailability } from "../services/quiz.ts";
 
-interface UserContextValue {
+interface StudentQuizContextValue {
   studentQuiz: StudentQuiz | undefined;
   loading: boolean;
   setStudentQuiz: React.Dispatch<React.SetStateAction<StudentQuiz | undefined>>;
   refresh: () => void;
 }
 
-export const UserContext = createContext<UserContextValue>({
+export const StudentQuizContext = createContext<StudentQuizContextValue>({
   studentQuiz: undefined,
   loading: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -53,7 +53,7 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
   }, [isLoading, data, error]);
 
   return (
-    <UserContext.Provider
+    <StudentQuizContext.Provider
       value={{
         studentQuiz: studentQuiz,
         loading,
@@ -62,8 +62,8 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
       }}
     >
       {children}
-    </UserContext.Provider>
+    </StudentQuizContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useStudentQuiz = () => useContext(StudentQuizContext);

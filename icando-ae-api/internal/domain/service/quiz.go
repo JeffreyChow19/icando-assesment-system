@@ -2,11 +2,6 @@ package service
 
 import (
 	"fmt"
-	"github.com/google/uuid"
-	"github.com/hibiken/asynq"
-	"github.com/pkg/errors"
-	"github.com/rs/zerolog/log"
-	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -16,7 +11,14 @@ import (
 	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
+	"icando/utils/logger"
 	"net/http"
+
+	"github.com/google/uuid"
+	"github.com/hibiken/asynq"
+	"github.com/pkg/errors"
+	"github.com/rs/zerolog/log"
+	"gorm.io/gorm"
 )
 
 type QuizService interface {
@@ -294,5 +296,6 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 }
 
 func (s *QuizServiceImpl) BuildUrl(token string) string {
+	logger.Log.Info(token)
 	return fmt.Sprintf("%s/quiz?token=%s", s.config.AssessmentWebHost, token)
 }

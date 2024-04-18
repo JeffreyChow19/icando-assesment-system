@@ -1,11 +1,11 @@
-import { useUser } from "../context/user-context.tsx";
+import { useStudentQuiz } from "../context/user-context.tsx";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { ReactNode } from "react";
 import { LoadingPage } from "../pages/loading.tsx";
-import { saveQuizToken } from "../services/auth.ts";
+import { setToken } from "../utils/local-storage.ts";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { studentQuiz: user, loading, refresh } = useUser();
+  const { studentQuiz: user, loading, refresh } = useStudentQuiz();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // fetch token from param
@@ -13,11 +13,11 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
 
   // save token
   if (token !== null) {
-    saveQuizToken(token).then(() => {
-      refresh();
-      searchParams.delete("token");
-      setSearchParams(searchParams);
-    });
+    setToken(token);
+
+    refresh();
+    searchParams.delete("token");
+    setSearchParams(searchParams);
     // console.log(token);
   }
 
