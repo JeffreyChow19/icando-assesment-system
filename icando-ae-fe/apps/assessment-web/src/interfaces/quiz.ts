@@ -1,5 +1,5 @@
 import { Question } from "./question";
-import { Teacher } from "./user";
+import { Teacher, Student } from "./user";
 
 export interface QuizDetail {
   id: string;
@@ -24,4 +24,26 @@ export interface StudentQuiz {
   duration: number;
   startAt: Date;
   endAt: Date;
+}
+
+export interface QuizAttempt {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  totalScore: number | null;
+  correctCount: number | null;
+  startedAt: string;
+  completedAt: string | null;
+  status: 'STARTED' | 'SUBMITTED' | 'NOT_STARTED';
+  quiz_id: string;
+  studentId: string;
+  student: Student | null;
+  studentAnswers: StudentAnswer[] | null; 
+}
+
+// todo fix student answer interface
+export interface StudentAnswer {
+  questionId: string;
+  answerId: string;
+  isCorrect: boolean;
 }

@@ -7,3 +7,12 @@ export interface User {
 export interface Teacher extends User {
   institutionId: string;
 }
+
+export interface Student{
+  id: string;
+  firstName: string;
+  lastName: string;
+  nisn: string;
+  email: string;
+  classId: string;
+}
