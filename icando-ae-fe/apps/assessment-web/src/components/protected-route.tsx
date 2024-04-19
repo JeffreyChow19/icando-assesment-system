@@ -5,7 +5,7 @@ import { LoadingPage } from "../pages/loading.tsx";
 import { setToken } from "../utils/local-storage.ts";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   // fetch token from param
   const token = searchParams.get("token");
@@ -14,9 +14,9 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   if (token !== null) {
     setToken(token);
 
-    searchParams.delete("token");
-    setSearchParams(searchParams);
-    // console.log(token);
+    // remove token search params from URL without reloading page or adding to history
+    const noParams = window.location.origin + window.location.pathname;
+    window.history.replaceState({ path: noParams }, "", noParams);
   }
   const { studentQuiz, loading } = useStudentQuiz();
 
