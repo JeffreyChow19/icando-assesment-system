@@ -25,6 +25,7 @@ type QuizService interface {
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
 	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
 	PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError)
+	GetQuizHistory(quizID uuid.UUID) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
 }
 
 type QuizServiceImpl struct {
@@ -141,6 +142,16 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 	}
 
 	return quizzes, meta, nil
+}
+
+func (s *QuizServiceImpl) GetQuizHistory(quizID uuid.UUID) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError) {
+    quizzes, meta, err := s.quizRepository.GetAllQuizHistory(dto.GetQuizVersionFilter{ID: quizID})
+    if err != nil {
+        log.Print(err)
+        return nil,nil, httperror.InternalServerError
+    }
+
+    return quizzes, meta, nil
 }
 
 func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
