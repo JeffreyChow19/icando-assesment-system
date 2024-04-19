@@ -6,32 +6,32 @@ import React, {
   useState,
 } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { User } from "../interfaces/user.tsx";
 import { AxiosError } from "axios";
 import { removeToken } from "../utils/local-storage.ts";
-import { checkAuth } from "../services/auth.ts";
+import { StudentQuiz } from "../interfaces/quiz.ts";
+import { getQuizAvailability } from "../services/quiz.ts";
 
-interface UserContextValue {
-  user: User | undefined;
+interface StudentQuizContextValue {
+  studentQuiz: StudentQuiz | undefined;
   loading: boolean;
-  setUser: React.Dispatch<React.SetStateAction<User | undefined>>;
+  setStudentQuiz: React.Dispatch<React.SetStateAction<StudentQuiz | undefined>>;
   refresh: () => void;
 }
 
-export const UserContext = createContext<UserContextValue>({
-  user: undefined,
+export const StudentQuizContext = createContext<StudentQuizContextValue>({
+  studentQuiz: undefined,
   loading: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  setUser: () => {},
+  setStudentQuiz: () => {},
   refresh: () => {},
 });
 
 export const UserProvider = ({ children }: { children: ReactElement }) => {
-  const [user, setUser] = useState<User>();
+  const [studentQuiz, setStudentQuiz] = useState<StudentQuiz>();
   const [loading, setLoading] = useState<boolean>(true);
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["user"],
-    queryFn: () => checkAuth(),
+    queryKey: ["studentquiz"],
+    queryFn: () => getQuizAvailability(),
     retry: false,
   });
 
@@ -43,22 +43,27 @@ export const UserProvider = ({ children }: { children: ReactElement }) => {
     setLoading(false);
     if (error && error instanceof AxiosError && error.response?.status == 401) {
       removeToken();
-      setUser(undefined);
+      setStudentQuiz(undefined);
       return;
     }
 
     if (!error && data) {
-      setUser(data);
+      setStudentQuiz(data);
     }
   }, [isLoading, data, error]);
 
   return (
-    <UserContext.Provider
-      value={{ user, loading, setUser, refresh: () => refetch() }}
+    <StudentQuizContext.Provider
+      value={{
+        studentQuiz: studentQuiz,
+        loading,
+        setStudentQuiz: setStudentQuiz,
+        refresh: () => refetch(),
+      }}
     >
       {children}
-    </UserContext.Provider>
+    </StudentQuizContext.Provider>
   );
 };
 
-export const useUser = () => useContext(UserContext);
+export const useStudentQuiz = () => useContext(StudentQuizContext);
