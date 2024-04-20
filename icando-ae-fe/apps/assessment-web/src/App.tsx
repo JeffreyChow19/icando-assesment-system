@@ -10,7 +10,7 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Home } from "./pages/home/index.tsx";
 import { Quiz } from "./pages/quiz.tsx";
-// import { TestPage } from "./pages/test.tsx";
+import Join from "./pages/join.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -26,7 +26,10 @@ function App() {
     {
       path: "/",
       element: <Home />,
-    },
+    }, {
+      path: "/join",
+      element: <Join />,
+    }
   ]);
   return (
     <QueryClientProvider client={queryClient}>

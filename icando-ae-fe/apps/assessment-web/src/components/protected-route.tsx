@@ -26,5 +26,5 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   if (studentQuiz) {
     return children;
   }
-  return <Navigate to={"/"} />;
+  return <Navigate to={"/join"} />;
 };
