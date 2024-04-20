@@ -6,23 +6,17 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/ui/card.tsx";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@ui/components/ui/select.tsx";
 import { QuizDetail } from "../../interfaces/quiz.ts";
 import { Button } from "@ui/components/ui/button.tsx";
 import { Link } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
 import { useState } from "react";
+import { QuizHistory } from "./quiz-history.tsx";
 // import { useQuery } from "@tanstack/react-query";
 
 export function QuizCard({ quiz }: { quiz: QuizDetail }) {
-  const versionIdParams = quiz.id
-  const [versionId, setVersionId] = useState(versionIdParams);
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
+
   function formatDate(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-indexed
@@ -36,6 +30,15 @@ export function QuizCard({ quiz }: { quiz: QuizDetail }) {
 
     return `${hours}:${minutes}`;
   }
+
+  const handleOpenHistory = () => {
+    setHistoryOpen(true);
+  };
+
+  const handleCloseHistory = () => {
+    setHistoryOpen(false);
+  };
+
   return (
     <Card className="space-x-2">
       <CardHeader className="flex flex-row justify-between">
@@ -77,27 +80,36 @@ export function QuizCard({ quiz }: { quiz: QuizDetail }) {
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        {/* dropdown for choose history version */}
-        <Select value={""} onValueChange={setVersionId}>
-          <SelectTrigger className="w-[240px]">
-            <SelectValue placeholder="Select Version" className="text-black" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value={"a"}>
-              {versionId}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex flex-row justify-between space-x-2">
-          <Button variant="outline">
-            <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
-          </Button>
-          <Button>
-            <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
-          </Button>
-        </div>
-      </CardFooter>
+      {quiz.lastPublishedAt ? (
+        <CardFooter className="flex justify-between">
+          <div onClick={handleOpenHistory} className="cursor-pointer underline text-gray-500 hover:text-gray-400">
+            Check Version History
+          </div>
+
+          {isHistoryOpen && (
+            <QuizHistory quizId={quiz.id} quizName={quiz.name} onClose={handleCloseHistory} />
+          )}
+          <div className="flex flex-row justify-between space-x-2">
+            <Button variant="outline">
+              <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
+            </Button>
+            <Button>
+              <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
+            </Button>
+          </div>
+        </CardFooter>
+      ) : (
+        <CardFooter className="flex justify-end">
+          <div className="flex flex-row justify-between space-x-2">
+            <Button variant="outline">
+              <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
+            </Button>
+            <Button>
+              <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
+            </Button>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }
