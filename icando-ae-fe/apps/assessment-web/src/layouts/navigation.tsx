@@ -4,21 +4,25 @@ import SidebarIcon from "../../public/ic_sidebar.svg";
 export const Navigation = ({
   pageTitle,
   toggleSidebar,
+  showNavigation,
 }: {
   pageTitle: string;
-  toggleSidebar: () => void;
+    toggleSidebar: () => void;
+    showNavigation: boolean;
 }) => {
   return (
     <header className="relative w-full flex flex-row justify-between px-2 lg:px-6 py-4 z-20 items-center">
       <h1 className="text-center flex-grow text-white font-semibold text-2xl">
         {pageTitle}
       </h1>
-      <button
-        onClick={toggleSidebar}
-        className="absolute right-5 top-0 bottom-0"
-      >
-        <img src={SidebarIcon} alt="Sidebar Icon" className="h-6 w-6 " />
-      </button>
+      {showNavigation &&
+        <button
+          onClick={toggleSidebar}
+          className="absolute right-5 top-0 bottom-0"
+        >
+          <img src={SidebarIcon} alt="Sidebar Icon" className="h-6 w-6 " />
+        </button>
+      }
     </header>
   );
 };

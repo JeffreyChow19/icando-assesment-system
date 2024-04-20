@@ -1,16 +1,16 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Toaster } from "@repo/ui/components/ui/toaster";
-import { UserProvider } from "./context/user-context.tsx";
+import { StudentProvider, QuizProvider } from "./context/user-context.tsx";
 import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import dayjs from "dayjs";
 import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
-import { Hello } from "./pages/hello.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
+import { Home } from "./pages/home/index.tsx";
 import { Quiz } from "./pages/quiz.tsx";
-// import { TestPage } from "./pages/test.tsx";
+import Join from "./pages/join.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -25,19 +25,24 @@ function App() {
     },
     {
       path: "/",
-      element: <Hello />,
-    },
+      element: <Home />,
+    }, {
+      path: "/join",
+      element: <Join />,
+    }
   ]);
   return (
     <QueryClientProvider client={queryClient}>
       <AlertDialogProvider>
-        <UserProvider>
-          <HelmetProvider>
-            <TooltipProvider>
-              <RouterProvider router={router} />
-            </TooltipProvider>
-          </HelmetProvider>
-        </UserProvider>
+        <QuizProvider>
+          <StudentProvider>
+            <HelmetProvider>
+              <TooltipProvider>
+                <RouterProvider router={router} />
+              </TooltipProvider>
+            </HelmetProvider>
+          </StudentProvider>
+        </QuizProvider>
         <Toaster />
       </AlertDialogProvider>
     </QueryClientProvider>

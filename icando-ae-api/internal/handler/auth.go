@@ -2,6 +2,7 @@ package handler
 
 import (
 	"icando/internal/domain/service"
+	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
@@ -77,10 +78,18 @@ func (h *AuthHandlerImpl) GetTeacherProfile(c *gin.Context) {
 }
 
 func (h *AuthHandlerImpl) GetStudentProfile(c *gin.Context) {
-	user, _ := c.Get(enum.USER_CONTEXT_KEY)
-	claim := user.(*dao.TokenClaim)
+	studentQuiz, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		return
+	}
+	quizData, okQuizData := studentQuiz.(*model.StudentQuiz)
+	if !okQuizData {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz"})
+		return
+	}
 
-	data, err := h.service.ProfileStudent(claim.ID)
+	data, err := h.service.ProfileStudent(quizData.StudentID)
 
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
