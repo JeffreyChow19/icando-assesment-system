@@ -20,6 +20,7 @@ import { StudentsNew } from "./pages/students/students-new.tsx";
 import { Students } from "./pages/students";
 import { Quizzes } from "./pages/quizzes/index.tsx";
 import { PublishQuizPage } from "./pages/quiz/publish.tsx";
+import { ViewQuizPage } from "./pages/quiz/view.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -76,6 +77,10 @@ function App() {
       path: "/quiz/:id/publish",
       element: <PublishQuizPage />,
     },
+    {
+      path: "/history/:id",
+      element: <ViewQuizPage />,
+    }
   ]);
   return (
     <QueryClientProvider client={queryClient}>
