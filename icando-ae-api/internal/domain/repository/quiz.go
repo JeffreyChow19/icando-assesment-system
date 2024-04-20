@@ -92,6 +92,7 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 	}
 
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")
+	query.Order("quizzes.updated_at DESC")
 
 	var totalItem int64
 	err := query.Session(&gorm.Session{}).Count(&totalItem).Error
@@ -115,7 +116,7 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 
 func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]dao.ParentQuizDao, *dao.MetaDao, error) {
     query := r.db.Table("quizzes").Select(
-		`quizzes.id, quizzes.name, quizzes.subject, quizzes.passing_grade, quizzes.published_at, t1.first_name || ' ' || t1.last_name as created_by, t2.first_name || ' ' || t2.last_name as updated_by`).
+		`quizzes.id, quizzes.name, quizzes.subject, quizzes.passing_grade, quizzes.published_at AS last_published_at, t1.first_name || ' ' || t1.last_name as created_by, t2.first_name || ' ' || t2.last_name as updated_by`).
 		Joins("INNER JOIN teachers t1 ON quizzes.created_by=t1.id").
 		Joins("INNER JOIN teachers t2 ON quizzes.updated_by=t2.id")
 
@@ -124,6 +125,7 @@ func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]d
 	}
 	
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")
+	query.Order("quizzes.updated_at DESC")
 
 	var totalItem int64
 	err := query.Session(&gorm.Session{}).Count(&totalItem).Error
