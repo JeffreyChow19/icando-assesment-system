@@ -72,6 +72,12 @@ export interface GetAllQuizFilter {
   page: number;
   limit: number;
 }
+
+export interface GetQuizHistoryFilter {
+  id: string;
+  page: number;
+  limit: number;
+}
 interface GetAllQuiz {
   meta: Meta;
   data: QuizDetail[];
@@ -122,3 +128,7 @@ export const getQuiz = async (id: string) => {
 export const getAllQuiz = async (filter: GetAllQuizFilter) => {
   return (await api.get(path, { params: filter })).data as GetAllQuiz;
 };
+
+export const getQuizHistory = async (filter: GetQuizHistoryFilter) => {
+  return (await api.get(`${path}/${filter.id}/history`, { params: filter })).data as GetAllQuiz;
+}
