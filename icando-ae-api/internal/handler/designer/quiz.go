@@ -162,12 +162,17 @@ func (h *QuizHandlerImpl) GetAll(c *gin.Context) {
 func (h *QuizHandlerImpl) GetQuizHistory(c *gin.Context) {
     quizID := c.Param("id")
     parsedQuizID, err := uuid.Parse(quizID)
-    if err != nil {
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
 	}
+	filter := dto.GetQuizVersionFilter{
+		ID: parsedQuizID,
+		Page:          1,
+		Limit:         10,
+	}
 
-    quizHistory, meta, httpErr := h.quizService.GetQuizHistory(parsedQuizID)
+    quizHistory, meta, httpErr := h.quizService.GetQuizHistory(filter)
 
 	if httpErr != nil {
 		c.AbortWithStatusJSON(httpErr.StatusCode, gin.H{"errors": httpErr.Err.Error()})
