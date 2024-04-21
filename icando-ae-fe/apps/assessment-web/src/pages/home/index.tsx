@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@ui/components/ui/card.tsx";
 import { Button } from "@ui/components/ui/button.tsx";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
 import { useStudentProfile, useStudentQuiz } from "../../context/user-context.tsx";
 import { startQuiz } from '../../services/quiz.ts';
@@ -23,9 +23,8 @@ export const Home = () => {
   const handleStartQuiz = async () => {
     try {
       const quizAttempt = await startQuiz();
-      // todo @ livia change navigation
       if (quizAttempt) {
-        navigate(`/`);
+        navigate(`/quiz/1`);
       }
     } catch (error) {
       console.error('Failed to start quiz:', error);
@@ -77,7 +76,7 @@ export const Home = () => {
                 className="flex flex-row justify-between space-x-2"
                 onClick={handleStartQuiz}
                 disabled={new Date(quiz.startAt) > currentDate || new Date(quiz.endAt) < currentDate}>
-                <Link to={``}>Mulai</Link>
+                Mulai
               </Button>
             </CardFooter>
           </Card>
