@@ -9,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@ui/components/ui/button.tsx";
 import Countdown from "react-countdown";
 import { toast } from "@ui/components/ui/use-toast.ts";
+import { removeToken } from "../utils/local-storage.ts";
 
 export const Quiz = () => {
   const { number } = useParams();
@@ -87,10 +88,8 @@ export const Quiz = () => {
   const submit = async () => {
     try {
       await submitQuiz();
-      toast({
-        description: "Quiz submitted!",
-      });
-      navigate("/");
+      removeToken();
+      navigate("/submit");
     } catch (err) {
       toast({
         variant: "destructive",
