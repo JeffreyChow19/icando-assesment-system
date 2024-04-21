@@ -8,7 +8,7 @@ import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
-import { Home } from "./pages/home/index.tsx";
+import { Home } from './pages/home';
 import { Quiz } from "./pages/quiz.tsx";
 import Join from "./pages/join.tsx";
 

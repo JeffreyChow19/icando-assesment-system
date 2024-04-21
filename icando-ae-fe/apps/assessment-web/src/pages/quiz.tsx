@@ -7,7 +7,7 @@ export const Quiz = () => {
     <Layout pageTitle="Quiz" showTitle={true} showNavigation={true}>
       {/* todo: quiz layout */}
       <p>
-        {studentQuiz ? `${studentQuiz.startAt} ${studentQuiz.endAt}` : "Quiz invalid"}
+        {studentQuiz ? `${studentQuiz.quiz?.startAt} ${studentQuiz.quiz?.endAt}` : "Quiz invalid"}
       </p>
     </Layout>
   );
