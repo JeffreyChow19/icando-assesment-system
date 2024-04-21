@@ -20,7 +20,7 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/quiz",
+      path: "/quiz/:number",
       element: <Quiz />,
     },
     {
