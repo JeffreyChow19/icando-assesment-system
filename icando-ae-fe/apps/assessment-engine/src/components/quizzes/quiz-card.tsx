@@ -10,21 +10,20 @@ import { QuizDetail } from "../../interfaces/quiz.ts";
 import { Button } from "@ui/components/ui/button.tsx";
 import { Link } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
+import { useState } from "react";
+import { QuizHistory } from "./quiz-history.tsx";
+import { formatDate, formatHour } from "../../utils/format-date.ts";
 
 export function QuizCard({ quiz }: { quiz: QuizDetail }) {
-  function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-indexed
-    const year = date.getFullYear().toString().slice(-2);
-  
-    return `${day}-${month}-${year}`;
-  }
-  function formatHour(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-  
-    return `${hours}:${minutes}`;
-  }
+  const [isHistoryOpen, setHistoryOpen] = useState(false);
+  const handleOpenHistory = () => {
+    setHistoryOpen(true);
+  };
+
+  const handleCloseHistory = () => {
+    setHistoryOpen(false);
+  };
+
   return (
     <Card className="space-x-2">
       <CardHeader className="flex flex-row justify-between">
@@ -45,8 +44,9 @@ export function QuizCard({ quiz }: { quiz: QuizDetail }) {
             </div>
           )}
         </CardDescription>
+
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardContent>
         <div className="flex flex-row justify-between">
           <div>
             <p className="mb-2">
@@ -57,22 +57,44 @@ export function QuizCard({ quiz }: { quiz: QuizDetail }) {
             <p>
               Last Published at: {quiz.lastPublishedAt ?
                 <>
-                <Badge key={formatDate(new Date(quiz.lastPublishedAt))} className="mr-2" variant={"outline"}>{formatDate(new Date(quiz.lastPublishedAt))}</Badge>
-                <Badge key={formatHour(new Date(quiz.lastPublishedAt))} variant={"outline"}>{formatHour(new Date(quiz.lastPublishedAt))}</Badge>
+                  <Badge key={formatDate(new Date(quiz.lastPublishedAt))} className="mr-2" variant={"outline"}>{formatDate(new Date(quiz.lastPublishedAt))}</Badge>
+                  <Badge key={formatHour(new Date(quiz.lastPublishedAt))} variant={"outline"}>{formatHour(new Date(quiz.lastPublishedAt))}</Badge>
                 </>
                 : "-"}
             </p>
           </div>
         </div>
-        <div className="flex flex-row justify-between space-x-2">
-          <Button variant="outline">
-            <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
-          </Button>
-          <Button>
-            <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
-          </Button>
-        </div>
-      </CardFooter>
+      </CardContent>
+      {quiz.lastPublishedAt ? (
+        <CardFooter className="flex justify-between">
+          <div onClick={handleOpenHistory} className="cursor-pointer underline text-gray-500 hover:text-gray-400">
+            Check Version History
+          </div>
+
+          {isHistoryOpen && (
+            <QuizHistory quizId={quiz.id} quizName={quiz.name} onClose={handleCloseHistory} />
+          )}
+          <div className="flex flex-row justify-between space-x-2">
+            <Button variant="outline">
+              <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
+            </Button>
+            <Button>
+              <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
+            </Button>
+          </div>
+        </CardFooter>
+      ) : (
+        <CardFooter className="flex justify-end">
+          <div className="flex flex-row justify-between space-x-2">
+            <Button variant="outline">
+              <Link to={`/quiz/${quiz.id}/edit`}>Edit</Link>
+            </Button>
+            <Button>
+              <Link to={`/quiz/${quiz.id}/publish`}>Publish</Link>
+            </Button>
+          </div>
+        </CardFooter>
+      )}
     </Card>
   );
 }

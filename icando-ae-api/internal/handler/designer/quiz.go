@@ -20,6 +20,7 @@ type QuizHandler interface {
 	Get(c *gin.Context)
 	Update(c *gin.Context)
 	GetAll(c *gin.Context)
+	GetQuizHistory(c *gin.Context)
 }
 
 type QuizHandlerImpl struct {
@@ -156,4 +157,29 @@ func (h *QuizHandlerImpl) GetAll(c *gin.Context) {
 
 	createdMsg := "ok"
 	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizzes, meta))
+}
+
+func (h *QuizHandlerImpl) GetQuizHistory(c *gin.Context) {
+    quizID := c.Param("id")
+    parsedQuizID, err := uuid.Parse(quizID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
+		return
+	}
+	filter := dto.GetQuizVersionFilter{
+		ID: parsedQuizID,
+		Page:          1,
+		Limit:         10,
+	}
+
+    quizHistory, meta, httpErr := h.quizService.GetQuizHistory(filter)
+
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, gin.H{"errors": httpErr.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizHistory, meta))
+
 }

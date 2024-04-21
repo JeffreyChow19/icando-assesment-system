@@ -18,6 +18,8 @@ func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group.GET("/:id", r.quizHandler.Get)
 	group.PATCH("", r.quizHandler.Update)
 	group.GET("", r.quizHandler.GetAll)
+	group.GET("/:id/history", r.quizHandler.GetQuizHistory)
+
 }
 
 func NewQuizRoute(
