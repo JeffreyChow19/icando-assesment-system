@@ -13,8 +13,10 @@ import { useQuery } from '@tanstack/react-query';
 import { getQuizHistory } from "../../services/quiz.ts";
 import React from "react";
 import { Pagination } from "../pagination.tsx";
+import { formatDate, formatHour } from "../../utils/format-date.ts";
+import { Badge } from "@ui/components/ui/badge.tsx";
 
-export function QuizHistory({ quizId, quizName, onClose }: { quizId: string, quizName:(string|null), onClose: () => void }) {
+export function QuizHistory({ quizId, quizName, onClose }: { quizId: string, quizName: (string | null), onClose: () => void }) {
     const [searchParams] = useSearchParams();
     const pageParams = searchParams.get("page");
     const [page, setPage] = useState(pageParams ? parseInt(pageParams) : 1);
@@ -38,21 +40,18 @@ export function QuizHistory({ quizId, quizName, onClose }: { quizId: string, qui
                     <DialogTitle>History - {quizName ? quizName : "Untitled Quiz"}</DialogTitle>
                 </DialogHeader>
                 {data && data.data.length > 0 && data.data
-                    .filter(history => history.lastPublishedAt !== null)
                     .map((history, index, array) => {
                         const idx = array.length - 1 - index;
-                        const formattedDate = history.lastPublishedAt
-                            ? new Date(history.lastPublishedAt).toLocaleDateString('en-US', {
-                                year: 'numeric', month: 'long', day: 'numeric',
-                                hour: '2-digit', minute: '2-digit', second: '2-digit'
-                            })
-                            : "Date not available";
-
                         return (
                             <React.Fragment key={index}>
                                 <div className="flex space-x-2 items-center">
                                     <div className="grid flex-1 gap-2">
-                                        <b>Version {idx}</b> - {formattedDate}
+                                        <b>Version {idx}</b>
+                                        {history.lastPublishedAt ?
+                                            <div className="flex flex-row">
+                                                <Badge key={formatDate(new Date(history.lastPublishedAt))} className="mr-2" variant={"outline"}>{formatDate(new Date(history.lastPublishedAt))}</Badge>
+                                                <Badge key={formatHour(new Date(history.lastPublishedAt))} variant={"outline"}>{formatHour(new Date(history.lastPublishedAt))}</Badge>
+                                            </div> : ""}
                                     </div>
                                     <Button type="submit" size="sm" className="px-3">
                                         <Link to={`/history/${history.id}`}>View</Link>

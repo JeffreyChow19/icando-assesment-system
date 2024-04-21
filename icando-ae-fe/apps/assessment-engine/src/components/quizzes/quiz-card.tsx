@@ -12,25 +12,10 @@ import { Link } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
 import { useState } from "react";
 import { QuizHistory } from "./quiz-history.tsx";
-// import { useQuery } from "@tanstack/react-query";
+import { formatDate, formatHour } from "../../utils/format-date.ts";
 
 export function QuizCard({ quiz }: { quiz: QuizDetail }) {
   const [isHistoryOpen, setHistoryOpen] = useState(false);
-
-  function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() is zero-indexed
-    const year = date.getFullYear().toString().slice(-2);
-
-    return `${day}-${month}-${year}`;
-  }
-  function formatHour(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-
-    return `${hours}:${minutes}`;
-  }
-
   const handleOpenHistory = () => {
     setHistoryOpen(true);
   };
