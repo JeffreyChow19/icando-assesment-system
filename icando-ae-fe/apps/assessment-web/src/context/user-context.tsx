@@ -8,14 +8,16 @@ import React, {
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { removeToken } from "../utils/local-storage.ts";
-import { StudentQuiz } from "../interfaces/quiz.ts";
+import { Quiz, StudentQuiz } from "../interfaces/quiz.ts";
 import { Student } from "../interfaces/user.ts";
 import { getQuizAvailability } from "../services/quiz.ts";
 import { getStudentProfile } from "../services/student.ts";
 
 interface StudentQuizContextValue {
+  quiz: Quiz | undefined;
   studentQuiz: StudentQuiz | undefined;
   loading: boolean;
+  setQuiz: React.Dispatch<React.SetStateAction<Quiz | undefined>>;
   setStudentQuiz: React.Dispatch<React.SetStateAction<StudentQuiz | undefined>>;
   refresh: () => void;
 }
@@ -27,9 +29,11 @@ interface StudentProfileContextValue {
 }
 
 export const StudentQuizContext = createContext<StudentQuizContextValue>({
+  quiz: undefined,
   studentQuiz: undefined,
   loading: true,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setQuiz: () => {},
   setStudentQuiz: () => {},
   refresh: () => {},
 });
@@ -43,6 +47,7 @@ export const StudentContext = createContext<StudentProfileContextValue>({
 });
 
 export const QuizProvider = ({ children }: { children: ReactElement }) => {
+  const [quiz, setQuiz] = useState<Quiz>();
   const [studentQuiz, setStudentQuiz] = useState<StudentQuiz>();
   const [loading, setLoading] = useState<boolean>(true);
   const { data, isLoading, error, refetch } = useQuery({
@@ -59,20 +64,22 @@ export const QuizProvider = ({ children }: { children: ReactElement }) => {
     setLoading(false);
     if (error && error instanceof AxiosError && error.response?.status == 401) {
       removeToken();
-      setStudentQuiz(undefined);
+      setQuiz(undefined);
       return;
     }
 
     if (!error && data) {
-      setStudentQuiz(data);
+      setQuiz(data);
     }
   }, [isLoading, data, error]);
 
   return (
     <StudentQuizContext.Provider
       value={{
+        quiz: quiz,
         studentQuiz: studentQuiz,
         loading,
+        setQuiz: setQuiz,
         setStudentQuiz: setStudentQuiz,
         refresh: () => refetch(),
       }}

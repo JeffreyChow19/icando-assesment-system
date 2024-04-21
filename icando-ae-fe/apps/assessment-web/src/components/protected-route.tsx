@@ -18,12 +18,12 @@ export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     const noParams = window.location.origin + window.location.pathname;
     window.history.replaceState({ path: noParams }, "", noParams);
   }
-  const { studentQuiz, loading } = useStudentQuiz();
+  const { quiz, loading } = useStudentQuiz();
 
   if (loading) {
     return <LoadingPage />;
   }
-  if (studentQuiz) {
+  if (quiz) {
     return children;
   }
   return <Navigate to={"/join"} />;

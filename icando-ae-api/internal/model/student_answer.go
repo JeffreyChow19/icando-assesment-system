@@ -47,14 +47,19 @@ func (a *StudentAnswer) SetCompetencies(competencies []StudentAnswerCompetency) 
 }
 
 func (a *StudentAnswer) ToDao(withQuestionAnswer bool) (*dao.StudentAnswerDao, error) {
-	competencies, err := a.GetCompetencies()
-	if err != nil {
-		return nil, err
-	}
-
 	var competenciesDao []dao.StudentAnswerCompetencyDao
-	for _, competency := range competencies {
-		competenciesDao = append(competenciesDao, competency.ToDao())
+
+	if a.Competencies != nil {
+		competencies, err := a.GetCompetencies()
+		if err != nil {
+			return nil, err
+		}
+
+		competenciesDao = make([]dao.StudentAnswerCompetencyDao, 0)
+
+		for _, competency := range competencies {
+			competenciesDao = append(competenciesDao, competency.ToDao())
+		}
 	}
 
 	daoAnswer := dao.StudentAnswerDao{

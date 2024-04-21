@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useParams } from 'react-router-dom';
 import SidebarIcon from "../../public/ic_sidebar.svg";
+import { useStudentQuiz } from '../context/user-context.tsx';
 
 export const Navigation = ({
   pageTitle,
@@ -28,9 +29,10 @@ export const Navigation = ({
 };
 
 export const SideBar = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
-  // TODO: get actual datas
-  const currNumber = 1;
-  const numOfQuestions = 5;
+  const { studentQuiz} = useStudentQuiz()
+  const {number} = useParams()
+  const currNumber = number ? parseInt(number) : 1;
+  const numOfQuestions = studentQuiz?.quiz?.questions ? studentQuiz.quiz.questions.length : 0;
 
   const questionNumbers = Array.from(
     { length: numOfQuestions },
@@ -44,7 +46,7 @@ export const SideBar = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
       <div className="h-auto p-6 overflow-auto grid grid-cols-2 gap-6">
         {questionNumbers.map((number) => (
           <Link
-            to={`/question/${number}`}
+            to={`/quiz/${number}`}
             key={number}
             className={`rounded-lg text-center w-12 h-12 flex items-center justify-center ${number === currNumber ? "bg-primary text-white" : "bg-[#D9D9D9] text-black"}`}
           >

@@ -22,14 +22,14 @@ export const Layout = ({ children, pageTitle, showTitle, showNavigation }: Layou
       <Helmet>
         <title>{pageTitle}</title>
       </Helmet>
-      <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-screen bg-primary overflow-hidden">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[100vh] bg-primary overflow-hidden">
         <Navigation pageTitle={pageTitle} toggleSidebar={toggleSidebar} showNavigation={showNavigation} />
-        
+
         <div
-          className={`relative w-full flex-grow bg-[#EDF3FF] overflow-hidden p-5 ${sidebarOpen ? "rounded-tl-3xl" : "rounded-t-3xl"}`}
+          className={`relative w-full h-full flex flex-col flex-grow bg-[#EDF3FF] overflow-hidden p-5 ${sidebarOpen ? "rounded-tl-3xl" : "rounded-t-3xl"}`}
         >
           <SideBar sidebarOpen={sidebarOpen} />
-          <main className="w-full p-5 rounded-t-3xl">
+          <main className="w-full p-5 rounded-t-3xl flex flex-col flex-grow">
             {showTitle && (
               <h1 className="text-lg font-bold mb-2">{pageTitle}</h1>
             )}
