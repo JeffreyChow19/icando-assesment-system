@@ -16,6 +16,7 @@ import {
 } from "../../context/user-context.tsx";
 import { startQuiz } from "../../services/quiz.ts";
 import { onErrorToast } from "../../components/error-toast.tsx";
+import { formatDate, formatHour } from "../../utils/format-date.ts";
 
 export const Home = () => {
   const { quiz } = useStudentQuiz();
@@ -34,20 +35,6 @@ export const Home = () => {
       onErrorToast(error as Error);
     }
   };
-
-  function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, "0");
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const year = date.getFullYear().toString().slice(-2);
-
-    return `${day}-${month}-${year}`;
-  }
-  function formatHour(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-
-    return `${hours}:${minutes}`;
-  }
   return (
     <Layout pageTitle={"Home"} showTitle={false} showNavigation={false}>
       {quiz && student ? (
@@ -57,7 +44,7 @@ export const Home = () => {
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>{quiz.name ? quiz.name : "Untitled Quiz"}</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-2">
               <CardDescription>
                 {quiz.subject && quiz.subject.length > 0 && (
                   <div className="flex flex-wrap gap-2">
@@ -67,20 +54,21 @@ export const Home = () => {
                   </div>
                 )}
               </CardDescription>
-              <div className="grid grid-cols-2 gap-x-4 py-2">
+              <div>
                 <div className="text-left font-medium text-gray-700">
                   Durasi Pengerjaan:
                 </div>
-                <div className="text-left text-lg font-semibold text-black">
+                <div className="text-left font-semibold text-black flex flex-wrap">
                   {quiz.duration} menit
                 </div>
-
+              </div>
+              <div>
                 <div className="text-left font-medium text-gray-700">
                   Batas Pengerjaan:
                 </div>
-                <div className="text-left text-lg font-semibold text-black">
+                <div className="text-left font-semibold text-black flex flex-wrap">
                   {" "}
-                  {formatDate(new Date(quiz.endAt))}{" "}
+                  {formatDate(new Date(quiz.endAt))}{" - "}
                   {formatHour(new Date(quiz.endAt))}
                 </div>
               </div>
