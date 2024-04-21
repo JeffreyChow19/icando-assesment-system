@@ -2,12 +2,14 @@ import { Layout } from "../layouts/layout.tsx";
 import { useStudentQuiz } from "../context/user-context.tsx";
 import { Card, CardContent } from "@ui/components/ui/card.tsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getQuizDetail, updateAnswer, submitQuiz } from "../services/quiz.ts";
+import { getQuizDetail, submitQuiz, updateAnswer } from '../services/quiz.ts';
 import { useEffect, useState } from "react";
 import { onErrorToast } from "../components/error-toast.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@ui/components/ui/button.tsx";
 import Countdown from "react-countdown";
+import { cn } from "@ui/lib/utils.ts";
+import { StudentAnswer } from "../interfaces/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { removeToken } from "../utils/local-storage.ts";
 
@@ -17,12 +19,23 @@ export const Quiz = () => {
 
   const { studentQuiz, setStudentQuiz } = useStudentQuiz();
   const [time, setTime] = useState<Date>();
+  const [answers, setAnswers] = useState<StudentAnswer[]>([]);
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["studentQuiz"],
     queryFn: () => getQuizDetail(),
     retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   });
+
+  useEffect(() => {
+    setAnswers([]);
+    if (data?.studentAnswers) {
+      setAnswers(data.studentAnswers);
+    }
+  }, [data]);
 
   useEffect(() => {
     if (data) {
@@ -37,7 +50,7 @@ export const Quiz = () => {
 
     if (!isLoading && data) {
       setStudentQuiz(data);
-      console.log(data);
+      if (data.studentAnswers) setAnswers(data.studentAnswers);
     }
   }, [isLoading, data, error]);
 
@@ -53,14 +66,39 @@ export const Quiz = () => {
         choiceId,
       );
     },
-    onSuccess: (response) => {
-      console.log(response);
-      refetch();
+    onSuccess: (_, choiceId) => {
+      const foundIdx = answers.findIndex(
+        (answer) =>
+          answer.questionId ===
+          data!.quiz!.questions![parseInt(number!) - 1].id,
+      );
+      if (foundIdx !== -1) {
+        setAnswers((prevAnswers) => {
+          const updatedAnswers = [...prevAnswers];
+          updatedAnswers[foundIdx] = {
+            ...updatedAnswers[foundIdx],
+            answerId: choiceId,
+          };
+          return updatedAnswers;
+        });
+      } else {
+        setAnswers((prev) => [
+          ...prev,
+          {
+            questionId: data!.quiz!.questions![parseInt(number!) - 1].id,
+            answerId: choiceId,
+          },
+        ]);
+      }
     },
     onError: (err: Error) => {
       onErrorToast(err);
     },
   });
+
+  const onChooseAnswer = (choiceId: number) => {
+    mutation.mutate(choiceId);
+  };
 
   const renderer = ({
     hours,
@@ -74,8 +112,7 @@ export const Quiz = () => {
     completed: boolean;
   }) => {
     if (completed) {
-      console.log("time ended");
-      // TODO: submit otomatis
+      submit()
     } else {
       return (
         <span className="font-bold text-primary">
@@ -117,8 +154,19 @@ export const Quiz = () => {
               {studentQuiz.quiz.questions[parseInt(number) - 1].choices.map(
                 (choice) => (
                   <Button
-                    className="w-full shadow-md py-3 rounded-lg bg-background text-foreground hover:bg-blue"
-                    onClick={() => mutation.mutate(choice.id)}
+                    className={cn(
+                      choice.id ===
+                        answers.find(
+                          (answer) =>
+                            answer.questionId ===
+                            studentQuiz.quiz!.questions![parseInt(number) - 1]
+                              .id,
+                        )?.answerId
+                        ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
+                        : "hover:bg-blue bg-background ",
+                      "w-full shadow-md py-3 rounded-lg text-foreground",
+                    )}
+                    onClick={() => onChooseAnswer(choice.id)}
                   >
                     {choice.text}
                   </Button>
