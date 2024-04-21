@@ -33,9 +33,7 @@ export interface StudentQuiz {
   studentAnswers: StudentAnswer[] | null;
 }
 
-// todo fix student answer interface
 export interface StudentAnswer {
   questionId: string;
-  answerId: string;
-  isCorrect: boolean;
+  answerId: number;
 }
