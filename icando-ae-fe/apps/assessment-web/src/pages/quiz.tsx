@@ -52,7 +52,7 @@ export const Quiz = () => {
       setStudentQuiz(data);
       if (data.studentAnswers) setAnswers(data.studentAnswers);
     }
-  }, [isLoading, data, error]);
+  }, [isLoading, data, error, setStudentQuiz]);
 
   const getRemainingTime = (startAt: string, duration: number) => {
     const startTime = new Date(startAt);
