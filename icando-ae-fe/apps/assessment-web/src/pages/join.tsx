@@ -46,7 +46,11 @@ export const Join = () => {
                 <CardTitle>Join Quiz</CardTitle>
               </CardHeader>
               <CardContent>
-                <p>We are redirecting you shortly ...</p>
+                {studentProfileContext.loading || studentQuizContext.loading ? (
+                  <p>Tunggu sebentar ...</p>
+                ) : (
+                  <p>Silakan mengikuti quiz melalui tautan yang diberikan.</p>
+                )}
               </CardContent>
             </Card>
           </main>

@@ -1,4 +1,4 @@
-import { Layout } from '../../layouts/layout.tsx';
+import { Layout } from "../../layouts/layout.tsx";
 import {
   Card,
   CardContent,
@@ -10,13 +10,16 @@ import {
 import { Button } from "@ui/components/ui/button.tsx";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
-import { useStudentProfile, useStudentQuiz } from "../../context/user-context.tsx";
-import { startQuiz } from '../../services/quiz.ts';
-
+import {
+  useStudentProfile,
+  useStudentQuiz,
+} from "../../context/user-context.tsx";
+import { startQuiz } from "../../services/quiz.ts";
+import { onErrorToast } from "../../components/error-toast.tsx";
 
 export const Home = () => {
-  const { quiz } = useStudentQuiz()
-  const { student } = useStudentProfile()
+  const { quiz } = useStudentQuiz();
+  const { student } = useStudentProfile();
   const currentDate = new Date();
   const navigate = useNavigate();
 
@@ -27,25 +30,26 @@ export const Home = () => {
         navigate(`/quiz/1`);
       }
     } catch (error) {
-      console.error('Failed to start quiz:', error);
+      console.error("Failed to start quiz:", error);
+      onErrorToast(error as Error);
     }
   };
 
   function formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
     const year = date.getFullYear().toString().slice(-2);
 
     return `${day}-${month}-${year}`;
   }
   function formatHour(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
 
     return `${hours}:${minutes}`;
   }
   return (
-    <Layout pageTitle={'Home'} showTitle={false} showNavigation={false}>
+    <Layout pageTitle={"Home"} showTitle={false} showNavigation={false}>
       {quiz && student ? (
         <>
           <h1 className="text-lg mb-2">Selamat datang, {student.firstName}</h1>
@@ -64,18 +68,32 @@ export const Home = () => {
                 )}
               </CardDescription>
               <div className="grid grid-cols-2 gap-x-4 py-2">
-                <div className="text-left font-medium text-gray-700">Durasi Pengerjaan:</div>
-                <div className="text-left text-lg font-semibold text-black">{quiz.duration} menit</div>
+                <div className="text-left font-medium text-gray-700">
+                  Durasi Pengerjaan:
+                </div>
+                <div className="text-left text-lg font-semibold text-black">
+                  {quiz.duration} menit
+                </div>
 
-                <div className="text-left font-medium text-gray-700">Batas Pengerjaan:</div>
-                <div className="text-left text-lg font-semibold text-black"> {formatDate(new Date(quiz.endAt))} {formatHour(new Date(quiz.endAt))}</div>
+                <div className="text-left font-medium text-gray-700">
+                  Batas Pengerjaan:
+                </div>
+                <div className="text-left text-lg font-semibold text-black">
+                  {" "}
+                  {formatDate(new Date(quiz.endAt))}{" "}
+                  {formatHour(new Date(quiz.endAt))}
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
               <Button
                 className="flex flex-row justify-between space-x-2"
                 onClick={handleStartQuiz}
-                disabled={new Date(quiz.startAt) > currentDate || new Date(quiz.endAt) < currentDate}>
+                disabled={
+                  new Date(quiz.startAt) > currentDate ||
+                  new Date(quiz.endAt) < currentDate
+                }
+              >
                 Mulai
               </Button>
             </CardFooter>
@@ -84,4 +102,4 @@ export const Home = () => {
       ) : null}
     </Layout>
   );
-}
+};
