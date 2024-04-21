@@ -8,9 +8,10 @@ import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
-import { Home } from './pages/home';
+import { Home } from "./pages/home";
 import { Quiz } from "./pages/quiz.tsx";
 import Join from "./pages/join.tsx";
+import { Submit } from "./pages/submit.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -26,10 +27,15 @@ function App() {
     {
       path: "/",
       element: <Home />,
-    }, {
+    },
+    {
       path: "/join",
       element: <Join />,
-    }
+    },
+    {
+      path: "/submit",
+      element: <Submit />,
+    },
   ]);
   return (
     <QueryClientProvider client={queryClient}>

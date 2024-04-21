@@ -18,3 +18,7 @@ export const updateAnswer = async (questionId: string, choiceId: number) => {
 export const startQuiz = async () => {
   return (await api.patch(`${path}/start`)).data.data as StudentQuiz;
 };
+
+export const submitQuiz = async () => {
+  await api.patch(`${path}/submit`);
+};

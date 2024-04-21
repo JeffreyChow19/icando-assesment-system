@@ -2,7 +2,7 @@ import { Layout } from "../layouts/layout.tsx";
 import { useStudentQuiz } from "../context/user-context.tsx";
 import { Card, CardContent } from "@ui/components/ui/card.tsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getQuizDetail, updateAnswer } from "../services/quiz.ts";
+import { getQuizDetail, submitQuiz, updateAnswer } from '../services/quiz.ts';
 import { useEffect, useState } from "react";
 import { onErrorToast } from "../components/error-toast.tsx";
 import { useNavigate, useParams } from "react-router-dom";
@@ -10,6 +10,8 @@ import { Button } from "@ui/components/ui/button.tsx";
 import Countdown from "react-countdown";
 import { cn } from "@ui/lib/utils.ts";
 import { StudentAnswer } from "../interfaces/quiz.ts";
+import { toast } from "@ui/components/ui/use-toast.ts";
+import { removeToken } from "../utils/local-storage.ts";
 
 export const Quiz = () => {
   const { number } = useParams();
@@ -50,7 +52,7 @@ export const Quiz = () => {
       setStudentQuiz(data);
       if (data.studentAnswers) setAnswers(data.studentAnswers);
     }
-  }, [isLoading, data, error]);
+  }, [isLoading, data, error, setStudentQuiz]);
 
   const getRemainingTime = (startAt: string, duration: number) => {
     const startTime = new Date(startAt);
@@ -110,14 +112,26 @@ export const Quiz = () => {
     completed: boolean;
   }) => {
     if (completed) {
-      console.log("time ended");
-      // TODO: submit otomatis
+      submit()
     } else {
       return (
         <span className="font-bold text-primary">
           {hours}:{minutes}:{seconds}
         </span>
       );
+    }
+  };
+
+  const submit = async () => {
+    try {
+      await submitQuiz();
+      removeToken();
+      navigate("/submit");
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        description: "Failed to submit quiz! Please try again!",
+      });
     }
   };
 
@@ -177,7 +191,12 @@ export const Quiz = () => {
                 </Button>
               )}
               {parseInt(number) === studentQuiz.quiz.questions.length && (
-                <Button className="rounded-full w-full">Submit</Button>
+                <Button
+                  className="rounded-full w-full"
+                  onClick={() => submit()}
+                >
+                  Submit
+                </Button>
               )}
             </div>
           </div>
