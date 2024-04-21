@@ -1,9 +1,6 @@
 package service
 
 import (
-	"github.com/google/uuid"
-	"github.com/pkg/errors"
-	"gorm.io/gorm"
 	"icando/internal/domain/repository"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -15,6 +12,10 @@ import (
 	"icando/utils/httperror"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/pkg/errors"
+	"gorm.io/gorm"
 )
 
 type StudentQuizService interface {
@@ -51,14 +52,18 @@ func NewStudentQuizServiceImpl(
 
 var ErrStartQuiz = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
-	Err:        errors.New("Error to start quiz"),
+	Err:        errors.New("Error on starting quiz"),
 }
 var ErrQuizStarted = &httperror.HttpError{
 	StatusCode: http.StatusConflict,
-	Err:        errors.New("Quiz started"),
+	Err:        errors.New("Quiz has already been started"),
 }
 
 func (s *StudentQuizServiceImpl) StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	if studentQuiz.Status == enum.SUBMITTED {
+		return nil, ErrStudentQuizSubmitted
+	}
+
 	if studentQuiz.Status != enum.NOT_STARTED || studentQuiz.StartedAt != nil {
 		return nil, ErrQuizStarted
 	}
@@ -137,15 +142,15 @@ var ErrInvalidQuestion = &httperror.HttpError{
 }
 var ErrStudentQuizNotStarted = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
-	Err:        errors.New("Student Quiz Not Started"),
+	Err:        errors.New("Student quiz has not been started"),
 }
 var ErrStudentQuizSubmitted = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
-	Err:        errors.New("Student Quiz Submitted"),
+	Err:        errors.New("Student quiz has already been submitted"),
 }
 var ErrQuizHasNotStarted = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
-	Err:        errors.New("Quiz hasn't started yet"),
+	Err:        errors.New("Quiz has not started yet"),
 }
 var ErrQuizHasEnded = &httperror.HttpError{
 	StatusCode: http.StatusForbidden,
