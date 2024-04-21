@@ -1,28 +1,31 @@
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
-} from "@ui/components/ui/card.tsx"
-import { Input } from "@ui/components/ui/input"
-import { Button } from "@ui/components/ui/button"
+} from "@ui/components/ui/card.tsx";
 import { Helmet } from "react-helmet-async";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { setToken } from "../utils/local-storage.ts";
-
-
+import { useStudentProfile, useStudentQuiz } from "../context/user-context.tsx";
 
 export const Join = () => {
-  const pageTitle = "ICANDO"
-  const [quizToken, setQuizToken] = useState('')
-  // const navigate = useNavigate();
-  const handleJoin = () => { 
-    setToken(quizToken)
-    // navigate(`/`);
-    // navigate(`/?token=${quizToken}`);
-  }
+  const pageTitle = "ICANDO";
+  const [searchParams] = useSearchParams();
+  const studentQuizContext = useStudentQuiz();
+  const studentProfileContext = useStudentProfile();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (searchParams && searchParams.get("token")) {
+      setToken(searchParams.get("token") as string);
+      studentProfileContext.refresh();
+      studentQuizContext.refresh();
+      navigate("/");
+    }
+  }, [searchParams, studentQuizContext, studentProfileContext, navigate]);
+
   return (
     <>
       <Helmet>
@@ -40,26 +43,11 @@ export const Join = () => {
           <main className="w-full p-5 rounded-t-3xl">
             <Card className="w-[350px]">
               <CardHeader>
-                <CardTitle>Masukkan Token</CardTitle>
+                <CardTitle>Join Quiz</CardTitle>
               </CardHeader>
               <CardContent>
-                <form>
-                  <div className="grid w-full items-center gap-4">
-                    <div className="flex flex-col space-y-1.5">
-                      <Input
-                        id="token"
-                        placeholder="Token Kuis"
-                        value={quizToken}
-                        onChange={(e) => setQuizToken(e.target.value)} />
-                    </div>
-                  </div>
-                </form>
+                <p>We are redirecting you shortly ...</p>
               </CardContent>
-              <CardFooter className="flex justify-end">
-                <Button disabled={quizToken == '' ? true : false} onClick={handleJoin}>
-                  <Link to={`/?token=${quizToken}`}>Masuk ke Kuis</Link>
-                </Button>
-              </CardFooter>
             </Card>
           </main>
         </div>

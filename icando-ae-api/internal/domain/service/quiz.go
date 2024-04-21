@@ -297,5 +297,5 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 
 func (s *QuizServiceImpl) BuildUrl(token string) string {
 	logger.Log.Info(token)
-	return fmt.Sprintf("%s/quiz?token=%s", s.config.AssessmentWebHost, token)
+	return fmt.Sprintf("%s/join?token=%s", s.config.AssessmentWebHost, token)
 }

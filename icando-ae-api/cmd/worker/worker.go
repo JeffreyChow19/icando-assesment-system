@@ -6,6 +6,7 @@ import (
 	"go.uber.org/fx"
 	"icando/internal/domain/repository"
 	"icando/internal/domain/service"
+	"icando/internal/worker/client"
 	"icando/internal/worker/handler"
 	"icando/internal/worker/server"
 	"icando/lib"
@@ -19,16 +20,21 @@ func startServer(server *server.WorkerServer) {
 	server.Run()
 }
 
+func NewWorkerClient() *client.WorkerClient {
+	return nil
+}
+
 func main() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	app := fx.New(
 		lib.Module,
+		fx.Options(fx.Provide(NewWorkerClient)),
 		service.Module,
 		repository.Module,
 		handler.Module,
 		server.Module,
 		fx.Invoke(startServer),
-		fx.NopLogger,
+		// fx.NopLogger,
 	)
 	app.Run()
 }
