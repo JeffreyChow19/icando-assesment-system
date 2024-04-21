@@ -18,7 +18,7 @@ type StudentQuiz struct {
 	Quiz           *Quiz
 	StudentID      uuid.UUID `gorm:"column:student_id"`
 	Student        *Student
-	StudentAnswers []StudentAnswer
+	StudentAnswers []StudentAnswer `gorm:"foreignKey:student_quiz_id"`
 }
 
 func (sq *StudentQuiz) ToDao(withQuestionAnswer bool) (*dao.StudentQuizDao, error) {
@@ -32,6 +32,7 @@ func (sq *StudentQuiz) ToDao(withQuestionAnswer bool) (*dao.StudentQuizDao, erro
 		CompletedAt:  sq.CompletedAt,
 		Status:       sq.Status,
 		QuizID:       sq.QuizID,
+		StudentID:    sq.StudentID,
 	}
 
 	if sq.Quiz != nil {

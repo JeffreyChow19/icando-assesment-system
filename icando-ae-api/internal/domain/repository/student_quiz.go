@@ -24,11 +24,11 @@ func (r *StudentQuizRepository) GetStudentQuiz(filter dto.GetStudentQuizFilter) 
 	query := r.db.Session(&gorm.Session{})
 
 	if filter.WithAnswers {
-		query.Preload("StudentAnswers")
+		query = query.Preload("StudentAnswers")
 	}
 
 	if filter.WithStudent {
-		query.Preload("Student")
+		query = query.Preload("Student")
 	}
 
 	query = query.Where("id = ?", filter.ID.String())
