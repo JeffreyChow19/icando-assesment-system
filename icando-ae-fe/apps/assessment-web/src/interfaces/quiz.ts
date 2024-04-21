@@ -1,5 +1,5 @@
-import { Question } from './question';
-import { Teacher, Student } from './user';
+import { Question } from "./question";
+import { Teacher, Student } from "./user";
 
 export interface Quiz {
   id: string;
@@ -25,7 +25,7 @@ export interface StudentQuiz {
   correctCount: number | null;
   startedAt: string;
   completedAt: string | null;
-  status: 'STARTED' | 'SUBMITTED' | 'NOT_STARTED';
+  status: "STARTED" | "SUBMITTED" | "NOT_STARTED";
   quiz_id: string;
   quiz?: Quiz;
   studentId: string;

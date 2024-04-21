@@ -1,4 +1,4 @@
-import { Quiz, StudentQuiz } from '../interfaces/quiz';
+import { Quiz, StudentQuiz } from "../interfaces/quiz";
 import { api } from "../utils/api";
 
 const path = "/student/quiz";
@@ -12,9 +12,9 @@ export const getQuizDetail = async () => {
 };
 
 export const updateAnswer = async (questionId: string, choiceId: number) => {
-  await api.post(`${path}/question/${questionId}`, {answer_id: choiceId})
-}
+  await api.post(`${path}/question/${questionId}`, { answer_id: choiceId });
+};
 
 export const startQuiz = async () => {
   return (await api.patch(`${path}/start`)).data.data as StudentQuiz;
-}
+};

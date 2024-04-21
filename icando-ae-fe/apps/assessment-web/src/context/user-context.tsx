@@ -8,7 +8,7 @@ import React, {
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { removeToken } from "../utils/local-storage.ts";
-import { Quiz, StudentQuiz } from '../interfaces/quiz.ts';
+import { Quiz, StudentQuiz } from "../interfaces/quiz.ts";
 import { Student } from "../interfaces/user.ts";
 import { getQuizAvailability } from "../services/quiz.ts";
 import { getStudentProfile } from "../services/student.ts";
@@ -48,7 +48,7 @@ export const StudentContext = createContext<StudentProfileContextValue>({
 
 export const QuizProvider = ({ children }: { children: ReactElement }) => {
   const [quiz, setQuiz] = useState<Quiz>();
-  const [studentQuiz, setStudentQuiz] = useState<StudentQuiz>()
+  const [studentQuiz, setStudentQuiz] = useState<StudentQuiz>();
   const [loading, setLoading] = useState<boolean>(true);
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["studentquiz"],
