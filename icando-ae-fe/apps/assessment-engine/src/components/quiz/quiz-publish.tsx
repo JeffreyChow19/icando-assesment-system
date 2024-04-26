@@ -87,6 +87,7 @@ export const QuizPublishForm = ({ id }: { id: string }) => {
                   min="0"
                   placeholder="Duration"
                   {...field}
+                  className="w-fit"
                 />
               </FormControl>
               <FormMessage />
