@@ -18,7 +18,7 @@ export const PublishQuizPage = () => {
   });
 
   return (
-    <Layout pageTitle={`Publish Quiz ${data?.name}`} showTitle={true} withBack={true}>
+    <Layout pageTitle={`Publish Quiz${data?.name? ` "${data?.name}"` : ""}`} showTitle={true} withBack={true}>
       {isLoading && <LoadingComponent />}
       {data && <QuizPublishForm id={params.id!} />}
     </Layout>

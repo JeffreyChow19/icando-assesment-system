@@ -80,13 +80,14 @@ export const QuizPublishForm = ({ id }: { id: string }) => {
           name="quizDuration"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Duration*</FormLabel>
+              <FormLabel>Duration (minutes)*</FormLabel>
               <FormControl>
                 <Input
                   type="number"
                   min="0"
                   placeholder="Duration"
                   {...field}
+                  className="w-fit"
                 />
               </FormControl>
               <FormMessage />
@@ -109,6 +110,7 @@ export const QuizPublishForm = ({ id }: { id: string }) => {
                       ? field.value.toISOString()
                       : field.value
                   }
+                  className="w-fit"
                 />
               </FormControl>
               <FormMessage />
@@ -131,6 +133,7 @@ export const QuizPublishForm = ({ id }: { id: string }) => {
                       ? field.value.toISOString()
                       : field.value
                   }
+                  className="w-fit"
                 />
               </FormControl>
               <FormMessage />

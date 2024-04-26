@@ -55,4 +55,17 @@ export const quizPublishFormSchema = z
       message: "Quiz end time should be greater than start time",
       path: ["endAt"],
     },
+  )
+  .refine(
+    (data) => {
+      const epochStart = data.startAt.getTime();
+      const epochEnd = data.endAt.getTime();
+
+      return data.quizDuration * 60 * 1000 <= epochEnd - epochStart;
+    },
+    {
+      message:
+        "Quiz duration should be less than or equal to quiz availability schedule",
+      path: ["quizDuration"],
+    },
   );
