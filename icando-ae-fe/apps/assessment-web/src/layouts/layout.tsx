@@ -10,20 +10,31 @@ type LayoutProps = {
   showNavigation: boolean;
 };
 
-export const Layout = ({ children, pageTitle, showTitle, showNavigation }: LayoutProps) => {
+export const Layout = ({
+  children,
+  pageTitle,
+  showTitle,
+  showNavigation,
+}: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const completeTitle = `${pageTitle} - ICANDO`;
+
   return (
     <ProtectedRoute>
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>{completeTitle}</title>
       </Helmet>
       <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[100vh] bg-primary overflow-hidden">
-        <Navigation pageTitle={pageTitle} toggleSidebar={toggleSidebar} showNavigation={showNavigation} />
+        <Navigation
+          pageTitle={pageTitle}
+          toggleSidebar={toggleSidebar}
+          showNavigation={showNavigation}
+        />
 
         <div
           className={`relative w-full h-full flex flex-col flex-grow bg-[#EDF3FF] overflow-hidden p-5 ${sidebarOpen ? "rounded-tl-3xl" : "rounded-t-3xl"}`}

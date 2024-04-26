@@ -12,10 +12,12 @@ export const Layout = ({
   pageTitle: string;
   showTitle: boolean;
 }) => {
+  const completeTitle = `${pageTitle} - ICANDO Analytics Dashboard`;
+
   return (
     <ProtectedRoute>
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>{completeTitle}</title>
       </Helmet>
       <div className="relative min-h-screen flex flex-col">
         <Navigation />
