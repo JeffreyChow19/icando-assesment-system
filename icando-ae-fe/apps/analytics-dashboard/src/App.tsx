@@ -6,7 +6,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat.js";
 import dayjs from "dayjs";
 import { AlertDialogProvider } from "./context/alert-dialog.tsx";
 import { HelmetProvider } from "react-helmet-async";
-import { Hello } from "./pages/hello.tsx";
+import { Dashboard } from "./pages/dashboard.tsx";
 import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { TestPage } from "./pages/test.tsx";
@@ -19,12 +19,8 @@ function App() {
 
   const router = createBrowserRouter([
     {
-      path: "/hello",
-      element: <Hello />,
-    },
-    {
       path: "/",
-      element: <TestPage />,
+      element: <Dashboard />,
     },
   ]);
   return (
