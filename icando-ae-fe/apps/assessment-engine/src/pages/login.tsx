@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { cn } from "@ui/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -35,7 +35,7 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
 
   useEffect(() => {
     if (user) {
-      navigate('/');
+      navigate("/");
     }
   }, [navigate, user]);
 
@@ -87,7 +87,9 @@ export function LoginPage({ className, ...props }: UserAuthFormProps) {
 
   return (
     <>
-      <Helmet>Login</Helmet>
+      <Helmet>
+        <title>Login - ICANDO Assessment Engine</title>
+      </Helmet>
       <main className={"absolute w-full min-h-screen card"}>
         <div className={"mx-auto mt-10 max-w-md"}>
           <div className={"primary p-8 shadow-2xl"}>

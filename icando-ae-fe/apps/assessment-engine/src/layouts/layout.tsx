@@ -19,10 +19,12 @@ export const Layout = ({
 }) => {
   const navigate = useNavigate();
 
+  const completeTitle = `${pageTitle} - ICANDO Assessment Engine`;
+
   return (
     <ProtectedRoute>
       <Helmet>
-        <title>{pageTitle}</title>
+        <title>{completeTitle}</title>
       </Helmet>
       <div className="relative min-h-screen flex flex-row">
         <SideBar />
