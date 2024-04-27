@@ -35,7 +35,7 @@ func (h *ScoreHandler) HandleCalculateScoreTask() asynq.HandlerFunc {
 			),
 		)
 
-		err = h.studentQuizService.CalculateScore(payload.StudentQuizID, true)
+		err = h.studentQuizService.CalculateScore(payload.StudentQuizID)
 		if err != nil {
 			logger.Log.Error(err)
 			return err

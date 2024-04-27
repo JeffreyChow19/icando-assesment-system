@@ -7,7 +7,6 @@ import (
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/internal/worker/client"
-	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -22,7 +21,7 @@ type StudentQuizService interface {
 	StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
-	CalculateScore(id uuid.UUID, updateSubmittedAt bool) error
+	CalculateScore(id uuid.UUID) error
 	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
 	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 }
@@ -103,23 +102,7 @@ func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (*da
 	studentQuiz.CompletedAt = &currentTime
 	studentQuiz.Status = enum.SUBMITTED
 
-	err := s.studentQuizRepository.UpdateStudentQuiz(*studentQuiz)
-	if err != nil {
-		return nil, ErrSubmitQuiz
-	}
-
-	calculateTask, err := task.NewCalcualteStudentQuizTask(task.CalculateStudentQuizPayload{
-		StudentQuizID: studentQuiz.ID,
-	})
-
-	if err != nil {
-		return nil, &httperror.HttpError{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
-
-	_, err = s.workerClient.Enqueue(calculateTask)
+	err := s.CalculateScore(studentQuiz.ID)
 
 	if err != nil {
 		return nil, &httperror.HttpError{
@@ -228,7 +211,7 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 	return nil
 }
 
-func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID, updateSubmittedAt bool) error {
+func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
 		WithQuizQuestions: true,
 		WithAnswers:       true,
@@ -315,11 +298,8 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID, updateSubmittedAt 
 	studentQuiz.TotalScore = &score
 	studentQuiz.Status = enum.SUBMITTED
 
-	if updateSubmittedAt {
-		now := time.Now()
-		// case for forgot submit, we also will update completedAt value
-		studentQuiz.CompletedAt = &now
-	}
+	now := time.Now()
+	studentQuiz.CompletedAt = &now
 
 	studentQuizCompetencies := make([]model.StudentQuizCompetency, 0)
 
