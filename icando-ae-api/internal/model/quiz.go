@@ -25,7 +25,7 @@ type Quiz struct {
 	EndAt           *time.Time `gorm:"type:timestamptz"`
 	Questions       []Question
 	Classes         []Class `gorm:"many2many:quiz_classes;"`
-	HasNewerVersion *bool
+	HasNewerVersion *bool   `gorm:"-"`
 }
 
 type QuizClass struct {
