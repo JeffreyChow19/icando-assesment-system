@@ -67,6 +67,34 @@ func (r *QuizRepository) GetQuiz(filter dto.GetQuizFilter) (*model.Quiz, error) 
 	return &quiz, nil
 }
 
+func (r *QuizRepository) CheckNewQuizVersion(id uuid.UUID, studentID uuid.UUID) (*int, error) {
+	var count int
+
+	if err := r.db.Raw(`
+		WITH new_published_quiz AS (
+			SELECT quiz_other.id AS id
+			FROM quizzes as quiz_published
+			INNER JOIN quizzes as quiz_parent
+			ON quiz_published.parent_quiz = quiz_parent.id
+			INNER JOIN quizzes as quiz_other
+			ON quiz_parent.id = quiz_other.parent_quiz
+			WHERE quiz_other.published_at > quiz_published.published_at AND
+				  quiz_published.id = ?
+		) -- get all published quiz that match this quiz parent id and published after the quiz
+		SELECT COUNT(*)
+		FROM students
+		INNER JOIN quiz_classes
+		ON quiz_classes.class_id = students.class_id -- find all quiz published to the student class
+		INNER JOIN new_published_quiz
+		ON new_published_quiz.id = quiz_classes.quiz_id -- find all quiz published to the student class
+		WHERE students.id = ?
+	`, id.String(), studentID.String()).Row().Scan(&count); err != nil {
+		return nil, err
+	}
+
+	return &count, nil
+}
+
 func (r *QuizRepository) CreateQuiz(quiz model.Quiz) (model.Quiz, error) {
 	err := r.db.Create(&quiz).Error
 	return quiz, err
@@ -115,7 +143,7 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 }
 
 func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]dao.ParentQuizDao, *dao.MetaDao, error) {
-    query := r.db.Table("quizzes").Select(
+	query := r.db.Table("quizzes").Select(
 		`quizzes.id, quizzes.name, quizzes.subject, quizzes.passing_grade, quizzes.published_at AS last_published_at, t1.first_name || ' ' || t1.last_name as created_by, t2.first_name || ' ' || t2.last_name as updated_by`).
 		Joins("INNER JOIN teachers t1 ON quizzes.created_by=t1.id").
 		Joins("INNER JOIN teachers t2 ON quizzes.updated_by=t2.id")
@@ -123,7 +151,7 @@ func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]d
 	if filter.ID != uuid.Nil {
 		query.Where("quizzes.parent_quiz = ?", filter.ID)
 	}
-	
+
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")
 	query.Order("quizzes.updated_at DESC")
 

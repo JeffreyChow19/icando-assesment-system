@@ -295,12 +295,25 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 
 func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError) {
 	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: studentQuiz.QuizID})
+
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQuizNotFound
 		}
 		return nil, ErrGetQuiz
 	}
+
+	newQuizCount, err := s.quizRepository.CheckNewQuizVersion(studentQuiz.QuizID, studentQuiz.StudentID)
+
+	if err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        errors.New("Failed to check new quiz version availability"),
+		}
+	}
+
+	hasNewerVersion := *newQuizCount > 0
+	quiz.HasNewerVersion = &hasNewerVersion
 
 	quizDao := quiz.ToDao(false)
 
