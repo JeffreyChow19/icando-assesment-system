@@ -1,7 +1,7 @@
-import { useUser } from "../context/user-context.tsx";
-import { useNavigate } from "react-router-dom";
+// import { useUser } from "../context/user-context.tsx";
+// import { useNavigate } from "react-router-dom";
 import { ReactNode } from "react";
-import { LoadingPage } from "../pages/loading.tsx";
+// import { LoadingPage } from "../pages/loading.tsx";
 
 export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const { user, loading } = useUser();
