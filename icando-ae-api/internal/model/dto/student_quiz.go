@@ -13,3 +13,8 @@ type GetStudentQuizFilter struct {
 type UpdateStudentAnswerDto struct {
 	AnswerID int `json:"answer_id"`
 }
+
+type StudentQuizCompetencyCorrectTotalDto struct {
+	TotalCount   int
+	CorrectCount int
+}
