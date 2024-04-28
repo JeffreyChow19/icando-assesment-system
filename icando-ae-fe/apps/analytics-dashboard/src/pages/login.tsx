@@ -18,7 +18,7 @@ export const Login = () => {
   return (
     <>
       <Helmet>
-        <title>Login - ICANDO Assessment Engine</title>
+        <title>Login - ICANDO Analytics Dashboard</title>
       </Helmet>
       <main className={"absolute w-full min-h-screen card"}>
         <div className="grid grid-cols-2 h-screen">
