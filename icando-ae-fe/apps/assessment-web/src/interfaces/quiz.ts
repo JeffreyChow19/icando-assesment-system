@@ -15,6 +15,7 @@ export interface Quiz {
   creator?: Teacher;
   updater?: Teacher;
   questions?: Question[];
+  hasNewerVersion?: boolean;
 }
 
 export interface StudentQuiz {
