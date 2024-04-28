@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@ui/components/ui/card.tsx";
-import { CustomCard } from "../components/shared/custom-card.tsx";
+import { CustomCard } from "../components/ui/custom-card.tsx";
 
 export const Dashboard = () => {
   const breadcrumbs = [

@@ -2,16 +2,18 @@ import { useUser } from "../context/user-context";
 import { Helmet } from "react-helmet-async";
 import { LoginForm } from "../components/login/login-form.tsx";
 import { Badge } from "@ui/components/ui/badge.tsx";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const { user } = useUser();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (user) {
-  //     navigate("/");
-  //   }
-  // }, [navigate, user]);
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [navigate, user]);
 
   return (
     <>

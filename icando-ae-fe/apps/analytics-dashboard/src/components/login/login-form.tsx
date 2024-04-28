@@ -18,6 +18,7 @@ import { toast } from "@ui/components/ui/use-toast.ts";
 import { AxiosError } from "axios";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { onErrorToast, serverErrorToast } from "../ui/error-toast.tsx";
 
 export const LoginForm = () => {
   const [authError, setAuthError] = useState<boolean>(false);
@@ -45,14 +46,13 @@ export const LoginForm = () => {
     },
     onError: (e: Error) => {
       if (e instanceof AxiosError) {
-        if (e.status === 401) {
+        if (e.response?.status === 401 || e.response?.status == 404) {
           setAuthError(true);
+        } else {
+          onErrorToast(e);
         }
       } else {
-        toast({
-          variant: "destructive",
-          description: e.message,
-        });
+        serverErrorToast();
       }
     },
   });
@@ -90,7 +90,9 @@ export const LoginForm = () => {
           )}
         />
         {authError && (
-          <p className={"mt-2 text-destructive text-sm"}>{authError}</p>
+          <p className={"mt-2 text-destructive text-sm"}>
+            Invalid email/password
+          </p>
         )}
         <Button
           variant={"default"}
