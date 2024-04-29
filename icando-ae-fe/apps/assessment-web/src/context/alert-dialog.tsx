@@ -130,7 +130,7 @@ export function AlertDialogProvider({
           return;
         }}
       >
-        <AlertDialogContent asChild>
+        <AlertDialogContent asChild className="w-10/12 rounded">
           <form
             onSubmit={(event) => {
               event.preventDefault();
@@ -150,12 +150,19 @@ export function AlertDialogProvider({
                 {...state.inputProps}
               />
             )}
-            <AlertDialogFooter>
-              <Button type="button" onClick={close}>
+            <AlertDialogFooter className="flex flex-row gap-2 justify-center">
+              <Button
+                type="button"
+                onClick={close}
+                variant={"outline"}
+                className="w-[70px]"
+              >
                 {state.cancelButton}
               </Button>
               {state.type === "alert" ? null : (
-                <Button type="submit">{state.actionButton}</Button>
+                <Button type="submit" className="w-[70px]">
+                  {state.actionButton}
+                </Button>
               )}
             </AlertDialogFooter>
           </form>
