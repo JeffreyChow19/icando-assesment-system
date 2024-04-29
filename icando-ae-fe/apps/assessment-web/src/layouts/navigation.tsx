@@ -3,7 +3,6 @@ import SidebarIcon from "../../public/ic_sidebar.svg";
 import { useStudentQuiz } from '../context/user-context.tsx';
 
 export const Navigation = ({
-  pageTitle,
   toggleSidebar,
   showNavigation,
 }: {
@@ -13,9 +12,8 @@ export const Navigation = ({
 }) => {
   return (
     <header className="relative w-full flex flex-row justify-between px-2 lg:px-6 py-4 z-20 items-center">
-      <h1 className="text-center flex-grow text-white font-semibold text-2xl">
-        {pageTitle}
-      </h1>
+      <img src={"/logo.png"} alt={"logo"} className="bg-white w-48 m-auto rounded-md" />
+
       {showNavigation &&
         <button
           onClick={toggleSidebar}

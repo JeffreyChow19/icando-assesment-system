@@ -64,6 +64,16 @@ export const Home = () => {
               </div>
               <div>
                 <div className="text-left font-medium text-gray-700">
+                  Mulai Pengerjaan:
+                </div>
+                <div className="text-left font-semibold text-black flex flex-wrap">
+                  {" "}
+                  {formatDate(new Date(quiz.startAt))}{" - "}
+                  {formatHour(new Date(quiz.startAt))}
+                </div>
+              </div>
+              <div>
+                <div className="text-left font-medium text-gray-700">
                   Batas Pengerjaan:
                 </div>
                 <div className="text-left font-semibold text-black flex flex-wrap">
@@ -73,17 +83,22 @@ export const Home = () => {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button
-                className="flex flex-row justify-between space-x-2"
-                onClick={handleStartQuiz}
-                disabled={
-                  new Date(quiz.startAt) > currentDate ||
-                  new Date(quiz.endAt) < currentDate
-                }
-              >
-                Mulai
-              </Button>
+            <CardFooter className={
+              `flex 
+              ${new Date(quiz.startAt) <= currentDate && new Date(quiz.endAt) >= currentDate
+                ? "justify-end" : "justify-center"}`}>
+              {new Date(quiz.startAt) <= currentDate && new Date(quiz.endAt) >= currentDate ? (
+                <Button
+                  className="flex flex-row justify-between space-x-2"
+                  onClick={handleStartQuiz}
+                >
+                  Mulai
+                </Button>
+              ) : (
+                <div className="text-red-400">
+                  {new Date(quiz.startAt) > currentDate ? "Kuis belum dimulai" : "Kuis telah berakhir"}
+                </div>
+              )}
             </CardFooter>
           </Card>
         </>
