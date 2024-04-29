@@ -2,22 +2,23 @@ import { Layout } from "../layouts/layout.tsx";
 import { useStudentQuiz } from "../context/user-context.tsx";
 import { Card, CardContent } from "@ui/components/ui/card.tsx";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getQuizDetail, submitQuiz, updateAnswer } from '../services/quiz.ts';
+import { getQuizDetail, submitQuiz, updateAnswer } from "../services/quiz.ts";
 import { useEffect, useState } from "react";
 import { onErrorToast } from "../components/error-toast.tsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@ui/components/ui/button.tsx";
-import Countdown from "react-countdown";
+import Countdown, { zeroPad } from "react-countdown";
 import { cn } from "@ui/lib/utils.ts";
 import { StudentAnswer } from "../interfaces/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
-import { removeToken } from "../utils/local-storage.ts";
+import { useAlert, useConfirm } from "../context/alert-dialog.tsx";
+import { formatDate, formatHour } from "../utils/format-date.ts";
 
 export const Quiz = () => {
   const { number } = useParams();
   const navigate = useNavigate();
 
-  const { studentQuiz, setStudentQuiz } = useStudentQuiz();
+  const { quiz, studentQuiz, setStudentQuiz } = useStudentQuiz();
   const [time, setTime] = useState<Date>();
   const [answers, setAnswers] = useState<StudentAnswer[]>([]);
 
@@ -30,16 +31,18 @@ export const Quiz = () => {
     refetchOnMount: false,
   });
 
-  useEffect(() => {
-    setAnswers([]);
-    if (data?.studentAnswers) {
-      setAnswers(data.studentAnswers);
-    }
-  }, [data]);
+  const confirm = useConfirm();
+  const alert = useAlert();
 
   useEffect(() => {
     if (data) {
-      setTime(getRemainingTime(data.startedAt, data.quiz!.duration));
+      setTime(
+        getRemainingTime(data.startedAt, data.quiz!.endAt, data.quiz!.duration),
+      );
+    }
+    setAnswers([]);
+    if (data?.studentAnswers) {
+      setAnswers(data.studentAnswers);
     }
   }, [data]);
 
@@ -54,9 +57,15 @@ export const Quiz = () => {
     }
   }, [isLoading, data, error, setStudentQuiz]);
 
-  const getRemainingTime = (startAt: string, duration: number) => {
+  const getRemainingTime = (
+    startAt: string,
+    endAt: string,
+    duration: number,
+  ) => {
     const startTime = new Date(startAt);
-    return new Date(startTime.getTime() + duration * 60000);
+    const endQuizTime = new Date(endAt);
+    const endTime = new Date(startTime.getTime() + duration * 60000);
+    return endQuizTime.getTime() < endTime.getTime() ? endQuizTime : endTime;
   };
 
   const mutation = useMutation({
@@ -112,11 +121,21 @@ export const Quiz = () => {
     completed: boolean;
   }) => {
     if (completed) {
-      submit()
+      submit();
+    } else if (hours === 0 && minutes === 5 && seconds === 0) {
+      alert({
+        title: "Waktu tersisa 5 menit lagi!",
+        cancelButton: "Oke",
+      });
+      return (
+        <span className="font-bold text-primary">
+          {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
+        </span>
+      );
     } else {
       return (
         <span className="font-bold text-primary">
-          {hours}:{minutes}:{seconds}
+          {zeroPad(hours)}:{zeroPad(minutes)}:{zeroPad(seconds)}
         </span>
       );
     }
@@ -125,7 +144,6 @@ export const Quiz = () => {
   const submit = async () => {
     try {
       await submitQuiz();
-      removeToken();
       navigate("/submit");
     } catch (err) {
       toast({
@@ -136,7 +154,11 @@ export const Quiz = () => {
   };
 
   return (
-    <Layout pageTitle="Quiz" showTitle={true} showNavigation={true}>
+    <Layout pageTitle={""} showTitle={false} showNavigation={true}>
+      <h1 className="text-lg font-bold">Quiz</h1>
+      {quiz && (
+        <h3 className="text-sm mb-2">{`Versi ${formatDate(new Date(quiz.publishedAt))} ${formatHour(new Date(quiz.publishedAt))}`}</h3>
+      )}
       {studentQuiz &&
         studentQuiz.quiz &&
         studentQuiz.quiz.questions &&
@@ -154,6 +176,7 @@ export const Quiz = () => {
               {studentQuiz.quiz.questions[parseInt(number) - 1].choices.map(
                 (choice) => (
                   <Button
+                    key={choice.id}
                     className={cn(
                       choice.id ===
                         answers.find(
@@ -164,7 +187,7 @@ export const Quiz = () => {
                         )?.answerId
                         ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
                         : "hover:bg-blue bg-background ",
-                      "w-full shadow-md py-3 rounded-lg text-foreground",
+                      "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
                     )}
                     onClick={() => onChooseAnswer(choice.id)}
                   >
@@ -193,7 +216,16 @@ export const Quiz = () => {
               {parseInt(number) === studentQuiz.quiz.questions.length && (
                 <Button
                   className="rounded-full w-full"
-                  onClick={() => submit()}
+                  onClick={() =>
+                    confirm({
+                      title: "Apakah kamu yakin ingin mengumpulkan jawaban?",
+                      body: "Jawaban tidak dapat diubah ketika sudah dikumpulkan",
+                      cancelButton: "Tidak",
+                      actionButton: "Ya",
+                    }).then((res) => {
+                      if (res) submit();
+                    })
+                  }
                 >
                   Submit
                 </Button>
