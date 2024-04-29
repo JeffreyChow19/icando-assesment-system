@@ -9,7 +9,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@ui/components/ui/button.tsx";
 import Countdown, { zeroPad } from "react-countdown";
 import { cn } from "@ui/lib/utils.ts";
-import { StudentAnswer } from "../interfaces/quiz.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { useAlert, useConfirm } from "../context/alert-dialog.tsx";
 import { formatDate, formatHour } from "../utils/format-date.ts";
@@ -20,7 +19,6 @@ export const Quiz = () => {
 
   const { quiz, studentQuiz, setStudentQuiz } = useStudentQuiz();
   const [time, setTime] = useState<Date>();
-  const [answers, setAnswers] = useState<StudentAnswer[]>([]);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["studentQuiz"],
@@ -40,10 +38,6 @@ export const Quiz = () => {
         getRemainingTime(data.startedAt, data.quiz!.endAt, data.quiz!.duration),
       );
     }
-    setAnswers([]);
-    if (data?.studentAnswers) {
-      setAnswers(data.studentAnswers);
-    }
   }, [data]);
 
   useEffect(() => {
@@ -53,7 +47,6 @@ export const Quiz = () => {
 
     if (!isLoading && data) {
       setStudentQuiz(data);
-      if (data.studentAnswers) setAnswers(data.studentAnswers);
     }
   }, [isLoading, data, error, setStudentQuiz]);
 
@@ -76,29 +69,24 @@ export const Quiz = () => {
       );
     },
     onSuccess: (_, choiceId) => {
-      const foundIdx = answers.findIndex(
+      const foundIdx = studentQuiz!.studentAnswers!.findIndex(
         (answer) =>
           answer.questionId ===
           data!.quiz!.questions![parseInt(number!) - 1].id,
       );
+      const updatedAnswers = [...studentQuiz!.studentAnswers!];
       if (foundIdx !== -1) {
-        setAnswers((prevAnswers) => {
-          const updatedAnswers = [...prevAnswers];
-          updatedAnswers[foundIdx] = {
-            ...updatedAnswers[foundIdx],
-            answerId: choiceId,
-          };
-          return updatedAnswers;
-        });
+        updatedAnswers[foundIdx] = {
+          ...updatedAnswers[foundIdx],
+          answerId: choiceId,
+        };
       } else {
-        setAnswers((prev) => [
-          ...prev,
-          {
-            questionId: data!.quiz!.questions![parseInt(number!) - 1].id,
-            answerId: choiceId,
-          },
-        ]);
+        updatedAnswers.push({
+          questionId: data!.quiz!.questions![parseInt(number!) - 1].id,
+          answerId: choiceId,
+        });
       }
+      setStudentQuiz({ ...studentQuiz!, studentAnswers: updatedAnswers });
     },
     onError: (err: Error) => {
       onErrorToast(err);
@@ -173,28 +161,29 @@ export const Quiz = () => {
                   <p>{studentQuiz.quiz.questions[parseInt(number) - 1].text}</p>
                 </CardContent>
               </Card>
-              {studentQuiz.quiz.questions[parseInt(number) - 1].choices.map(
-                (choice) => (
-                  <Button
-                    key={choice.id}
-                    className={cn(
-                      choice.id ===
-                        answers.find(
-                          (answer) =>
-                            answer.questionId ===
-                            studentQuiz.quiz!.questions![parseInt(number) - 1]
-                              .id,
-                        )?.answerId
-                        ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
-                        : "hover:bg-blue bg-background ",
-                      "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
-                    )}
-                    onClick={() => onChooseAnswer(choice.id)}
-                  >
-                    {choice.text}
-                  </Button>
-                ),
-              )}
+              {studentQuiz.studentAnswers !== null &&
+                studentQuiz.quiz.questions[parseInt(number) - 1].choices.map(
+                  (choice) => (
+                    <Button
+                      key={choice.id}
+                      className={cn(
+                        choice.id ===
+                          studentQuiz.studentAnswers!.find(
+                            (answer) =>
+                              answer.questionId ===
+                              studentQuiz.quiz!.questions![parseInt(number) - 1]
+                                .id,
+                          )?.answerId
+                          ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
+                          : "hover:bg-blue bg-background ",
+                        "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
+                      )}
+                      onClick={() => onChooseAnswer(choice.id)}
+                    >
+                      {choice.text}
+                    </Button>
+                  ),
+                )}
             </div>
             <div className="flex gap-3">
               {parseInt(number) > 1 && (
