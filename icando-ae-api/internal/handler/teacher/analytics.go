@@ -27,8 +27,6 @@ func NewAnalyticsHandlerImpl(analyticsService service.AnalyticsService) *Analyti
 }
 
 func (h *AnalyticsHandlerImpl) GetQuizPerformance(c *gin.Context) {
-	// todo: institution ID di filter ???
-
 	filter := dto.GetQuizPerformanceFilter{}
 
 	if err := c.ShouldBindQuery(&filter); err != nil {

@@ -10,7 +10,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-
 type AnalyticsService interface {
 	GetQuizPerformance(filter dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, *httperror.HttpError)
 }
@@ -39,7 +38,3 @@ func (s *AnalyticsServiceImpl) GetQuizPerformance(filter dto.GetQuizPerformanceF
 
 	return quizPerformance, nil
 }
-
-/*
-
- */

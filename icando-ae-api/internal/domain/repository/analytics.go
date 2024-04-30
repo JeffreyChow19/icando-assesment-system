@@ -19,16 +19,14 @@ func NewAnalyticsRepository(db *lib.Database) AnalyticsRepository {
 }
 
 func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, error) {
-	query := r.db.Raw(`
-		SELECT
+	query := r.db.Table("student_quizzes").
+		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
+		Joins("NATURAL JOIN quiz_classes").
+		Joins("NATURAL JOIN class_teacher").
+		Select(`
 			COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
 			COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
-		FROM
-			student_quizzes JOIN quizzes ON student_quizzes.quiz_id = quizzes.id
-			NATURAL JOIN quiz_classes NATURAL JOIN class_teacher
-	`)
-
-	// todo: test filters
+			`)
 
 	if filter.QuizID != nil {
 		query = query.Where("quiz_id = ?", filter.QuizID)
