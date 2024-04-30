@@ -13,6 +13,7 @@ import (
 	"icando/utils/httperror"
 	"icando/utils/logger"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
@@ -147,13 +148,13 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 }
 
 func (s *QuizServiceImpl) GetQuizHistory(filter dto.GetQuizVersionFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError) {
-    quizzes, meta, err := s.quizRepository.GetAllQuizHistory(filter)
-    if err != nil {
-        log.Print(err)
-        return nil,nil, httperror.InternalServerError
-    }
+	quizzes, meta, err := s.quizRepository.GetAllQuizHistory(filter)
+	if err != nil {
+		log.Print(err)
+		return nil, nil, httperror.InternalServerError
+	}
 
-    return quizzes, meta, nil
+	return quizzes, meta, nil
 }
 
 func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
@@ -225,7 +226,7 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 		// token here
 		token, err := s.authService.GenerateQuizToken(dto.GenerateQuizTokenDto{
 			StudentQuizId: studentQuiz.ID,
-			ExpiredAt:     *quiz.EndAt,
+			ExpiredAt:     (*quiz.EndAt).Add(2 * time.Hour),
 		})
 
 		if err != nil {
