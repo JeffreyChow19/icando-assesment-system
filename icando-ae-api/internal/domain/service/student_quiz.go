@@ -23,7 +23,7 @@ type StudentQuizService interface {
 	SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
-	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
+	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 }
 
@@ -164,6 +164,10 @@ var ErrUpdateStudentAnswer = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when updating student answer"),
 }
+var ErrGetQuizOverview = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when getting quiz overview"),
+}
 var ErrGetQuizDetail = &httperror.HttpError{
 	StatusCode: http.StatusInternalServerError,
 	Err:        errors.New("Unexpected error happened when getting quiz detail"),
@@ -293,8 +297,8 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	return s.db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Quiz").Updates(&studentQuiz).Error
 }
 
-func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError) {
-	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: studentQuiz.QuizID})
+func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: studentQuiz.ID, WithQuizOverview: true})
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQuizNotFound
@@ -302,9 +306,12 @@ func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQ
 		return nil, ErrGetQuiz
 	}
 
-	quizDao := quiz.ToDao(false)
+	studentQuizDao, err := studentQuiz.ToDao(false)
+	if err != nil {
+		return nil, ErrGetQuizOverview
+	}
 
-	return &quizDao, nil
+	return studentQuizDao, nil
 }
 
 func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
