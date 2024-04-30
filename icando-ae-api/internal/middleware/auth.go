@@ -70,7 +70,7 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 
 				c.Set(enum.INSTITUTION_ID_CONTEXT_KEY, teacher.InstitutionID)
 				c.Set(enum.USER_CONTEXT_KEY, authorized)
-				c.Set(enum.TEACHER_CONTEXT_KEY, &teacher)
+				c.Set(enum.TEACHER_CONTEXT_KEY, teacher)
 			} else if role == enum.ROLE_STUDENT {
 				idString := authorized.ID.String()
 
