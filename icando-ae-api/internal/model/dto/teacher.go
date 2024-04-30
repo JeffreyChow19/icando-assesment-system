@@ -10,4 +10,5 @@ type GetTeacherFilter struct {
 	Email         *string
 	Role          *enum.TeacherRole
 	InstitutionID *uuid.UUID
+	WithClasses   *bool
 }
