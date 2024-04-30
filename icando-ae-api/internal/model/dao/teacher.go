@@ -11,3 +11,9 @@ type TeacherDao struct {
 	Email         *string   `json:"email"`
 	InstitutionID uuid.UUID `json:"institutionId"`
 }
+
+type DashboardOverviewDao struct {
+	TotalClass       int `json:"totalClass"`
+	TotalStudent     int `json:"totalStudent"`
+	TotalOngoingQuiz int `json:"totalOngoingQuiz"`
+}
