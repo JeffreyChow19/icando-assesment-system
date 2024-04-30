@@ -11,20 +11,21 @@ import (
 
 type Quiz struct {
 	Model
-	Name         *string
-	Subject      base.StringArray `gorm:"type:text[]"`
-	PassingGrade float64
-	ParentQuiz   *uuid.UUID
-	CreatedBy    uuid.UUID  `gorm:"type:uuid;not null"`
-	Creator      *Teacher   `gorm:"foreignKey:CreatedBy"`
-	UpdatedBy    *uuid.UUID `gorm:"type:uuid"`
-	Updater      *Teacher   `gorm:"foreignKey:UpdatedBy"`
-	PublishedAt  *time.Time `gorm:"type:timestamptz"`
-	Duration     *int
-	StartAt      *time.Time `gorm:"type:timestamptz"`
-	EndAt        *time.Time `gorm:"type:timestamptz"`
-	Questions    []Question
-	Classes      []Class `gorm:"many2many:quiz_classes;"`
+	Name            *string
+	Subject         base.StringArray `gorm:"type:text[]"`
+	PassingGrade    float64
+	ParentQuiz      *uuid.UUID
+	CreatedBy       uuid.UUID  `gorm:"type:uuid;not null"`
+	Creator         *Teacher   `gorm:"foreignKey:CreatedBy"`
+	UpdatedBy       *uuid.UUID `gorm:"type:uuid"`
+	Updater         *Teacher   `gorm:"foreignKey:UpdatedBy"`
+	PublishedAt     *time.Time `gorm:"type:timestamptz"`
+	Duration        *int
+	StartAt         *time.Time `gorm:"type:timestamptz"`
+	EndAt           *time.Time `gorm:"type:timestamptz"`
+	Questions       []Question
+	Classes         []Class `gorm:"many2many:quiz_classes;"`
+	HasNewerVersion *bool   `gorm:"-"`
 }
 
 type QuizClass struct {
@@ -75,6 +76,10 @@ func (q Quiz) ToDao(withAnswer bool) dao.QuizDao {
 		}
 
 		daoQuiz.Classes = classes
+	}
+
+	if q.HasNewerVersion != nil {
+		daoQuiz.HasNewerVersion = q.HasNewerVersion
 	}
 
 	return daoQuiz

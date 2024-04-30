@@ -17,6 +17,11 @@ import {
 import { startQuiz } from "../../services/quiz.ts";
 import { onErrorToast } from "../../components/error-toast.tsx";
 import { formatDate, formatHour } from "../../utils/format-date.ts";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@ui/components/ui/alert.tsx";
 
 export const Home = () => {
   const { quiz } = useStudentQuiz();
@@ -40,6 +45,15 @@ export const Home = () => {
       {quiz && student ? (
         <>
           <h1 className="text-lg mb-2">Selamat datang, {student.firstName}</h1>
+          {quiz.hasNewerVersion && (
+            <Alert variant="warning" className="mb-2">
+              <AlertTitle>Perhatian</AlertTitle>
+              <AlertDescription>
+                Terdapat kuis dengan versi lebih baru. Anda mungkin ingin
+                mengerjakan kuis tersebut dan memeriksa kembali email anda.
+              </AlertDescription>
+            </Alert>
+          )}
           <Card className="space-x-2">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>{quiz.name ? quiz.name : "Untitled Quiz"}</CardTitle>
@@ -54,6 +68,7 @@ export const Home = () => {
                   </div>
                 )}
               </CardDescription>
+
               <div>
                 <div className="text-left font-medium text-gray-700">
                   Durasi Pengerjaan:
@@ -78,7 +93,8 @@ export const Home = () => {
                 </div>
                 <div className="text-left font-semibold text-black flex flex-wrap">
                   {" "}
-                  {formatDate(new Date(quiz.endAt))}{" - "}
+                  {formatDate(new Date(quiz.endAt))}
+                  {" - "}
                   {formatHour(new Date(quiz.endAt))}
                 </div>
               </div>

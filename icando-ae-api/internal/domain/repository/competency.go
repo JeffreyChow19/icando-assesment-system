@@ -3,6 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/pkg/errors"
 	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
@@ -105,4 +106,46 @@ func (r *CompetencyRepository) UpdateCompetency(competency model.Competency) err
 
 func (r *CompetencyRepository) DeleteCompetency(competency model.Competency) error {
 	return r.db.Delete(&competency).Error
+}
+
+func (r *CompetencyRepository) GetStudentCompetency(filter dto.GetStudentCompetencyFilter) ([]dao.StudentCompetencyDao, error) {
+	if filter.StudentID == nil && filter.StudentQuizID == nil {
+		return nil, errors.New("Both student id and student quiz id cannot be null")
+	} else if filter.StudentID != nil && filter.StudentQuizID != nil {
+		return nil, errors.New("Either student id and student quiz id should have a value")
+	}
+
+	var result []dao.StudentCompetencyDao
+
+	if filter.StudentID != nil {
+		if err := r.db.Raw(`
+		SELECT
+			id as competency_id,
+			name as competency_name,
+			coalesce(sum(total_count), 0) as total_count,
+			coalesce(sum(correct_count), 0) as correct_count
+		FROM competencies
+		LEFT JOIN student_quiz_competencies
+		ON competencies.id = student_quiz_competencies.competency_id AND student_id = ?
+		GROUP BY competencies.id
+	`, filter.StudentID.String()).Scan(&result).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		if err := r.db.Raw(`
+		SELECT
+			id as competency_id,
+			name as competency_name,
+			coalesce(sum(total_count), 0) as total_count,
+			coalesce(sum(correct_count), 0) as correct_count
+		FROM competencies
+		LEFT JOIN student_quiz_competencies
+		ON competencies.id = student_quiz_competencies.competency_id AND student_quiz_id = ?
+		GROUP BY competencies.id
+	`, filter.StudentQuizID.String()).Scan(&result).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
 }

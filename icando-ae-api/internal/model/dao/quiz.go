@@ -7,18 +7,19 @@ import (
 )
 
 type QuizDao struct {
-	ID           uuid.UUID        `json:"id"`
-	Name         *string          `json:"name"`
-	Subject      base.StringArray `json:"subject" gorm:"type:text[]"`
-	PassingGrade float64          `json:"passingGrade"`
-	PublishedAt  *time.Time       `json:"publishedAt"`
-	Duration     *int             `json:"duration"`
-	StartAt      *time.Time       `json:"startAt"`
-	EndAt        *time.Time       `json:"endAt"`
-	Creator      *TeacherDao      `json:"creator,omitempty"`
-	Updater      *TeacherDao      `json:"updater,omitempty"`
-	Questions    []QuestionDao    `json:"questions,omitempty"`
-	Classes      []ClassDao       `json:"classes,omitempty"`
+	ID              uuid.UUID        `json:"id"`
+	Name            *string          `json:"name"`
+	Subject         base.StringArray `json:"subject" gorm:"type:text[]"`
+	PassingGrade    float64          `json:"passingGrade"`
+	PublishedAt     *time.Time       `json:"publishedAt"`
+	Duration        *int             `json:"duration"`
+	StartAt         *time.Time       `json:"startAt"`
+	EndAt           *time.Time       `json:"endAt"`
+	Creator         *TeacherDao      `json:"creator,omitempty"`
+	Updater         *TeacherDao      `json:"updater,omitempty"`
+	Questions       []QuestionDao    `json:"questions,omitempty"`
+	Classes         []ClassDao       `json:"classes,omitempty"`
+	HasNewerVersion *bool            `json:"hasNewerVersion,omitempty"`
 }
 
 type ParentQuizDao struct {

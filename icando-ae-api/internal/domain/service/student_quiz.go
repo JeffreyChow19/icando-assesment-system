@@ -7,7 +7,6 @@ import (
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/internal/worker/client"
-	"icando/internal/worker/task"
 	"icando/lib"
 	"icando/utils/httperror"
 	"net/http"
@@ -103,23 +102,7 @@ func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (*da
 	studentQuiz.CompletedAt = &currentTime
 	studentQuiz.Status = enum.SUBMITTED
 
-	err := s.studentQuizRepository.UpdateStudentQuiz(*studentQuiz)
-	if err != nil {
-		return nil, ErrSubmitQuiz
-	}
-
-	calculateTask, err := task.NewCalcualteStudentQuizTask(task.CalculateStudentQuizPayload{
-		StudentQuizID: studentQuiz.ID,
-	})
-
-	if err != nil {
-		return nil, &httperror.HttpError{
-			StatusCode: http.StatusInternalServerError,
-			Err:        err,
-		}
-	}
-
-	_, err = s.workerClient.Enqueue(calculateTask)
+	err := s.CalculateScore(studentQuiz.ID)
 
 	if err != nil {
 		return nil, &httperror.HttpError{
@@ -243,11 +226,12 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 		return err
 	}
 
-	if studentQuiz.Status == enum.NOT_STARTED {
-		return nil // we mark not started quiz as separated
+	if studentQuiz.Status != enum.STARTED {
+		return nil // skip not started and submitted
 	}
 
 	answerMap := make(map[string]model.StudentAnswer)
+	competencyMap := make(map[string]dto.StudentQuizCompetencyCorrectTotalDto)
 
 	for _, answer := range studentQuiz.StudentAnswers {
 		answerMap[answer.QuestionID.String()] = answer
@@ -270,6 +254,30 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 					CompetencyID: competency.ID,
 					IsPassed:     isCorrect,
 				})
+
+				comp, ok := competencyMap[competency.ID.String()]
+
+				if ok {
+					comp.TotalCount++
+
+					if isCorrect {
+						comp.CorrectCount++
+					}
+
+					competencyMap[competency.ID.String()] = comp
+				} else {
+					if isCorrect {
+						competencyMap[competency.ID.String()] = dto.StudentQuizCompetencyCorrectTotalDto{
+							TotalCount:   1,
+							CorrectCount: 1,
+						}
+					} else {
+						competencyMap[competency.ID.String()] = dto.StudentQuizCompetencyCorrectTotalDto{
+							TotalCount:   1,
+							CorrectCount: 0,
+						}
+					}
+				}
 			}
 
 			if err := answer.SetCompetencies(answerCompetencies); err != nil {
@@ -294,7 +302,36 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	studentQuiz.TotalScore = &score
 	studentQuiz.Status = enum.SUBMITTED
 
-	return s.db.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Quiz").Updates(&studentQuiz).Error
+	now := time.Now()
+	studentQuiz.CompletedAt = &now
+
+	studentQuizCompetencies := make([]model.StudentQuizCompetency, 0)
+
+	for id, sqc := range competencyMap {
+		studentQuizCompetencies = append(studentQuizCompetencies, model.StudentQuizCompetency{
+			StudentID:     studentQuiz.StudentID,
+			StudentQuizID: studentQuiz.ID,
+			CompetencyID:  uuid.MustParse(id),
+			TotalCount:    sqc.TotalCount,
+			CorrectCount:  sqc.CorrectCount,
+		})
+	}
+
+	tx := s.db.Begin()
+
+	if err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Omit("Quiz").Updates(&studentQuiz).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if len(studentQuizCompetencies) != 0 {
+		if err := tx.Create(&studentQuizCompetencies).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+
+	return tx.Commit().Error
 }
 
 func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
@@ -305,6 +342,17 @@ func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQ
 		}
 		return nil, ErrGetQuiz
 	}
+	newQuizCount, err := s.quizRepository.CheckNewQuizVersion(studentQuiz.QuizID, studentQuiz.StudentID)
+
+	if err != nil {
+		return nil, &httperror.HttpError{
+			StatusCode: http.StatusInternalServerError,
+			Err:        errors.New("Failed to check new quiz version availability"),
+		}
+	}
+
+	hasNewerVersion := *newQuizCount > 0
+	studentQuiz.Quiz.HasNewerVersion = &hasNewerVersion
 
 	studentQuizDao, err := studentQuiz.ToDao(false)
 	if err != nil {
