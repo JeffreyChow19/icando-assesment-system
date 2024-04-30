@@ -24,7 +24,9 @@ import {
 } from "@ui/components/ui/alert.tsx";
 
 export const Home = () => {
-  const { quiz } = useStudentQuiz();
+  const { studentQuiz } = useStudentQuiz();
+  const quiz = studentQuiz?.quiz;
+
   const { student } = useStudentProfile();
   const currentDate = new Date();
   const navigate = useNavigate();
@@ -83,7 +85,8 @@ export const Home = () => {
                 </div>
                 <div className="text-left font-semibold text-black flex flex-wrap">
                   {" "}
-                  {formatDate(new Date(quiz.startAt))}{" - "}
+                  {formatDate(new Date(quiz.startAt))}
+                  {" - "}
                   {formatHour(new Date(quiz.startAt))}
                 </div>
               </div>
@@ -99,11 +102,17 @@ export const Home = () => {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className={
-              `flex 
-              ${new Date(quiz.startAt) <= currentDate && new Date(quiz.endAt) >= currentDate
-                ? "justify-end" : "justify-center"}`}>
-              {new Date(quiz.startAt) <= currentDate && new Date(quiz.endAt) >= currentDate ? (
+            <CardFooter
+              className={`flex
+              ${
+                new Date(quiz.startAt) <= currentDate &&
+                new Date(quiz.endAt) >= currentDate
+                  ? "justify-end"
+                  : "justify-center"
+              }`}
+            >
+              {new Date(quiz.startAt) <= currentDate &&
+              new Date(quiz.endAt) >= currentDate ? (
                 <Button
                   className="flex flex-row justify-between space-x-2"
                   onClick={handleStartQuiz}
@@ -112,7 +121,9 @@ export const Home = () => {
                 </Button>
               ) : (
                 <div className="text-red-400">
-                  {new Date(quiz.startAt) > currentDate ? "Kuis belum dimulai" : "Kuis telah berakhir"}
+                  {new Date(quiz.startAt) > currentDate
+                    ? "Kuis belum dimulai"
+                    : "Kuis telah berakhir"}
                 </div>
               )}
             </CardFooter>

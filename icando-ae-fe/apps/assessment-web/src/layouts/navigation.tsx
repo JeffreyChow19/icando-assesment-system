@@ -27,10 +27,10 @@ export const Navigation = ({
 };
 
 export const SideBar = ({ sidebarOpen }: { sidebarOpen: boolean }) => {
-  const { studentQuiz} = useStudentQuiz()
+  const { questions} = useStudentQuiz()
   const {number} = useParams()
   const currNumber = number ? parseInt(number) : 1;
-  const numOfQuestions = studentQuiz?.quiz?.questions ? studentQuiz.quiz.questions.length : 0;
+  const numOfQuestions = questions ? questions.length : 0;
 
   const questionNumbers = Array.from(
     { length: numOfQuestions },
