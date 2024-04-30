@@ -24,6 +24,7 @@ type StudentQuizService interface {
 	CalculateScore(id uuid.UUID) error
 	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
 	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
+	GetQuizDetailByID(id uuid.UUID) (*dao.StudentQuizDao, *httperror.HttpError)
 }
 
 type StudentQuizServiceImpl struct {
@@ -393,6 +394,28 @@ func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
 	}
 
 	quizDao, err := studentQuiz.ToDao(false)
+	if err != nil {
+		return nil, ErrGetQuizDetail
+	}
+
+	return quizDao, nil
+}
+
+func (s *StudentQuizServiceImpl) GetQuizDetailByID(id uuid.UUID) (*dao.StudentQuizDao, *httperror.HttpError) {
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: id,
+		WithQuizQuestions: true,
+		WithAnswers:       true,
+		WithStudent:       true,
+	})
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	quizDao, err := studentQuiz.ToDao(true)
 	if err != nil {
 		return nil, ErrGetQuizDetail
 	}
