@@ -216,7 +216,7 @@ export const Quiz = () => {
                     })
                   }
                 >
-                  Submit
+                  Kirim
                 </Button>
               )}
             </div>
