@@ -20,7 +20,9 @@ import (
 type StudentQuizService interface {
 	StartQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
-	UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError
+	UpdateStudentAnswer(
+		studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto,
+	) *httperror.HttpError
 	CalculateScore(id uuid.UUID) error
 	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError)
 	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
@@ -39,7 +41,8 @@ func NewStudentQuizServiceImpl(
 	questionRepository repository.QuestionRepository,
 	quizRepository repository.QuizRepository,
 	workerClient *client.WorkerClient,
-	db *lib.Database) *StudentQuizServiceImpl {
+	db *lib.Database,
+) *StudentQuizServiceImpl {
 	return &StudentQuizServiceImpl{
 		studentQuizRepository: studentQuizRepository,
 		questionRepository:    questionRepository,
@@ -89,7 +92,9 @@ var ErrSubmitQuiz = &httperror.HttpError{
 	Err:        errors.New("Error to submit quiz"),
 }
 
-func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+func (s *StudentQuizServiceImpl) SubmitQuiz(studentQuiz *model.StudentQuiz) (
+	*dao.StudentQuizDao, *httperror.HttpError,
+) {
 	if studentQuiz.Status == enum.NOT_STARTED {
 		return nil, ErrStudentQuizNotStarted
 	}
@@ -152,7 +157,19 @@ var ErrGetQuizDetail = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when getting quiz detail"),
 }
 
-func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto) *httperror.HttpError {
+var ErrQuizHasNotEnded = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Quiz has not ended"),
+}
+
+var ErrQuizScoreNotCalculated = &httperror.HttpError{
+	StatusCode: http.StatusForbidden,
+	Err:        errors.New("Quiz hasn't been reviewed yet"),
+}
+
+func (s *StudentQuizServiceImpl) UpdateStudentAnswer(
+	studentQuiz *model.StudentQuiz, questionID uuid.UUID, studentAnswerDto dto.UpdateStudentAnswerDto,
+) *httperror.HttpError {
 	if studentQuiz.Status == enum.NOT_STARTED {
 		return ErrStudentQuizNotStarted
 	}
@@ -161,9 +178,11 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 		return ErrStudentQuizSubmitted
 	}
 
-	quiz, errQuiz := s.quizRepository.GetQuiz(dto.GetQuizFilter{
-		ID: studentQuiz.QuizID,
-	})
+	quiz, errQuiz := s.quizRepository.GetQuiz(
+		dto.GetQuizFilter{
+			ID: studentQuiz.QuizID,
+		},
+	)
 
 	if errQuiz != nil {
 		if errors.Is(errQuiz, gorm.ErrRecordNotFound) {
@@ -183,9 +202,11 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 		return ErrQuizHasNotStarted
 	}
 
-	question, errGetQuestion := s.questionRepository.GetQuestion(dto.GetQuestionFilter{
-		ID: questionID,
-	})
+	question, errGetQuestion := s.questionRepository.GetQuestion(
+		dto.GetQuestionFilter{
+			ID: questionID,
+		},
+	)
 	if errGetQuestion != nil {
 		if errors.Is(errGetQuestion, gorm.ErrRecordNotFound) {
 			return ErrQuestionNotFound
@@ -212,11 +233,13 @@ func (s *StudentQuizServiceImpl) UpdateStudentAnswer(studentQuiz *model.StudentQ
 }
 
 func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
-	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{
-		WithQuizQuestions: true,
-		WithAnswers:       true,
-		ID:                id,
-	})
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(
+		dto.GetStudentQuizFilter{
+			WithQuizQuestions: true,
+			WithAnswers:       true,
+			ID:                id,
+		},
+	)
 
 	if err != nil {
 		return err
@@ -246,10 +269,12 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 			answerCompetencies := make([]model.StudentAnswerCompetency, 0)
 
 			for _, competency := range question.Competencies {
-				answerCompetencies = append(answerCompetencies, model.StudentAnswerCompetency{
-					CompetencyID: competency.ID,
-					IsPassed:     isCorrect,
-				})
+				answerCompetencies = append(
+					answerCompetencies, model.StudentAnswerCompetency{
+						CompetencyID: competency.ID,
+						IsPassed:     isCorrect,
+					},
+				)
 
 				comp, ok := competencyMap[competency.ID.String()]
 
@@ -304,13 +329,15 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	studentQuizCompetencies := make([]model.StudentQuizCompetency, 0)
 
 	for id, sqc := range competencyMap {
-		studentQuizCompetencies = append(studentQuizCompetencies, model.StudentQuizCompetency{
-			StudentID:     studentQuiz.StudentID,
-			StudentQuizID: studentQuiz.ID,
-			CompetencyID:  uuid.MustParse(id),
-			TotalCount:    sqc.TotalCount,
-			CorrectCount:  sqc.CorrectCount,
-		})
+		studentQuizCompetencies = append(
+			studentQuizCompetencies, model.StudentQuizCompetency{
+				StudentID:     studentQuiz.StudentID,
+				StudentQuizID: studentQuiz.ID,
+				CompetencyID:  uuid.MustParse(id),
+				TotalCount:    sqc.TotalCount,
+				CorrectCount:  sqc.CorrectCount,
+			},
+		)
 	}
 
 	tx := s.db.Begin()
@@ -330,7 +357,9 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	return tx.Commit().Error
 }
 
-func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.QuizDao, *httperror.HttpError) {
+func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (
+	*dao.QuizDao, *httperror.HttpError,
+) {
 	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: studentQuiz.QuizID})
 
 	if err != nil {
@@ -357,7 +386,9 @@ func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQ
 	return &quizDao, nil
 }
 
-func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
+func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
+	*dao.StudentQuizDao, *httperror.HttpError,
+) {
 	if studentQuiz.Status == enum.NOT_STARTED {
 		return nil, ErrStudentQuizNotStarted
 	}
@@ -366,10 +397,13 @@ func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
 		return nil, ErrStudentQuizSubmitted
 	}
 
-	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: studentQuiz.ID,
-		WithQuizQuestions: true,
-		WithAnswers:       true,
-	})
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(
+		dto.GetStudentQuizFilter{
+			ID:                studentQuiz.ID,
+			WithQuizQuestions: true,
+			WithAnswers:       true,
+		},
+	)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -393,6 +427,49 @@ func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
 	}
 
 	quizDao, err := studentQuiz.ToDao(false)
+	if err != nil {
+		return nil, ErrGetQuizDetail
+	}
+
+	return quizDao, nil
+}
+
+func (s *StudentQuizServiceImpl) GetQuizRevieww(studentQuiz *model.StudentQuiz) (
+	*dao.StudentQuizDao,
+	*httperror.HttpError,
+) {
+	if studentQuiz.Status == enum.NOT_STARTED {
+		return nil, ErrStudentQuizNotStarted
+	}
+
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(
+		dto.GetStudentQuizFilter{
+			ID:                studentQuiz.ID,
+			WithQuizQuestions: true,
+			WithAnswers:       true,
+		},
+	)
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrQuizNotFound
+		}
+		return nil, ErrGetQuiz
+	}
+
+	currentTime := time.Now()
+
+	// dont show review when quiz is not done yet
+	if studentQuiz.Quiz.EndAt.After(currentTime) {
+		return nil, ErrQuizHasNotEnded
+	}
+
+	if studentQuiz.TotalScore == nil {
+		return nil, ErrQuizScoreNotCalculated
+	}
+
+	quizDao, err := studentQuiz.ToDao(true)
+	
 	if err != nil {
 		return nil, ErrGetQuizDetail
 	}
