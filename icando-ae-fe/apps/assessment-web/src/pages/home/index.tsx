@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@ui/components/ui/card.tsx";
 import { Button } from "@ui/components/ui/button.tsx";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Badge } from "@ui/components/ui/badge.tsx";
 import {
   useStudentProfile,
@@ -22,6 +22,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from "@ui/components/ui/alert.tsx";
+import { useEffect } from "react";
 
 export const Home = () => {
   const { studentQuiz } = useStudentQuiz();
@@ -30,6 +31,13 @@ export const Home = () => {
   const { student } = useStudentProfile();
   const currentDate = new Date();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (studentQuiz?.status === 'SUBMITTED') {
+      // TODO: review quiz @rachel
+      navigate('/submit');
+    }
+  }, [studentQuiz, navigate]);
 
   const handleStartQuiz = async () => {
     try {
@@ -104,21 +112,26 @@ export const Home = () => {
             </CardContent>
             <CardFooter
               className={`flex
-              ${
-                new Date(quiz.startAt) <= currentDate &&
-                new Date(quiz.endAt) >= currentDate
+              ${new Date(quiz.startAt) <= currentDate &&
+                  new Date(quiz.endAt) >= currentDate
                   ? "justify-end"
                   : "justify-center"
-              }`}
+                }`}
             >
               {new Date(quiz.startAt) <= currentDate &&
-              new Date(quiz.endAt) >= currentDate ? (
-                <Button
-                  className="flex flex-row justify-between space-x-2"
-                  onClick={handleStartQuiz}
-                >
-                  Mulai
-                </Button>
+                new Date(quiz.endAt) >= currentDate ? (
+                studentQuiz.status === "STARTED" ? (
+                  <Button className="flex flex-row justify-between space-x-2">
+                    <Link to={`/quiz/1`}>Lanjut</Link>
+                  </Button>
+                ) : (
+                  <Button
+                    className="flex flex-row justify-between space-x-2"
+                    onClick={handleStartQuiz}
+                  >
+                    Mulai
+                  </Button>
+                )
               ) : (
                 <div className="text-red-400">
                   {new Date(quiz.startAt) > currentDate
