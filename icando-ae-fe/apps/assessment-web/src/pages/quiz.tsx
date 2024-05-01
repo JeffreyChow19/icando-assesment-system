@@ -147,7 +147,7 @@ export const Quiz = () => {
   };
 
   return (
-    <Layout pageTitle={""} showTitle={false} showNavigation={true}>
+    <Layout pageTitle={"Quiz"} showTitle={false} showNavigation={true}>
       <h1 className="text-lg font-bold">Quiz</h1>
       {quiz && (
         <h3 className="text-sm mb-2">{`Versi ${formatDate(new Date(quiz.publishedAt))} ${formatHour(new Date(quiz.publishedAt))}`}</h3>
@@ -215,7 +215,7 @@ export const Quiz = () => {
                   })
                 }
               >
-                Submit
+                Kirim
               </Button>
             )}
           </div>
