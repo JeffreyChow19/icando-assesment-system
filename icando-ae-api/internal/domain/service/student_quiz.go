@@ -282,7 +282,10 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 			}
 
 			answerMap[question.ID.String()] = answer
-			correctCount++
+
+			if isCorrect {
+				correctCount++
+			}
 		} // not ok result mean that the question is not answered
 	}
 
