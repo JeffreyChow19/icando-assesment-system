@@ -21,6 +21,7 @@ export const StudentQuizReview = () => {
       pageTitle="Student Quiz Review"
       showTitle={true}
       breadcrumbs={breadcrumbs}
+      withBack={true}
     >
       <StudentQuiz />
     </Layout>
