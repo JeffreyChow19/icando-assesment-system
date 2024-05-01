@@ -4,6 +4,7 @@ import { getStudentQuizReview } from "../../../services/quiz";
 import { QuestionList } from "./question-list";
 import { useMemo } from "react";
 import { QuestionWithAnswer } from "../../../interfaces/quiz";
+import { QuizInfo } from "./quiz-info";
 
 export const StudentQuiz = () => {
   const params = useParams<{ quizid: string; studentquizid: string }>();
@@ -44,6 +45,7 @@ export const StudentQuiz = () => {
 
   return (
     <div>
+      {data && !isLoading && <QuizInfo data={data} />}
       <QuestionList questions={questionWithAnswer} />
     </div>
   );

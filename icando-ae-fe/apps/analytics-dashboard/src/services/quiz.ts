@@ -4,7 +4,7 @@ import { StudentCompetency } from "src/interfaces/competency";
 
 const path = "/teacher/quiz";
 
-interface StudentQuizReviewResponseData {
+export interface StudentQuizReviewResponseData {
   quiz: StudentQuiz;
   competency: StudentCompetency[];
 }

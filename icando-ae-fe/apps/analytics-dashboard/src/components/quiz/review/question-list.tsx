@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@ui/components/ui/table.tsx";
-import { Choice, Question } from "../../../interfaces/question.ts";
+import { Choice } from "../../../interfaces/question.ts";
 import { useState } from "react";
 import {
   Check,
@@ -16,7 +16,6 @@ import {
   SearchIcon,
   X,
 } from "lucide-react";
-import { Pagination } from "../../pagination.tsx";
 import {
   Collapsible,
   CollapsibleContent,
@@ -115,13 +114,7 @@ export const QuestionList = ({ questions }: QuestionListProps) => {
                         : null
                     }
                   />
-                  <h2 className="font-bold">
-                    Competencies (
-                    {question.answerId === question.studentAnswer?.answerId
-                      ? "Passed"
-                      : "Not Passed"}
-                    )
-                  </h2>
+                  <h2 className="font-bold">Competencies</h2>
                   <div className="flex flex-wrap gap-1">
                     {question.competencies.map((competency) => {
                       return (
