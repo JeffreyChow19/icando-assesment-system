@@ -17,7 +17,14 @@ export const Quiz = () => {
   const { number } = useParams();
   const navigate = useNavigate();
 
-  const { quiz, studentQuiz, setStudentQuiz } = useStudentQuiz();
+  const {
+    studentQuiz,
+    questions,
+    studentAnswers,
+    setQuestions,
+    setStudentAnswers,
+  } = useStudentQuiz();
+  const quiz = studentQuiz?.quiz;
   const [time, setTime] = useState<Date>();
 
   const { data, isLoading, error } = useQuery({
@@ -43,12 +50,14 @@ export const Quiz = () => {
   useEffect(() => {
     if (error) {
       onErrorToast(error);
+      navigate("/");
     }
 
-    if (!isLoading && data) {
-      setStudentQuiz(data);
+    if (!isLoading && data && data.quiz?.questions && data.studentAnswers) {
+      setQuestions(data.quiz.questions);
+      setStudentAnswers(data.studentAnswers);
     }
-  }, [isLoading, data, error, setStudentQuiz]);
+  }, [isLoading, data, error, setQuestions, setStudentAnswers]);
 
   const getRemainingTime = (
     startAt: string,
@@ -63,18 +72,13 @@ export const Quiz = () => {
 
   const mutation = useMutation({
     mutationFn: async (choiceId: number) => {
-      return await updateAnswer(
-        studentQuiz!.quiz!.questions![parseInt(number!) - 1].id,
-        choiceId,
-      );
+      return await updateAnswer(questions![parseInt(number!) - 1].id, choiceId);
     },
     onSuccess: (_, choiceId) => {
-      const foundIdx = studentQuiz!.studentAnswers!.findIndex(
-        (answer) =>
-          answer.questionId ===
-          data!.quiz!.questions![parseInt(number!) - 1].id,
+      const foundIdx = studentAnswers!.findIndex(
+        (answer) => answer.questionId === questions![parseInt(number!) - 1].id,
       );
-      const updatedAnswers = [...studentQuiz!.studentAnswers!];
+      const updatedAnswers = [...studentAnswers!];
       if (foundIdx !== -1) {
         updatedAnswers[foundIdx] = {
           ...updatedAnswers[foundIdx],
@@ -82,11 +86,11 @@ export const Quiz = () => {
         };
       } else {
         updatedAnswers.push({
-          questionId: data!.quiz!.questions![parseInt(number!) - 1].id,
+          questionId: questions![parseInt(number!) - 1].id,
           answerId: choiceId,
         });
       }
-      setStudentQuiz({ ...studentQuiz!, studentAnswers: updatedAnswers });
+      setStudentAnswers(updatedAnswers);
     },
     onError: (err: Error) => {
       onErrorToast(err);
@@ -113,6 +117,7 @@ export const Quiz = () => {
     } else if (hours === 0 && minutes === 5 && seconds === 0) {
       alert({
         title: "Waktu tersisa 5 menit lagi!",
+        body: "Perhatikan waktu mengerjakan kuis.",
         cancelButton: "Oke",
       });
       return (
@@ -142,86 +147,80 @@ export const Quiz = () => {
   };
 
   return (
-    <Layout pageTitle={""} showTitle={false} showNavigation={true}>
+    <Layout pageTitle={"Quiz"} showTitle={false} showNavigation={true}>
       <h1 className="text-lg font-bold">Quiz</h1>
       {quiz && (
         <h3 className="text-sm mb-2">{`Versi ${formatDate(new Date(quiz.publishedAt))} ${formatHour(new Date(quiz.publishedAt))}`}</h3>
       )}
-      {studentQuiz &&
-        studentQuiz.quiz &&
-        studentQuiz.quiz.questions &&
-        number && (
-          <div className="flex flex-col flex-grow justify-between">
-            <div className="flex flex-col gap-3">
-              <div className="w-full flex justify-end">
-                <Countdown date={time} renderer={renderer} />
-              </div>
-              <Card className="mb-2">
-                <CardContent className="p-4">
-                  <p>{studentQuiz.quiz.questions[parseInt(number) - 1].text}</p>
-                </CardContent>
-              </Card>
-              {studentQuiz.studentAnswers !== null &&
-                studentQuiz.quiz.questions[parseInt(number) - 1].choices.map(
-                  (choice) => (
-                    <Button
-                      key={choice.id}
-                      className={cn(
-                        choice.id ===
-                          studentQuiz.studentAnswers!.find(
-                            (answer) =>
-                              answer.questionId ===
-                              studentQuiz.quiz!.questions![parseInt(number) - 1]
-                                .id,
-                          )?.answerId
-                          ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
-                          : "hover:bg-blue bg-background ",
-                        "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
-                      )}
-                      onClick={() => onChooseAnswer(choice.id)}
-                    >
-                      {choice.text}
-                    </Button>
-                  ),
-                )}
+      {questions && number && (
+        <div className="flex flex-col flex-grow justify-between">
+          <div className="flex flex-col gap-3">
+            <div className="w-full flex justify-end">
+              <Countdown date={time} renderer={renderer} />
             </div>
-            <div className="flex gap-3">
-              {parseInt(number) > 1 && (
+            <Card className="mb-2">
+              <CardContent className="p-4">
+                <p>{questions[parseInt(number) - 1].text}</p>
+              </CardContent>
+            </Card>
+            {studentAnswers &&
+              questions[parseInt(number) - 1].choices.map((choice) => (
                 <Button
-                  className="text-primary bg-background hover:bg-background/80 rounded-full w-full"
-                  onClick={() => navigate(`/quiz/${parseInt(number) - 1}`)}
+                  key={choice.id}
+                  className={cn(
+                    choice.id ===
+                      studentAnswers.find(
+                        (answer) =>
+                          answer.questionId ===
+                          questions![parseInt(number) - 1].id,
+                      )?.answerId
+                      ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
+                      : "hover:bg-blue bg-background ",
+                    "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
+                  )}
+                  onClick={() => onChooseAnswer(choice.id)}
                 >
-                  Kembali
+                  {choice.text}
                 </Button>
-              )}
-              {parseInt(number) !== studentQuiz.quiz.questions.length && (
-                <Button
-                  className="rounded-full w-full"
-                  onClick={() => navigate(`/quiz/${parseInt(number) + 1}`)}
-                >
-                  Lanjut
-                </Button>
-              )}
-              {parseInt(number) === studentQuiz.quiz.questions.length && (
-                <Button
-                  className="rounded-full w-full"
-                  onClick={() =>
-                    confirm({
-                      title: "Apakah kamu yakin ingin mengumpulkan jawaban?",
-                      body: "Jawaban tidak dapat diubah ketika sudah dikumpulkan",
-                      cancelButton: "Tidak",
-                      actionButton: "Ya",
-                    }).then((res) => {
-                      if (res) submit();
-                    })
-                  }
-                >
-                  Submit
-                </Button>
-              )}
-            </div>
+              ))}
           </div>
-        )}
+          <div className="flex gap-3">
+            {parseInt(number) > 1 && (
+              <Button
+                className="text-primary bg-background hover:bg-background/80 rounded-full w-full"
+                onClick={() => navigate(`/quiz/${parseInt(number) - 1}`)}
+              >
+                Kembali
+              </Button>
+            )}
+            {parseInt(number) !== questions.length && (
+              <Button
+                className="rounded-full w-full"
+                onClick={() => navigate(`/quiz/${parseInt(number) + 1}`)}
+              >
+                Lanjut
+              </Button>
+            )}
+            {parseInt(number) === questions.length && (
+              <Button
+                className="rounded-full w-full"
+                onClick={() =>
+                  confirm({
+                    title: "Apakah kamu yakin ingin mengumpulkan jawaban?",
+                    body: "Jawaban tidak dapat diubah ketika sudah dikumpulkan",
+                    cancelButton: "Tidak",
+                    actionButton: "Ya",
+                  }).then((res) => {
+                    if (res) submit();
+                  })
+                }
+              >
+                Kirim
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
     </Layout>
   );
 };

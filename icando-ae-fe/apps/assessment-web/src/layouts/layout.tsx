@@ -36,10 +36,8 @@ export const Layout = ({
           showNavigation={showNavigation}
         />
 
-        <div
-          className={`relative w-full h-full flex flex-col flex-grow bg-[#EDF3FF] overflow-hidden p-5 ${sidebarOpen ? "rounded-tl-3xl" : "rounded-t-3xl"}`}
-        >
-          <SideBar sidebarOpen={sidebarOpen} />
+        <div className="relative w-full h-full flex flex-col flex-grow bg-[#EDF3FF] overflow-hidden p-5">
+          <SideBar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
           <main className="w-full p-5 rounded-t-3xl flex flex-col flex-grow">
             {showTitle && (
               <h1 className="text-lg font-bold mb-2">{pageTitle}</h1>
