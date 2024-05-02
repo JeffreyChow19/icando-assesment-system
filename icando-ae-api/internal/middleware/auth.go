@@ -54,7 +54,9 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 			}
 
 			if role == enum.ROLE_TEACHER || role == enum.ROLE_LEARNING_DESIGNER {
-				teacher, err := m.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &authorized.ID})
+				// :<
+				trueVal := true
+				teacher, err := m.teacherRepository.GetTeacher(dto.GetTeacherFilter{ID: &authorized.ID, WithClasses: &trueVal})
 
 				if err != nil {
 					c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": errors.New("Teacher not found")})
@@ -68,6 +70,7 @@ func (m *AuthMiddleware) Handler(role enum.Role) gin.HandlerFunc {
 
 				c.Set(enum.INSTITUTION_ID_CONTEXT_KEY, teacher.InstitutionID)
 				c.Set(enum.USER_CONTEXT_KEY, authorized)
+				c.Set(enum.TEACHER_CONTEXT_KEY, teacher)
 			} else if role == enum.ROLE_STUDENT {
 				idString := authorized.ID.String()
 

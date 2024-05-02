@@ -4,7 +4,6 @@ import (
 	"icando/internal/handler/designer"
 	"icando/internal/handler/student"
 	"icando/internal/handler/teacher"
-
 	"go.uber.org/fx"
 )
 
@@ -37,6 +36,9 @@ var Module = fx.Module(
 		),
 		fx.Provide(
 			fx.Annotate(student.NewQuizHandlerImpl, fx.As(new(student.QuizHandler))),
+		),
+		fx.Provide(
+			fx.Annotate(teacher.NewQuizHandlerImpl, fx.As(new(teacher.QuizHandler))),
 		),
 		fx.Provide(
 			fx.Annotate(teacher.NewAnalyticsHandlerImpl, fx.As(new(teacher.AnalyticsHandler))),
