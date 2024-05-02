@@ -18,6 +18,7 @@ func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group.POST("/question/:id", r.quizHandler.UpdateAnswer)
 	group.PATCH("/start", r.quizHandler.StartQuiz)
 	group.PATCH("/submit", r.quizHandler.SubmitQuiz)
+	group.GET("/review", r.quizHandler.GetQuizReview)
 }
 
 func NewQuizRoute(
