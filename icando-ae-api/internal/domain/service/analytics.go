@@ -12,6 +12,7 @@ import (
 
 type AnalyticsService interface {
 	GetQuizPerformance(filter dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, *httperror.HttpError)
+	GetLatestSubmissions(filter dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, *httperror.HttpError)
 }
 
 type AnalyticsServiceImpl struct {
@@ -37,4 +38,19 @@ func (s *AnalyticsServiceImpl) GetQuizPerformance(filter dto.GetQuizPerformanceF
 	}
 
 	return quizPerformance, nil
+}
+
+var ErrGetLatestSubmissions = &httperror.HttpError{
+	StatusCode: http.StatusInternalServerError,
+	Err:        errors.New("Unexpected error happened when fetching latest submissions"),
+}
+
+func (s *AnalyticsServiceImpl) GetLatestSubmissions(filter dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, *httperror.HttpError) {
+	latestSubmissions, err := s.analyticsRepository.GetLatestSubmissions(&filter)
+
+	if err != nil {
+		return nil, ErrGetLatestSubmissions
+	}
+
+	return latestSubmissions, nil
 }
