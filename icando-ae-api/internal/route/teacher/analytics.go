@@ -15,6 +15,7 @@ type AnalyticsRoute struct {
 func (r AnalyticsRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/analytics")
 	group.GET("/performance", r.analyticsHandler.GetQuizPerformance)
+	group.GET("/latest-submissions", r.analyticsHandler.GetLatestSubmissions)
 }
 
 func NewAnalyticsRoute(
