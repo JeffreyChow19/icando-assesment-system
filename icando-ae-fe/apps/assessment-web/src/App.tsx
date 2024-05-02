@@ -12,6 +12,7 @@ import { Home } from "./pages/home";
 import { Quiz } from "./pages/quiz.tsx";
 import Join from "./pages/join.tsx";
 import { Submit } from "./pages/submit.tsx";
+import { Review } from "./pages/review.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -35,6 +36,10 @@ function App() {
     {
       path: "/submit",
       element: <Submit />,
+    },
+    {
+      path: "/review",
+      element: <Review />,
     },
   ]);
   return (
