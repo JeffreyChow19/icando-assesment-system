@@ -1,7 +1,20 @@
+import { useEffect } from "react";
+import { useStudentQuiz } from "../context/user-context.tsx";
 import { Layout } from "../layouts/layout.tsx";
 import { CheckIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 export const Submit = () => {
+  const { studentQuiz } = useStudentQuiz();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!studentQuiz) {
+      console.log("Waiting for studentQuiz data...");
+    } else if (studentQuiz?.status !== 'SUBMITTED') {
+      console.log("Quiz status:", studentQuiz?.status);
+      navigate('/quiz/1');
+    }
+  }, [studentQuiz, navigate]);
   return (
     <Layout pageTitle="Quiz" showTitle={false} showNavigation={false}>
       <div className="flex flex-col items-center justify-center gap-1 text-center">

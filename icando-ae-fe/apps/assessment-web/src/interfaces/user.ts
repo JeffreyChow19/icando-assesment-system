@@ -8,7 +8,7 @@ export interface Teacher extends User {
   institutionId: string;
 }
 
-export interface Student{
+export interface Student {
   id: string;
   firstName: string;
   lastName: string;
