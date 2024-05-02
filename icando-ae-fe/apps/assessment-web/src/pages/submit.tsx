@@ -3,6 +3,8 @@ import { useStudentQuiz } from "../context/user-context.tsx";
 import { Layout } from "../layouts/layout.tsx";
 import { CheckIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@ui/components/ui/button.tsx";
+import { Link } from "react-router-dom";
 
 export const Submit = () => {
   const { studentQuiz } = useStudentQuiz();
@@ -25,6 +27,11 @@ export const Submit = () => {
         <h2 className="font-semibold">
           Terima kasih telah mengerjakan quiz ini
         </h2>
+        <Link to="/review">
+          <Button variant="link" className="underline">
+            Review
+          </Button>
+        </Link>
       </div>
     </Layout>
   );
