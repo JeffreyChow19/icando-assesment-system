@@ -11,6 +11,10 @@ export const getQuizDetail = async () => {
   return (await api.get(`${path}/detail`)).data.data as StudentQuiz;
 };
 
+export const getQuizReview = async () => {
+  return (await api.get(`${path}/review`)).data.data as StudentQuiz;
+};
+
 export const updateAnswer = async (questionId: string, choiceId: number) => {
   await api.post(`${path}/question/${questionId}`, { answer_id: choiceId });
 };

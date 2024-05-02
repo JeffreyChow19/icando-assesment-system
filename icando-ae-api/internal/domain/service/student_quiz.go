@@ -27,6 +27,10 @@ type StudentQuizService interface {
 	GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	GetQuizDetail(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError)
 	GetQuizDetailByID(id uuid.UUID) (*dao.StudentQuizDao, *httperror.HttpError)
+	GetQuizReview(studentQuiz *model.StudentQuiz) (
+		*dao.StudentQuizDao,
+		*httperror.HttpError,
+	)
 }
 
 type StudentQuizServiceImpl struct {
@@ -365,8 +369,14 @@ func (s *StudentQuizServiceImpl) CalculateScore(id uuid.UUID) error {
 	return tx.Commit().Error
 }
 
-func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (*dao.StudentQuizDao, *httperror.HttpError) {
-	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: studentQuiz.ID, WithQuizOverview: true})
+func (s *StudentQuizServiceImpl) GetQuizAvailability(studentQuiz *model.StudentQuiz) (
+	*dao.StudentQuizDao, *httperror.HttpError,
+) {
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(
+		dto.GetStudentQuizFilter{
+			ID: studentQuiz.ID, WithQuizOverview: true,
+		},
+	)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQuizNotFound
@@ -442,11 +452,14 @@ func (s *StudentQuizServiceImpl) GetQuizDetail(studentQuiz *model.StudentQuiz) (
 }
 
 func (s *StudentQuizServiceImpl) GetQuizDetailByID(id uuid.UUID) (*dao.StudentQuizDao, *httperror.HttpError) {
-	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(dto.GetStudentQuizFilter{ID: id,
-		WithQuizQuestions: true,
-		WithAnswers:       true,
-		WithStudent:       true,
-	})
+	studentQuiz, err := s.studentQuizRepository.GetStudentQuiz(
+		dto.GetStudentQuizFilter{
+			ID:                id,
+			WithQuizQuestions: true,
+			WithAnswers:       true,
+			WithStudent:       true,
+		},
+	)
 
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -463,7 +476,7 @@ func (s *StudentQuizServiceImpl) GetQuizDetailByID(id uuid.UUID) (*dao.StudentQu
 	return quizDao, nil
 }
 
-func (s *StudentQuizServiceImpl) GetQuizRevieww(studentQuiz *model.StudentQuiz) (
+func (s *StudentQuizServiceImpl) GetQuizReview(studentQuiz *model.StudentQuiz) (
 	*dao.StudentQuizDao,
 	*httperror.HttpError,
 ) {

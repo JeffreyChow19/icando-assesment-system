@@ -20,6 +20,7 @@ type QuizHandler interface {
 	UpdateAnswer(c *gin.Context)
 	GetQuiz(c *gin.Context)
 	GetQuizDetail(c *gin.Context)
+	GetQuizReview(c *gin.Context)
 }
 
 type QuizHandlerImpl struct {
@@ -35,7 +36,9 @@ func NewQuizHandlerImpl(studentQuizService service.StudentQuizService) *QuizHand
 func (h *QuizHandlerImpl) StartQuiz(c *gin.Context) {
 	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
 		return
 	}
 
@@ -57,7 +60,9 @@ func (h *QuizHandlerImpl) StartQuiz(c *gin.Context) {
 func (h *QuizHandlerImpl) SubmitQuiz(c *gin.Context) {
 	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
 		return
 	}
 
@@ -103,7 +108,9 @@ func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
 
 	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
 		return
 	}
 
@@ -128,7 +135,9 @@ func (h *QuizHandlerImpl) UpdateAnswer(c *gin.Context) {
 func (h *QuizHandlerImpl) GetQuiz(c *gin.Context) {
 	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
 		return
 	}
 
@@ -150,7 +159,9 @@ func (h *QuizHandlerImpl) GetQuiz(c *gin.Context) {
 func (h *QuizHandlerImpl) GetQuizDetail(c *gin.Context) {
 	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"})
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
 		return
 	}
 
@@ -161,6 +172,30 @@ func (h *QuizHandlerImpl) GetQuizDetail(c *gin.Context) {
 	}
 
 	quiz, err := h.studentQuizService.GetQuizDetail(studentQuiz)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, *quiz))
+}
+
+func (h *QuizHandlerImpl) GetQuizReview(c *gin.Context) {
+	value, ok := c.Get(enum.STUDENT_QUIZ_ID_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(
+			http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz from context"},
+		)
+		return
+	}
+
+	studentQuiz, okStudentQuiz := value.(*model.StudentQuiz)
+	if !okStudentQuiz {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get student quiz"})
+		return
+	}
+
+	quiz, err := h.studentQuizService.GetQuizReview(studentQuiz)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
 		return
