@@ -20,6 +20,7 @@ export const QuestionAnswerCard = ({
           choice.id == answerId && question.answerId != choice.id;
         return (
           <div
+            key={choice.id}
             className={cn(
               "flex py-2 px-4 items-center rounded-md justify-between",
               isCorrectAnswer

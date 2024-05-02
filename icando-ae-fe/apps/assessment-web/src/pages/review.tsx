@@ -7,7 +7,6 @@ import { QuestionAnswerCard } from "../components/question-answer-card.tsx";
 import { LoadingComponent } from "../components/loading.tsx";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
-import { useStudentQuiz } from "../context/user-context.tsx";
 import { AlertTriangleIcon } from "lucide-react";
 
 export const Review = () => {
@@ -74,6 +73,7 @@ export const Review = () => {
             </p>
             {orderedQuestions.map((question, index) => (
               <QuestionAnswerCard
+                key={index}
                 question={question}
                 answerId={orderedAnswers[index].answerId}
                 questionNumber={index + 1}
