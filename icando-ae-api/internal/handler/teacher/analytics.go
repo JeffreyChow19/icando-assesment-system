@@ -3,7 +3,9 @@ package teacher
 import (
 	"errors"
 	"icando/internal/domain/service"
+	"icando/internal/model"
 	"icando/internal/model/dto"
+	"icando/internal/model/enum"
 	"icando/utils/httperror"
 	"icando/utils/response"
 	"net/http"
@@ -14,6 +16,7 @@ import (
 
 type AnalyticsHandler interface {
 	GetQuizPerformance(c *gin.Context)
+	GetLatestSubmissions(c *gin.Context)
 }
 
 type AnalyticsHandlerImpl struct {
@@ -51,4 +54,32 @@ func (h *AnalyticsHandlerImpl) GetQuizPerformance(c *gin.Context) {
 
 	createdMsg := "ok"
 	c.JSON(http.StatusOK, response.NewBaseResponse(&createdMsg, quizPerformance))
+}
+
+func (h *AnalyticsHandlerImpl) GetLatestSubmissions(c *gin.Context) {
+	value, ok := c.Get(enum.TEACHER_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher from context"})
+		return
+	}
+
+	teacher, okTeacher := value.(*model.Teacher)
+
+	if !okTeacher {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher data"})
+		return
+	}
+
+	teacherID := teacher.ID.String()
+
+	latestSubmissions, err := h.analyticsService.GetLatestSubmissions(dto.GetLatestSubmissionsFilter{
+		TeacherID: &teacherID,
+	})
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponse(&createdMsg, latestSubmissions))
 }
