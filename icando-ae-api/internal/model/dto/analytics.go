@@ -5,3 +5,7 @@ type GetQuizPerformanceFilter struct {
 	TeacherID *string `form:"teacherId"`
 	QuizID    *string `form:"quizId"`
 }
+
+type GetLatestSubmissionsFilter struct {
+	TeacherID *string `form:"teacher_id"`
+}
