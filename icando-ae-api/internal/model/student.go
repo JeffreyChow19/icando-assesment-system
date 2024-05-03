@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/google/uuid"
 	"icando/internal/model/dao"
+	"icando/internal/model/dto"
 )
 
 type Student struct {
@@ -11,14 +12,14 @@ type Student struct {
 	LastName      string
 	Nisn          string
 	Email         string
-	InstitutionID uuid.UUID
-	ClassID       *uuid.UUID
-	Institution   *Institution
-	Class         *Class
+	InstitutionID uuid.UUID    `gorm:"type:uuid;not null"`
+	ClassID       *uuid.UUID   `gorm:"type:uuid"`
+	Institution   *Institution `gorm:"foreignKey:InstitutionID"`
+	Class         *Class       `gorm:"foreignKey:ClassID"`
 }
 
 func (s Student) ToDao() dao.StudentDao {
-	return dao.StudentDao{
+	studentDao := dao.StudentDao{
 		ID:        s.ID,
 		FirstName: s.FirstName,
 		LastName:  s.LastName,
@@ -26,4 +27,11 @@ func (s Student) ToDao() dao.StudentDao {
 		Email:     s.Email,
 		ClassID:   s.ClassID,
 	}
+
+	if s.Class != nil {
+		classDao := s.Class.ToDao(dto.GetClassFilter{})
+		studentDao.Class = &classDao
+	}
+
+	return studentDao
 }
