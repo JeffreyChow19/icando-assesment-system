@@ -15,14 +15,14 @@ export const QuizDetailCard = ({
     <Fragment>
       <Card className="w-full">
         <CardContent className="grid grid-cols-4 w-full mt-6">
-          <div className="flex flex-col gap-2 col-span-1 font-medium text-sm">
+          <div className="flex flex-col gap-2 col-span-1 font-semibold">
             <p>Subjects</p>
             <p>Published at</p>
             <p>Start at</p>
             <p>End at</p>
             <p>Passing grade</p>
           </div>
-          <div className="flex flex-col gap-2 col-span-3 text-sm">
+          <div className="flex flex-col gap-2 col-span-3">
             {isLoading && (
               <>
                 <Skeleton className="w-4/5 h-4" />
