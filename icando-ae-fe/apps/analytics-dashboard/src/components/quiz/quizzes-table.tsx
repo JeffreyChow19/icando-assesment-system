@@ -22,6 +22,7 @@ import { Input } from "@ui/components/ui/input";
 import { useSearchParams } from "react-router-dom";
 import { SUBJECTS } from "../../utils/constants";
 import { useDebounce } from "use-debounce";
+import { HistoryCollapsible } from "./history-collapsible";
 
 export const QuizzesTable = () => {
   const [page, setPage] = useState(1);
@@ -86,11 +87,9 @@ export const QuizzesTable = () => {
               <SelectValue placeholder="Select Subject" />
             </SelectTrigger>
             <SelectContent>
-              {subjectFilter !== "" && (
-                <SelectItem value="all" key="all">
-                  Select Subjects
-                </SelectItem>
-              )}
+              <SelectItem value="all" key="all">
+                Select Subjects
+              </SelectItem>
               {subjectOptions &&
                 subjectOptions.map((subject) => (
                   <SelectItem value={subject} key={subject}>
@@ -107,7 +106,6 @@ export const QuizzesTable = () => {
           data.data.length > 0 &&
           data.data.map((quiz) => {
             return (
-              // todo: quiz detail card and history dropdown
               <CustomCard key={quiz.id}>
                 <CardHeader>
                   <CardTitle>{quiz.name}</CardTitle>
@@ -119,7 +117,16 @@ export const QuizzesTable = () => {
                     </div>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>Check Version History</CardContent>
+                <CardContent>
+                  <p>
+                    <strong>Passing Grade:</strong> {quiz.passingGrade}
+                    <br />
+                    <strong>Created By:</strong> {quiz.createdBy}
+                    <br />
+                  </p>
+                  <br />
+                  <HistoryCollapsible quizId={quiz.id} />
+                </CardContent>
               </CustomCard>
             );
           })}
