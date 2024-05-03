@@ -113,10 +113,11 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 		Where("quizzes.parent_quiz IS NULL")
 
 	if filter.Query != nil {
-		query.Where("LOWER(name) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Query)))
+		query.Where("LOWER(quizzes.name) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Query)))
 	}
 	if filter.Subject != nil {
-		query.Where("subject @> ?", filter.Subject)
+		// note: gorm bug fails query when array Subject is length >= 2
+		query.Where("quizzes.subject @> ARRAY[?]::text[]", filter.Subject)
 	}
 
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")

@@ -1,8 +1,9 @@
 package teacher
 
 import (
-	"github.com/gin-gonic/gin"
 	"icando/internal/handler/teacher"
+
+	"github.com/gin-gonic/gin"
 )
 
 type QuizRoute struct {
@@ -11,7 +12,9 @@ type QuizRoute struct {
 
 func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/quiz")
+	group.GET("", r.quizHandler.GetAllQuizDetail)
 	group.GET("/:quizid/students/:studentquizid", r.quizHandler.GetStudentQuiz)
+	group.GET("/history/:id", r.quizHandler.GetQuizHistory)
 }
 
 func NewQuizRoute(
