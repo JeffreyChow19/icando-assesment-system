@@ -20,6 +20,7 @@ type GetQuizVersionFilter struct {
 	Limit int `form:"limit"`
 }
 type GetAllQuizzesFilter struct {
+	TeacherID     *uuid.UUID
 	InstitutionID *string  `form:"institutionId"`
 	Query         *string  `form:"name"`
 	Subject       []string `form:"subject"`

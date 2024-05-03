@@ -17,7 +17,7 @@ import (
 )
 
 type QuizHandler interface {
-	GetAllQuizDetail(c *gin.Context)
+	GetAllTeacherQuiz(c *gin.Context)
 	GetQuizHistory(c *gin.Context)
 	GetStudentQuiz(c *gin.Context)
 }
@@ -40,12 +40,26 @@ func NewQuizHandlerImpl(
 	}
 }
 
-func (h *QuizHandlerImpl) GetAllQuizDetail(c *gin.Context) {
+func (h *QuizHandlerImpl) GetAllTeacherQuiz(c *gin.Context) {
 	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
 	parsedInstutionID := institutionID.(uuid.UUID).String()
 
+	value, ok := c.Get(enum.TEACHER_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher from context"})
+		return
+	}
+
+	teacher, okTeacher := value.(*model.Teacher)
+
+	if !okTeacher {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher data"})
+		return
+	}
+
 	filter := dto.GetAllQuizzesFilter{
 		InstitutionID: &parsedInstutionID,
+		TeacherID:     &teacher.ID,
 		Page:          1,
 		Limit:         10,
 	}
