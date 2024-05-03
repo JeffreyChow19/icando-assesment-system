@@ -16,6 +16,7 @@ type AnalyticsService interface {
 	GetQuizPerformance(filter dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, *httperror.HttpError)
 	GetLatestSubmissions(filter dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, *httperror.HttpError)
 	GetStudentStatistics(studentID uuid.UUID) (*dao.GetStudentStatisticsDao, *httperror.HttpError)
+	GetDashboardOverview(id uuid.UUID) (*dao.DashboardOverviewDao, *httperror.HttpError)
 }
 
 type AnalyticsServiceImpl struct {
@@ -109,4 +110,15 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 		Competency:  *competencyStats,
 		Quizzes:     *quizzes,
 	}, nil
+}
+
+func (s *AnalyticsServiceImpl) GetDashboardOverview(id uuid.UUID) (*dao.DashboardOverviewDao, *httperror.HttpError) {
+	dashboardDao, err := s.analyticsRepository.GetTeacherDashboardOverview(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrTeacherNotFound
+		}
+		return nil, httperror.InternalServerError
+	}
+	return dashboardDao, nil
 }

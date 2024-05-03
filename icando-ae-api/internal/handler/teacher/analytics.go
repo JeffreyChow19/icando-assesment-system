@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"icando/internal/domain/service"
 	"icando/internal/model"
+	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/utils/httperror"
@@ -19,6 +20,7 @@ type AnalyticsHandler interface {
 	GetQuizPerformance(c *gin.Context)
 	GetLatestSubmissions(c *gin.Context)
 	GetStudentStatistics(c *gin.Context)
+	GetDashboardOverview(c *gin.Context)
 }
 
 type AnalyticsHandlerImpl struct {
@@ -104,4 +106,18 @@ func (h *AnalyticsHandlerImpl) GetStudentStatistics(c *gin.Context) {
 
 	createdMsg := "ok"
 	c.JSON(http.StatusOK, response.NewBaseResponse(&createdMsg, studentStatistics))
+}
+
+func (h *AnalyticsHandlerImpl) GetDashboardOverview(c *gin.Context) {
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
+	claim := user.(*dao.TokenClaim)
+
+	data, err := h.analyticsService.GetDashboardOverview(claim.ID)
+
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
 }
