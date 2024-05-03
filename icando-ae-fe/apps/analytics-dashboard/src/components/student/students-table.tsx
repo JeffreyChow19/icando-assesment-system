@@ -41,7 +41,7 @@ export function StudentsTable() {
   const [name, setName] = useState(nameParams ? nameParams : "");
   const [classId, setClassId] = useState(classIdParams ? classIdParams : "");
   const [query] = useDebounce([name, classId], 300);
-  const [classMap, _] = useState<ClassMap>({});
+  const [classMap] = useState<ClassMap>({});
 
   useEffect(() => {
     setPage(1);
