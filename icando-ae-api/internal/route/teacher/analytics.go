@@ -17,6 +17,8 @@ func (r AnalyticsRoute) Setup(group *gin.RouterGroup) {
 	group.GET("/overview", r.analyticsHandler.GetDashboardOverview)
 	group.GET("/performance", r.analyticsHandler.GetQuizPerformance)
 	group.GET("/latest-submissions", r.analyticsHandler.GetLatestSubmissions)
+	group.GET("/class", r.analyticsHandler.GetAllClasses)
+	group.GET("/student", r.analyticsHandler.GetAllStudents)
 	group.GET("/student/:id", r.analyticsHandler.GetStudentStatistics)
 }
 

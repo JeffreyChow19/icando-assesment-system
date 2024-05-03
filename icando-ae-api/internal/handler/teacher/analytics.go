@@ -21,15 +21,21 @@ type AnalyticsHandler interface {
 	GetLatestSubmissions(c *gin.Context)
 	GetStudentStatistics(c *gin.Context)
 	GetDashboardOverview(c *gin.Context)
+	GetAllStudents(c *gin.Context)
+	GetAllClasses(c *gin.Context)
 }
 
 type AnalyticsHandlerImpl struct {
 	analyticsService service.AnalyticsService
+	studentService   service.StudentService
+	classService     service.ClassService
 }
 
-func NewAnalyticsHandlerImpl(analyticsService service.AnalyticsService) *AnalyticsHandlerImpl {
+func NewAnalyticsHandlerImpl(analyticsService service.AnalyticsService, studentService service.StudentService, classService service.ClassService) *AnalyticsHandlerImpl {
 	return &AnalyticsHandlerImpl{
 		analyticsService: analyticsService,
+		studentService:   studentService,
+		classService:     classService,
 	}
 }
 
@@ -120,4 +126,67 @@ func (h *AnalyticsHandlerImpl) GetDashboardOverview(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
+}
+
+func (h *AnalyticsHandlerImpl) GetAllStudents(c *gin.Context) {
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID).String()
+
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
+	claim := user.(*dao.TokenClaim)
+	teacherId := claim.ID.String()
+
+	filter := dto.GetAllStudentsFilter{
+		InstitutionID: &parsedInstutionID,
+		Page:          1,
+		Limit:         10,
+		TeacherID:     &teacherId,
+	}
+
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid query"})
+		return
+	}
+
+	students, meta, err := h.studentService.GetAllStudents(filter)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, students, meta))
+}
+
+func (h *AnalyticsHandlerImpl) GetAllClasses(c *gin.Context) {
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstitutionID := institutionID.(uuid.UUID)
+	sortBy := "name"
+
+	user, _ := c.Get(enum.USER_CONTEXT_KEY)
+	claim := user.(*dao.TokenClaim)
+
+	filter := dto.GetAllClassFilter{
+		TeacherID:     &claim.ID,
+		InstitutionID: &parsedInstitutionID,
+		SortBy:        &sortBy,
+	}
+
+	class, err := h.classService.GetAllClass(filter)
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": err})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.NewBaseResponse(nil, class))
 }
