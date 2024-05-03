@@ -21,7 +21,7 @@ export const Statistics = () => {
     <div className="flex flex-col gap-10 w-full">
       {data && !isLoading && (
         <>
-          <StatsCard className="w-fit pl-5 pr-32">
+          <StatsCard className="items-start">
             <StudentInfo data={data.studentInfo} />
           </StatsCard>
 
