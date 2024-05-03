@@ -5,6 +5,7 @@ import { StudentInfo } from "./student-info.tsx";
 import CompetencyChart from "../quiz/competency-chart.tsx";
 import { QuizStatisticsChart } from "../quiz/quiz-statistics-chart.tsx";
 import { QuizList } from "../quiz/quiz-list.tsx";
+import { StatsCard } from "../ui/stats-card.tsx";
 
 export const Statistics = () => {
   const params = useParams<{ studentId: string }>();
@@ -16,31 +17,35 @@ export const Statistics = () => {
   });
 
   return (
-    <div className="flex flex-col gap-12">
+    <div className="flex flex-col gap-10 w-full">
       {data && !isLoading && (
         <>
-          <StudentInfo data={data.studentInfo} />
+          <StatsCard className="w-fit">
+            <StudentInfo data={data.studentInfo} />
+          </StatsCard>
 
-          <div className="flex flex-col items-center gap-4 w-fit">
-            <p className="text-center text-xl font-medium">Quiz Statistics</p>
-            <QuizStatisticsChart
-              pass={data.performance.quizzesPassed}
-              fail={data.performance.quizzesFailed}
-              isLoading={isLoading}
-            />
+          <div className="flex gap-10 flex-wrap">
+            <StatsCard className="w-fit">
+              <p className="text-center text-xl font-medium">Quiz Statistics</p>
+              <QuizStatisticsChart
+                pass={data.performance.quizzesPassed}
+                fail={data.performance.quizzesFailed}
+                isLoading={isLoading}
+              />
+            </StatsCard>
+
+            <StatsCard className="w-fit">
+              <p className="text-center text-xl font-medium">
+                Competency Statistics
+              </p>
+              <CompetencyChart data={data.competency} />
+            </StatsCard>
           </div>
 
-          <div className="flex flex-col items-center gap-4 w-fit">
-            <p className="text-center text-xl font-medium">
-              Competency Statistics
-            </p>
-            <CompetencyChart data={data.competency} />
-          </div>
-
-          <div className="flex flex-col items-center gap-4 w-fit">
+          <StatsCard>
             <p className="text-center text-xl font-medium">Quiz History</p>
             <QuizList quizzes={data.quizzes} />
-          </div>
+          </StatsCard>
         </>
       )}
     </div>
