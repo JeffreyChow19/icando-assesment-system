@@ -33,7 +33,7 @@ function App() {
       element: <StudentQuizReview />,
     },
     {
-      path: "/students/:studentId",
+      path: "/student/:studentId",
       element: <StudentStatistics />,
     },
   ]);
