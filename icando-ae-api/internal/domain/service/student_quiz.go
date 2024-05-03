@@ -32,7 +32,7 @@ type StudentQuizService interface {
 		*httperror.HttpError,
 	)
 	GetStudentQuizzes(filter dto.GetStudentQuizzesFilter) (
-		[]dao.GetStudentQuizzesDao,
+		[]dao.GetStudentQuizzesByQuizDao,
 		*dao.MetaDao, *httperror.HttpError,
 	)
 }
@@ -524,13 +524,13 @@ func (s *StudentQuizServiceImpl) GetQuizReview(studentQuiz *model.StudentQuiz) (
 }
 
 func (s *StudentQuizServiceImpl) GetStudentQuizzes(filter dto.GetStudentQuizzesFilter) (
-	[]dao.GetStudentQuizzesDao,
+	[]dao.GetStudentQuizzesByQuizDao,
 	*dao.MetaDao, *httperror.HttpError,
 ) {
 	// Get Student Quizzes By Quiz ID
 	studentQuizzes, meta, err := s.studentQuizRepository.GetStudentQuizzes(filter)
 	if err != nil {
-		return []dao.GetStudentQuizzesDao{}, nil, httperror.InternalServerError
+		return []dao.GetStudentQuizzesByQuizDao{}, nil, httperror.InternalServerError
 	}
 	return studentQuizzes, meta, nil
 }

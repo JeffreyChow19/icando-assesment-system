@@ -120,11 +120,14 @@ func (r *AnalyticsRepository) GetTeacherDashboardOverview(id uuid.UUID) (*dao.Da
 	var numClasses, numStudents, numQuizzes int
 
 	currentTime := time.Now()
-	if err := r.db.Raw(`WITH taught_classes_id AS (SELECT class_id FROM class_teacher WHERE teacher_id = ?)
+	if err := r.db.Raw(
+		`WITH taught_classes_id AS (SELECT class_id FROM class_teacher WHERE teacher_id = ?)
 	SELECT
 		(SELECT COUNT(DISTINCT class_id) FROM taught_classes_id) as num_classes,
 		(SELECT COUNT(DISTINCT id) FROM students WHERE class_id IN (SELECT class_id FROM taught_classes_id)) as num_students,
-		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`, id, currentTime, currentTime).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
+		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`,
+		id, currentTime, currentTime,
+	).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
 		return nil, err
 	}
 

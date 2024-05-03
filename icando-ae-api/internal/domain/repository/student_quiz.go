@@ -78,7 +78,7 @@ func (r *StudentQuizRepository) UpdateAnswer(answer model.StudentAnswer) error {
 }
 
 func (r *StudentQuizRepository) GetStudentQuizzes(filter dto.GetStudentQuizzesFilter) (
-	[]dao.GetStudentQuizzesDao,
+	[]dao.GetStudentQuizzesByQuizDao,
 	*dao.MetaDao,
 	error,
 ) {
@@ -113,7 +113,7 @@ func (r *StudentQuizRepository) GetStudentQuizzes(filter dto.GetStudentQuizzesFi
 	        ELSE TRUE
 		END
 		AND CASE WHEN config.student_name IS NOT NULL
-			THEN '%' || config.student_name || '%' ILIKE CONCAT(s.first_name, ' ', s.last_name)
+			THEN  CONCAT(s.first_name, ' ', s.last_name) ILIKE '%' || config.student_name || '%' 
 			ELSE TRUE
 		END
 		AND CASE WHEN config.quiz_status IS NOT NULL
@@ -130,6 +130,9 @@ func (r *StudentQuizRepository) GetStudentQuizzes(filter dto.GetStudentQuizzesFi
 	query := baseQuery + `
 	SELECT 
 	    concat(s.first_name, ' ', s.last_name) name,
+		c.name class_name,
+		c.grade class_grade,
+		sq.id id,
 	    sq.correct_count correct_count,
 	    sq.total_score total_score,
 	    sq.status status,
@@ -137,7 +140,7 @@ func (r *StudentQuizRepository) GetStudentQuizzes(filter dto.GetStudentQuizzesFi
 	` + tableQuery + ` ORDER BY sq.completed_at DESC`
 
 	var totalItem int64
-	results := []dao.GetStudentQuizzesDao{}
+	results := []dao.GetStudentQuizzesByQuizDao{}
 
 	err := r.db.Raw(
 		countQuery, filter.QuizID, filter.ClassID, filter.StudentName, filter.QuizStatus, filter.TeacherID,

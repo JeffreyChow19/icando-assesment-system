@@ -1,6 +1,7 @@
 package dao
 
 import (
+	"github.com/google/uuid"
 	"icando/internal/model/enum"
 	"time"
 )
@@ -40,4 +41,16 @@ type GetStudentStatisticsDao struct {
 	Performance QuizPerformanceDao            `json:"performance"`
 	Competency  []GetStudentQuizCompetencyDao `json:"competency"`
 	Quizzes     []GetStudentQuizzesDao        `json:"quizzes"`
+}
+
+type GetStudentQuizzesByQuizDao struct {
+	ID           uuid.UUID        `json:"id"`
+	ClassName    string           `json:"className" gorm:"column:class_name"`
+	ClassGrade   string           `json:"classGrade" gorm:"column:class_grade"`
+	TotalScore   float32          `json:"totalScore" gorm:"column:total_score"`
+	CorrectCount int              `json:"correctCount" gorm:"column:correct_count"`
+	CompletedAt  time.Time        `json:"completedAt" gorm:"column:completed_at"`
+	Name         string           `json:"name" gorm:"column:name"`
+	PassingGrade *float64         `json:"passingGrade,omitempty"`
+	Status       *enum.QuizStatus `json:"status,omitempty"`
 }
