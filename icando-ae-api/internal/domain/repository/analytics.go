@@ -6,6 +6,8 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
+	"icando/utils/logger"
+	"time"
 )
 
 type AnalyticsRepository struct {
@@ -105,4 +107,26 @@ func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.Get
 	}
 
 	return &results, nil
+}
+
+func (r *AnalyticsRepository) GetTeacherDashboardOverview(id uuid.UUID) (*dao.DashboardOverviewDao, error) {
+	var numClasses, numStudents, numQuizzes int
+
+	currentTime := time.Now()
+	if err := r.db.Raw(`WITH taught_classes_id AS (SELECT class_id FROM class_teacher WHERE teacher_id = ?)
+	SELECT
+		(SELECT COUNT(DISTINCT class_id) FROM taught_classes_id) as num_classes,
+		(SELECT COUNT(DISTINCT id) FROM students WHERE class_id IN (SELECT class_id FROM taught_classes_id)) as num_students,
+		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`, id, currentTime, currentTime).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
+		logger.Log.Info(err)
+		return nil, err
+	}
+
+	dashboardDao := dao.DashboardOverviewDao{
+		TotalClass:       numClasses,
+		TotalStudent:     numStudents,
+		TotalOngoingQuiz: numQuizzes,
+	}
+
+	return &dashboardDao, nil
 }

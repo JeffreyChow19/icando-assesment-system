@@ -2,7 +2,6 @@ package designer
 
 import (
 	"icando/internal/domain/service"
-	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/internal/model/enum"
 	"icando/utils/response"
@@ -14,7 +13,6 @@ import (
 
 type TeacherHandler interface {
 	GetAll(c *gin.Context)
-	GetDashboardOverview(c *gin.Context)
 }
 
 type TeacherHandlerImpl struct {
@@ -43,18 +41,4 @@ func (h *TeacherHandlerImpl) GetAll(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response.NewBaseResponse(nil, teachers))
-}
-
-func (h *TeacherHandlerImpl) GetDashboardOverview(c *gin.Context) {
-	user, _ := c.Get(enum.USER_CONTEXT_KEY)
-	claim := user.(*dao.TokenClaim)
-
-	data, err := h.teacherService.GetDashboardOverview(claim.ID)
-
-	if err != nil {
-		c.AbortWithStatusJSON(err.StatusCode, gin.H{"error": err.Err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.NewBaseResponse(nil, data))
 }

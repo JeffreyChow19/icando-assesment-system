@@ -16,7 +16,6 @@ type TeacherService interface {
 	GetAllTeachers(filter dto.GetTeacherFilter) ([]dao.LearningDesignerDao, *httperror.HttpError)
 	FindTeacherByID(id uuid.UUID) (*dao.LearningDesignerDao, *httperror.HttpError)
 	PutUserInfo(id uuid.UUID, dto dto.PutUserInfoDto) (*dao.LearningDesignerDao, *httperror.HttpError)
-	GetDashboardOverview(id uuid.UUID) (*dao.DashboardOverviewDao, *httperror.HttpError)
 }
 
 type TeacherServiceImpl struct {
@@ -101,15 +100,4 @@ func (s *TeacherServiceImpl) PutUserInfo(
 		Email:     teacher.Email,
 	}
 	return &teacherDao, nil
-}
-
-func (s *TeacherServiceImpl) GetDashboardOverview(id uuid.UUID) (*dao.DashboardOverviewDao, *httperror.HttpError) {
-	dashboardDao, err := s.teacherRepository.GetTeacherDashboardOverview(id)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, ErrTeacherNotFound
-		}
-		return nil, httperror.InternalServerError
-	}
-	return dashboardDao, nil
 }
