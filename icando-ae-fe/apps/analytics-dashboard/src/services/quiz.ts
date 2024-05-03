@@ -40,6 +40,5 @@ export const getQuizHistory = async (filter: GetQuizHistoryFilter) => {
 };
 
 export const getQuiz = async (id: string) => {
-  console.log((await api.get(`${path}/${id}`)).data.data);
   return (await api.get(`${path}/${id}`)).data.data as GetQuizResponse;
 };

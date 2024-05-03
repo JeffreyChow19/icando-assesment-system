@@ -1,12 +1,12 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getStudentStatistics } from "../../services/student.ts";
 import { StudentInfo } from "./student-info.tsx";
 import CompetencyChart from "../quiz/competency-chart.tsx";
 import { QuizStatisticsChart } from "../quiz/quiz-statistics-chart.tsx";
 import { QuizList } from "../quiz/quiz-list.tsx";
 import { StatsCard } from "../ui/stats-card.tsx";
 import { CardTitle } from "@ui/components/ui/card.tsx";
+import { getStudentStatistics } from "../../services/analytics.ts";
 
 export const Statistics = () => {
   const params = useParams<{ studentId: string }>();

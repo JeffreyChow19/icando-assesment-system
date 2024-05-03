@@ -18,7 +18,7 @@ export const QuizDetailCard = ({
 }) => {
   return (
     <Fragment>
-      <Card className="w-1/2">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>
             {quiz ? quiz.name : <Skeleton className="w-4/5 h-4" />}{" "}
