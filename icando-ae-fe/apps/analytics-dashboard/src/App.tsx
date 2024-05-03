@@ -11,6 +11,7 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Login } from "./pages/login.tsx";
 import { StudentQuizReview } from "./pages/quizzes/review/index.tsx";
+import { QuizDetail } from "./pages/quizzes/quiz-detail.tsx";
 
 dayjs.locale("id");
 dayjs.extend(localizedFormat);
@@ -30,6 +31,10 @@ function App() {
     {
       path: "/quiz/:quizid/review/:studentquizid",
       element: <StudentQuizReview />,
+    },
+    {
+      path: "/quiz/:id",
+      element: <QuizDetail />,
     },
   ]);
   return (

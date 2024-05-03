@@ -1,19 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getStudentQuizReview } from "../../../services/quiz";
 import { QuestionList } from "./question-list";
 import { useMemo } from "react";
 import { QuestionWithAnswer } from "../../../interfaces/quiz";
 import { QuizInfo } from "./quiz-info";
 import { PieChart } from "@mui/x-charts/PieChart";
 import CompetencyChart from "../competency-chart";
+import { getStudentQuizReview } from "../../../services/student-quiz.ts";
 
 export const StudentQuiz = () => {
   const params = useParams<{ quizid: string; studentquizid: string }>();
 
   const { data, isLoading } = useQuery({
     queryKey: ["studentQuiz", params.studentquizid],
-    queryFn: () => getStudentQuizReview(params.quizid!, params.studentquizid!),
+    queryFn: () => getStudentQuizReview(params.studentquizid!),
     enabled: !!params.quizid && !!params.studentquizid,
   });
 
