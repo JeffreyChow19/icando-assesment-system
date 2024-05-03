@@ -45,16 +45,22 @@ func (r *TeacherRepository) GetAllTeacher(filter dto.GetTeacherFilter) ([]model.
 func (r *TeacherRepository) GetTeacher(filter dto.GetTeacherFilter) (*model.Teacher, error) {
 	var user model.Teacher
 
+	query := r.db
+
 	if filter.ID != nil {
-		if err := r.db.Where("id = ?", filter.ID.String()).First(&user).Error; err != nil {
-			return nil, err
-		}
+		query = query.Where("id = ?", filter.ID.String())
 	} else if filter.Email != nil {
-		if err := r.db.Where("email = ?", *filter.Email).First(&user).Error; err != nil {
-			return nil, err
-		}
+		query = query.Where("email = ?", *filter.Email)
 	} else {
 		return nil, errors.New("Invalid filter")
+	}
+
+	if filter.WithClasses != nil && *filter.WithClasses {
+		query = query.Preload("Classes")
+	}
+
+	if err := query.First(&user).Error; err != nil {
+		return nil, err
 	}
 
 	return &user, nil

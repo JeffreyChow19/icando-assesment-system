@@ -1,27 +1,30 @@
 package teacher
 
 import (
-	"github.com/gin-gonic/gin"
-	"icando/internal/handler/designer"
+	"icando/internal/handler/teacher"
 	"icando/internal/middleware"
+
+	"github.com/gin-gonic/gin"
 )
 
 type AnalyticsRoute struct {
-	teacherHandler designer.TeacherHandler
-	authMiddleware middleware.AuthMiddleware
+	analyticsHandler teacher.AnalyticsHandler
+	authMiddleware   middleware.AuthMiddleware
 }
 
 func (r AnalyticsRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/analytics")
-	group.GET("/dashboard/overview", r.teacherHandler.GetDashboardOverview)
+	group.GET("/performance", r.analyticsHandler.GetQuizPerformance)
+	group.GET("/latest-submissions", r.analyticsHandler.GetLatestSubmissions)
+	group.GET("/student/:id", r.analyticsHandler.GetStudentStatistics)
 }
 
 func NewAnalyticsRoute(
-	teacherHandler designer.TeacherHandler,
+	handler teacher.AnalyticsHandler,
 	authMiddleware *middleware.AuthMiddleware,
 ) *AnalyticsRoute {
 	return &AnalyticsRoute{
-		teacherHandler: teacherHandler,
-		authMiddleware: *authMiddleware,
+		analyticsHandler: handler,
+		authMiddleware:   *authMiddleware,
 	}
 }

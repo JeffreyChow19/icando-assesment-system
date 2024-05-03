@@ -147,5 +147,22 @@ func (r *CompetencyRepository) GetStudentCompetency(filter dto.GetStudentCompete
 		}
 	}
 
-	return result, nil
+	if filter.StudentID != nil {
+		return result, nil
+	} else {
+		// hacky way but more efficient <3
+		// this is case for showing competencies for student quiz
+		// we don't want to show competencies that does not show in the quiz
+		// to check if the competency is in the quiz, we assume that if totalCount is 0
+		// then the competency does not show up in the quiz
+		filteredResult := make([]dao.StudentCompetencyDao, 0)
+
+		for _, each := range result {
+			if each.TotalCount > 0 {
+				filteredResult = append(filteredResult, each)
+			}
+		}
+
+		return filteredResult, nil
+	}
 }

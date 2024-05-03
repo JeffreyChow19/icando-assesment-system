@@ -1,14 +1,18 @@
-import { Quiz, StudentQuiz } from "../interfaces/quiz";
+import { StudentQuiz } from "../interfaces/quiz";
 import { api } from "../utils/api";
 
 const path = "/student/quiz";
 
 export const getQuizAvailability = async () => {
-  return (await api.get(`${path}/overview`)).data.data as Quiz;
+  return (await api.get(`${path}/overview`)).data.data as StudentQuiz;
 };
 
 export const getQuizDetail = async () => {
   return (await api.get(`${path}/detail`)).data.data as StudentQuiz;
+};
+
+export const getQuizReview = async () => {
+  return (await api.get(`${path}/review`)).data.data as StudentQuiz;
 };
 
 export const updateAnswer = async (questionId: string, choiceId: number) => {
