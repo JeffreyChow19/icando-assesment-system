@@ -149,30 +149,19 @@ func (r *ClassRepository) GetAllClass(filter dto.GetAllClassFilter) ([]model.Cla
 	query := r.db
 	result := make([]model.Class, 0)
 
+	query = query.Preload("Teachers")
+
 	if filter.SortBy != nil && *filter.SortBy != "" {
 		utils.QuerySortBy(query, *filter.SortBy, !filter.Desc)
 	}
 
 	if filter.TeacherID != nil {
-		var classIds []ClassIds
-		ids := make([]string, 0)
-
-		if err := r.db.Raw("SELECT class_id FROM class_teacher WHERE teacher_id = ?", filter.TeacherID.String()).Scan(&classIds).Error; err != nil {
-			return nil, err
-		}
-
-		for _, classId := range classIds {
-			ids = append(ids, classId.ClassID.String())
-		}
-
-		query.Where("id IN ?", ids)
+		query.Where("id IN (SELECT class_id id FROM class_teacher WHERE teacher_id = ?)", (*filter.TeacherID).String())
 	}
 
 	if filter.InstitutionID != nil {
-		query.Where("institution_id = ?", filter.InstitutionID.String())
+		query.Where("institution_id = ?", (*filter.InstitutionID).String())
 	}
-
-	query = query.Preload("Teachers")
 
 	if err := query.Find(&result).Error; err != nil {
 		return nil, err
