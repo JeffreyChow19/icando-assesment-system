@@ -59,7 +59,7 @@ export function StudentsTable() {
       searchParams.delete("classId");
     }
     setSearchParams(searchParams);
-  }, [name, classId]);
+  }, [name, classId, setSearchParams, searchParams]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["students", page, ...query],
@@ -85,7 +85,7 @@ export function StudentsTable() {
         classMap[cls.id] = `${cls.name} - ${cls.grade}`;
       });
     }
-  }, [classes]);
+  }, [classes, classMap]);
 
   useEffect(() => {
     if (data) {
