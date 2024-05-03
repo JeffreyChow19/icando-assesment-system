@@ -68,7 +68,7 @@ export const StudentQuiz = () => {
   return (
     <div className="flex flex-col gap-10">
       {data && !isLoading && (
-        <StatsCard className="w-fit">
+        <StatsCard className="items-start">
           <QuizInfo data={data} />
         </StatsCard>
       )}
