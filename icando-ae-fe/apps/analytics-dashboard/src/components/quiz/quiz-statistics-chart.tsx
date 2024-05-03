@@ -21,11 +21,13 @@ export const QuizStatisticsChart: React.FC<QuizStatisticsChartProps> = ({
               id: 0,
               value: pass,
               label: "Passed",
+              color: "#b7da89",
             },
             {
               id: 1,
               value: fail,
               label: "Failed",
+              color: "#c71f1d",
             },
           ],
         },
