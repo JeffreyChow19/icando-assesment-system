@@ -163,6 +163,12 @@ func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]d
 		query.Where("quizzes.parent_quiz = ?", filter.ID)
 	}
 
+	if filter.TeacherID != nil {
+		query.Joins("JOIN quiz_classes qc ON quizzes.id=qc.quiz_id").
+			Joins("JOIN class_teacher ct ON qc.class_id=ct.class_id").
+			Where("ct.teacher_id = ?", filter.TeacherID)
+	}
+
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")
 	query.Order("quizzes.updated_at DESC")
 

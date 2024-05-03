@@ -95,10 +95,25 @@ func (h *QuizHandlerImpl) GetQuizHistory(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
 		return
 	}
+
+	value, ok := c.Get(enum.TEACHER_CONTEXT_KEY)
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher from context"})
+		return
+	}
+
+	teacher, okTeacher := value.(*model.Teacher)
+
+	if !okTeacher {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"errors": "Failed to get teacher data"})
+		return
+	}
+
 	filter := dto.GetQuizVersionFilter{
-		ID:    parsedQuizID,
-		Page:  1,
-		Limit: 10,
+		ID:        parsedQuizID,
+		TeacherID: &teacher.ID,
+		Page:      1,
+		Limit:     10,
 	}
 
 	quizHistory, meta, httpErr := h.quizDetailService.GetQuizHistory(filter)
