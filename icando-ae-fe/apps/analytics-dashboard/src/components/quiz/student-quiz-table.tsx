@@ -26,9 +26,7 @@ import {
 import { Input } from "@ui/components/ui/input.tsx";
 import {
   CheckIcon,
-  ListCollapse,
   SearchIcon,
-  ViewIcon,
   XIcon,
 } from "lucide-react";
 import {
