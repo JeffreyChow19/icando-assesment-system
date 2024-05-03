@@ -32,7 +32,7 @@ export const QuizStatisticsChart: React.FC<QuizStatisticsChartProps> = ({
           ],
         },
       ]}
-      width={600}
+      width={500}
       height={300}
     />
   );

@@ -26,7 +26,7 @@ export const QuizList = ({ quizzes }: QuizListProps) => {
   };
 
   return (
-    <Table>
+    <Table className="w-full">
       <TableCaption>
         {quizzes.length <= 0 && (
           <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
