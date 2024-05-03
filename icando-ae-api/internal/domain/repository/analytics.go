@@ -6,7 +6,6 @@ import (
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
-	"icando/utils/logger"
 	"time"
 )
 
@@ -118,7 +117,6 @@ func (r *AnalyticsRepository) GetTeacherDashboardOverview(id uuid.UUID) (*dao.Da
 		(SELECT COUNT(DISTINCT class_id) FROM taught_classes_id) as num_classes,
 		(SELECT COUNT(DISTINCT id) FROM students WHERE class_id IN (SELECT class_id FROM taught_classes_id)) as num_students,
 		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`, id, currentTime, currentTime).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
-		logger.Log.Info(err)
 		return nil, err
 	}
 
