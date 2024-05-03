@@ -18,6 +18,7 @@ import (
 
 type QuizHandler interface {
 	GetAllQuizDetail(c *gin.Context)
+	GetQuizHistory(c *gin.Context)
 	GetStudentQuiz(c *gin.Context)
 }
 
@@ -63,7 +64,6 @@ func (h *QuizHandlerImpl) GetAllQuizDetail(c *gin.Context) {
 		return
 	}
 
-	// todo?: filter if quiz is teached by teacher
 	quizzes, meta, err := h.quizDetailService.GetAllQuizzes(filter)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
@@ -72,6 +72,31 @@ func (h *QuizHandlerImpl) GetAllQuizDetail(c *gin.Context) {
 
 	createdMsg := "ok"
 	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizzes, meta))
+}
+
+func (h *QuizHandlerImpl) GetQuizHistory(c *gin.Context) {
+	quizID := c.Param("id")
+	parsedQuizID, err := uuid.Parse(quizID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
+		return
+	}
+	filter := dto.GetQuizVersionFilter{
+		ID:    parsedQuizID,
+		Page:  1,
+		Limit: 10,
+	}
+
+	quizHistory, meta, httpErr := h.quizDetailService.GetQuizHistory(filter)
+
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, gin.H{"errors": httpErr.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizHistory, meta))
+
 }
 
 func (h *QuizHandlerImpl) GetStudentQuiz(c *gin.Context) {

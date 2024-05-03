@@ -21,11 +21,19 @@ interface GetAllQuiz {
   meta: Meta;
   data: Quiz[];
 }
+export interface GetQuizHistoryFilter {
+  id: string;
+  page: number;
+  limit: number;
+}
 
 export const getAllQuiz = async (filter: GetAllQuizFilter) => {
   return (await api.get(path, { params: filter })).data as GetAllQuiz;
 };
-// todo: endpoint for quiz history
+export const getQuizHistory = async (filter: GetQuizHistoryFilter) => {
+  return (await api.get(`${path}/history/${filter.id}`, { params: filter }))
+    .data as GetAllQuiz;
+};
 
 export const getStudentQuizReview = async (
   quizId: string,
