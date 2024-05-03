@@ -34,18 +34,15 @@ interface SideBarProps {
 }
 
 export const SideBar: FC<SideBarProps> = ({ sidebarOpen, setSidebarOpen }) => {
-  const { studentQuiz } = useStudentQuiz();
+  const { questions, studentAnswers } = useStudentQuiz();
   const { number } = useParams();
   const currNumber = number ? parseInt(number) : 1;
-
-  const studentAnswers = studentQuiz?.studentAnswers;
-  const quizQuestions = studentQuiz?.quiz?.questions;
 
   const CURRENT_NUMBER_STYLE = "bg-primary text-white";
   const ANSWERED_NUMBER_STYLE = "bg-[#facc13] text-black";
   const DEFAULT_NUMBER_STYLE = "bg-[#D9D9D9] text-back";
 
-  const questionNumbers = quizQuestions?.map((question, index) => {
+  const questionNumbers = questions?.map((question, index) => {
     const answered = studentAnswers?.some(
       (answer) => answer.questionId === question.id,
     );
