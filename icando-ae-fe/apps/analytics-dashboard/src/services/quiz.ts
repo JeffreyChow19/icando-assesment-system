@@ -39,14 +39,6 @@ export const getQuizHistory = async (filter: GetQuizHistoryFilter) => {
     .data as GetAllQuiz;
 };
 
-export const getStudentQuizReview = async (
-  quizId: string,
-  studentQuizId: string,
-) => {
-  return (await api.get(`${path}/${quizId}/students/${studentQuizId}`)).data
-    .data as StudentQuizReviewResponseData;
-}
-
 export const getQuiz = async (id: string) => {
   console.log((await api.get(`${path}/${id}`)).data.data);
   return (await api.get(`${path}/${id}`)).data.data as GetQuizResponse;

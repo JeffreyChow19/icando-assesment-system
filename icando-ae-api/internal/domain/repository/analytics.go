@@ -19,19 +19,13 @@ func NewAnalyticsRepository(db *lib.Database) AnalyticsRepository {
 	}
 }
 
-func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (
-	*dao.QuizPerformanceDao, error,
-) {
+func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, error) {
 	query := r.db.Table("student_quizzes").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
-		Joins("NATURAL JOIN quiz_classes").
-		Joins("NATURAL JOIN class_teacher").
-		Select(
-			`
-			COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
-			COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
-			`,
-		)
+		Select(`
+		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed,
+		COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
+		`)
 
 	if filter.QuizID != nil {
 		query = query.Where("quiz_id = ?", filter.QuizID)
@@ -42,6 +36,9 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	}
 
 	if filter.TeacherID != nil {
+		// join teachers only if teacherId filter is active
+		// prevent COUNT on aggregating duplicate student_quiz for amount of teacher in class
+		query = query.Joins("NATURAL JOIN quiz_classes").Joins("NATURAL JOIN class_teacher")
 		query = query.Where("teacher_id = ?", filter.TeacherID)
 	}
 
@@ -54,9 +51,7 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	return &result, nil
 }
 
-func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissionsFilter) (
-	*[]dao.GetLatestSubmissionsDao, error,
-) {
+func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, error) {
 	query := r.db.Table("student_quizzes").
 		Select("classes.name as class_name, classes.grade, quizzes.name as quiz_name, students.first_name, students.last_name, student_quizzes.completed_at").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
@@ -81,9 +76,7 @@ func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissi
 	return &results, nil
 }
 
-func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (
-	*[]dao.GetStudentQuizCompetencyDao, error,
-) {
+func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]dao.GetStudentQuizCompetencyDao, error) {
 	query := r.db.Table("student_quizzes sq").
 		Select("c.numbering, c.name, SUM(sqc.correct_count) AS correct_sum, SUM(sqc.total_count) AS total_sum").
 		Joins("INNER JOIN student_quiz_competencies sqc ON sq.id = sqc.student_quiz_id").
@@ -102,7 +95,7 @@ func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (
 
 func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.GetStudentQuizzesDao, error) {
 	query := r.db.Table("student_quizzes sq").
-		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade").
+		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade, sq.id, sq.quiz_id").
 		Joins("INNER JOIN quizzes q ON sq.quiz_id = q.id").
 		Where("sq.student_id = ? AND total_score IS NOT NULL", studentID).
 		Order("sq.completed_at DESC")
@@ -120,14 +113,11 @@ func (r *AnalyticsRepository) GetTeacherDashboardOverview(id uuid.UUID) (*dao.Da
 	var numClasses, numStudents, numQuizzes int
 
 	currentTime := time.Now()
-	if err := r.db.Raw(
-		`WITH taught_classes_id AS (SELECT class_id FROM class_teacher WHERE teacher_id = ?)
+	if err := r.db.Raw(`WITH taught_classes_id AS (SELECT class_id FROM class_teacher WHERE teacher_id = ?)
 	SELECT
 		(SELECT COUNT(DISTINCT class_id) FROM taught_classes_id) as num_classes,
 		(SELECT COUNT(DISTINCT id) FROM students WHERE class_id IN (SELECT class_id FROM taught_classes_id)) as num_students,
-		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`,
-		id, currentTime, currentTime,
-	).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
+		(SELECT COUNT(DISTINCT quiz_id) FROM quiz_classes qc LEFT JOIN quizzes q ON qc.quiz_id = q.id WHERE q.start_at < ? AND q.end_at > ? AND qc.class_id IN (SELECT class_id FROM taught_classes_id)) as num_quizzes`, id, currentTime, currentTime).Row().Scan(&numClasses, &numStudents, &numQuizzes); err != nil {
 		return nil, err
 	}
 
