@@ -23,6 +23,7 @@ import { useSearchParams } from "react-router-dom";
 import { SUBJECTS } from "../../utils/constants";
 import { useDebounce } from "use-debounce";
 import { HistoryCollapsible } from "./history-collapsible";
+import { formatDate, formatHour } from "../../utils/format-date";
 
 export const QuizzesTable = () => {
   const [page, setPage] = useState(1);
@@ -117,6 +118,10 @@ export const QuizzesTable = () => {
                     <strong>Passing Grade:</strong> {quiz.passingGrade}
                     <br />
                     <strong>Created By:</strong> {quiz.createdBy}
+                    <br />
+                    <strong>Latest Release:</strong>{" "}
+                    {formatDate(new Date(quiz.lastPublishedAt!))} -{" "}
+                    {formatHour(new Date(quiz.lastPublishedAt!))}
                     <br />
                   </p>
                   <br />
