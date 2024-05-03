@@ -2,7 +2,6 @@ import { Layout } from "../../layouts/layout.tsx";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -34,7 +33,6 @@ export const Home = () => {
 
   useEffect(() => {
     if (studentQuiz?.status === 'SUBMITTED') {
-      // TODO: review quiz @rachel
       navigate('/submit');
     }
   }, [studentQuiz, navigate]);
@@ -69,15 +67,14 @@ export const Home = () => {
               <CardTitle>{quiz.name ? quiz.name : "Untitled Quiz"}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <CardDescription>
-                {quiz.subject && quiz.subject.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {quiz.subject.map((subject) => (
-                      <Badge key={subject}>{subject}</Badge>
-                    ))}
-                  </div>
-                )}
-              </CardDescription>
+
+              {quiz.subject && quiz.subject.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {quiz.subject.map((subject) => (
+                    <Badge key={subject}>{subject}</Badge>
+                  ))}
+                </div>
+              )}
 
               <div>
                 <div className="text-left font-medium text-gray-700">
