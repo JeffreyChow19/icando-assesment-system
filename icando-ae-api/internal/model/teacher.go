@@ -37,6 +37,19 @@ func (s Teacher) IsTeachingClass(classID uuid.UUID) (bool, error) {
 	return isFound, nil
 }
 
+func (s Teacher) IsTeachingClasses(classIds []uuid.UUID) (bool, error) {
+	for _, id := range classIds {
+		isFound, err := s.IsTeachingClass(id)
+		if err != nil {
+			return false, err
+		}
+		if isFound {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
 func (s Teacher) ToDao() dao.TeacherDao {
 	teacherDao := dao.TeacherDao{
 		ID:            s.ID,
