@@ -9,7 +9,7 @@ import { StudentCompetency } from "../interfaces/competency.ts";
 const path = "/teacher/analytics";
 
 export interface StudentStatisticsResponseData {
-  student_info: StudentData;
+  studentInfo: StudentData;
   performance: StudentPerformance;
   competency: StudentCompetency[];
   quizzes: StudentQuiz[];

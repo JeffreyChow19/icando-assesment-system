@@ -22,7 +22,7 @@ export const QuizList = ({ quizzes }: QuizListProps) => {
   const navigate = useNavigate();
 
   const handleOnRowClicked = (quiz: StudentQuiz) => {
-    navigate(`/quiz/${quiz.quiz_id}/review/${quiz.id}`);
+    navigate(`/quiz/${quiz.quizId}/review/${quiz.id}`);
   };
 
   return (
@@ -53,9 +53,9 @@ export const QuizList = ({ quizzes }: QuizListProps) => {
             <TableCell>{index + 1}</TableCell>
             <TableCell>{quiz.name}</TableCell>
             <TableCell className="text-center">
-              {dayjs(quiz.completed_at).format("L LT")}
+              {dayjs(quiz.completedAt).format("L LT")}
             </TableCell>
-            <TableCell className="text-center">{quiz.total_score}</TableCell>
+            <TableCell className="text-center">{quiz.totalScore}</TableCell>
           </TableRow>
         ))}
       </TableBody>

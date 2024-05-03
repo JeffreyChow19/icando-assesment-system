@@ -18,10 +18,10 @@ export interface StudentPerformance {
 
 export interface StudentQuiz {
   id: string;
-  quiz_id: string;
-  total_score: number;
-  correct_count: number;
-  completed_at: string;
+  quizId: string;
+  totalScore: number;
+  correctCount: number;
+  completedAt: string;
   name: string;
-  passing_grade: number;
+  passingGrade: number;
 }

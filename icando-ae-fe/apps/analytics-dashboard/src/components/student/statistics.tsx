@@ -19,7 +19,7 @@ export const Statistics = () => {
     <div className="flex flex-col gap-12">
       {data && !isLoading && (
         <>
-          <StudentInfo data={data.student_info} />
+          <StudentInfo data={data.studentInfo} />
 
           <div className="flex flex-col items-center gap-4 w-fit">
             <p className="text-center text-xl font-medium">Quiz Statistics</p>
