@@ -143,8 +143,8 @@ export function StudentsTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead>NISN</TableHead>
             <TableHead>Email</TableHead>
+            <TableHead>NISN</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
