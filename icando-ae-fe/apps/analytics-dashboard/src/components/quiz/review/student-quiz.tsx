@@ -8,6 +8,7 @@ import { QuizInfo } from "./quiz-info";
 import { PieChart } from "@mui/x-charts/PieChart";
 import CompetencyChart from "../competency-chart";
 import { StatsCard } from "../../ui/stats-card.tsx";
+import { CardTitle } from "@ui/components/ui/card.tsx";
 
 export const StudentQuiz = () => {
   const params = useParams<{ quizid: string; studentquizid: string }>();
@@ -75,17 +76,13 @@ export const StudentQuiz = () => {
       <div className="flex gap-10 flex-wrap items-top">
         {data && !isLoading && (
           <StatsCard className="w-fit">
-            <p className="text-center text-xl font-medium">
-              Competency Statistics
-            </p>
+            <CardTitle>Competency Statistics</CardTitle>
             <CompetencyChart data={data.competency} />
           </StatsCard>
         )}
         {questionCorrectStats && (
           <StatsCard className="w-fit">
-            <p className="text-center text-xl font-medium">
-              Question Statistics
-            </p>
+            <CardTitle>Question Statistics</CardTitle>
             <PieChart
               series={[
                 {
@@ -115,6 +112,7 @@ export const StudentQuiz = () => {
         )}
       </div>
       <StatsCard className="w-full">
+        <CardTitle>Questions</CardTitle>
         <QuestionList questions={questionWithAnswer} />{" "}
       </StatsCard>
     </div>
