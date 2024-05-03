@@ -3,7 +3,7 @@ import { Pagination } from "../pagination";
 import { CustomCard } from "../ui/custom-card";
 import { useQuery } from "@tanstack/react-query";
 import { getAllQuiz } from "../../services/quiz";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CardContent,
   CardDescription,
@@ -11,27 +11,98 @@ import {
   CardTitle,
 } from "@ui/components/ui/card";
 import { Badge } from "@ui/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@ui/components/ui/select";
+import { Input } from "@ui/components/ui/input";
+import { useSearchParams } from "react-router-dom";
+import { SUBJECTS } from "../../utils/constants";
+import { useDebounce } from "use-debounce";
 
 export const QuizzesTable = () => {
   const [page, setPage] = useState(1);
 
-  // todo: add query param to query and queryKey
+  // search filter params
+  const [searchParams, setSearchParams] = useSearchParams();
+  const quizName = searchParams.get("quiz");
+  const [quizNameFilter, setQuizNameFilter] = useState<string | undefined>(
+    quizName ?? undefined,
+  );
+
+  const subjectOptions = SUBJECTS;
+  const subjectQuery = searchParams.get("subject");
+  const [subjectFilter, setSubjectFilter] = useState<string | undefined>(
+    subjectQuery ?? undefined,
+  );
+  const [query] = useDebounce([quizNameFilter, subjectFilter], 300);
+
+  useEffect(() => {
+    if (quizNameFilter && quizNameFilter !== "") {
+      searchParams.set("name", quizNameFilter);
+    } else {
+      searchParams.delete("name");
+    }
+    if (subjectFilter && subjectFilter !== "") {
+      if (subjectFilter === "all") {
+        setSubjectFilter(undefined);
+        searchParams.delete("subject");
+      } else {
+        searchParams.set("subject", subjectFilter);
+      }
+    } else {
+      searchParams.delete("subject");
+    }
+    setSearchParams(searchParams);
+  }, [quizNameFilter, subjectFilter, searchParams, setSearchParams]);
+
+  // quiz data query
   const { data, isLoading } = useQuery({
-    queryFn: () => getAllQuiz({ page: page, limit: 10 }),
-    queryKey: ["quizzes", page],
+    queryFn: () =>
+      getAllQuiz({
+        page: page,
+        limit: 10,
+        name: quizNameFilter,
+        subject: subjectFilter,
+      }),
+    queryKey: ["quizzes", page, ...query],
   });
 
   return (
-    // todo: search bar and filters
     <div className="w-full mb-2">
       <div className="w-full flex flex-row font-normal gap-x-3 justify-between">
-        <div className="w-full flex flex-row font-normal gap-x-3"></div>
-        <div>
-          <p>search</p>
+        <div className="w-full flex flex-row font-normal gap-x-3">
+          <Input
+            className={"w-[360px]"}
+            placeholder={"Search name ..."}
+            value={quizNameFilter}
+            onChange={(e) => setQuizNameFilter(e.target.value)}
+          />
+          <Select value={subjectFilter} onValueChange={setSubjectFilter}>
+            <SelectTrigger className="w-[240px]">
+              <SelectValue placeholder="Select Subject" />
+            </SelectTrigger>
+            <SelectContent>
+              {subjectFilter !== "" && (
+                <SelectItem value="all" key="all">
+                  Select Subjects
+                </SelectItem>
+              )}
+              {subjectOptions &&
+                subjectOptions.map((subject) => (
+                  <SelectItem value={subject} key={subject}>
+                    {subject}
+                  </SelectItem>
+                ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-2">
+      <div className="grid grid-cols-1 gap-2 my-5">
         {data &&
           data.data.length > 0 &&
           data.data.map((quiz) => {
@@ -63,7 +134,7 @@ export const QuizzesTable = () => {
         !isLoading &&
         data &&
         data.meta.totalPage > 1 && (
-          <div className="flex w-full justify-end my-10">
+          <div className="flex w-full justify-end">
             <Pagination
               page={page}
               totalPage={data?.meta.totalPage || 1}
