@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@repo/ui/components/ui/button";
 import {
   ChevronLeftIcon,
@@ -6,14 +6,30 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 interface PaginationProps {
   page: number;
   totalPage: number;
   setPage: React.Dispatch<React.SetStateAction<number>>;
+  withSearchParams?: boolean;
 }
 
-export const Pagination = ({ page, totalPage, setPage }: PaginationProps) => {
+export const Pagination = ({
+  page,
+  totalPage,
+  setPage,
+  withSearchParams,
+}: PaginationProps) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (withSearchParams) {
+      searchParams.set("page", page.toString());
+      setSearchParams(searchParams);
+    }
+  }, [page, searchParams, setSearchParams, withSearchParams]);
+
   return (
     <div className="flex flex-row justify-end w-full">
       <div className="flex w-[100px] items-center justify-center text-sm font-medium">
