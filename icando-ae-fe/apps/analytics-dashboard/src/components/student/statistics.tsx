@@ -6,6 +6,7 @@ import CompetencyChart from "../quiz/competency-chart.tsx";
 import { QuizStatisticsChart } from "../quiz/quiz-statistics-chart.tsx";
 import { QuizList } from "../quiz/quiz-list.tsx";
 import { StatsCard } from "../ui/stats-card.tsx";
+import { CardTitle } from "@ui/components/ui/card.tsx";
 
 export const Statistics = () => {
   const params = useParams<{ studentId: string }>();
@@ -20,13 +21,13 @@ export const Statistics = () => {
     <div className="flex flex-col gap-10 w-full">
       {data && !isLoading && (
         <>
-          <StatsCard className="w-fit">
+          <StatsCard className="w-fit pl-5 pr-32">
             <StudentInfo data={data.studentInfo} />
           </StatsCard>
 
           <div className="flex gap-10 flex-wrap">
             <StatsCard className="w-fit">
-              <p className="text-center text-xl font-medium">Quiz Statistics</p>
+              <CardTitle>Quiz Statistics</CardTitle>
               <QuizStatisticsChart
                 pass={data.performance.quizzesPassed}
                 fail={data.performance.quizzesFailed}
@@ -35,15 +36,13 @@ export const Statistics = () => {
             </StatsCard>
 
             <StatsCard className="w-fit">
-              <p className="text-center text-xl font-medium">
-                Competency Statistics
-              </p>
+              <CardTitle>Competency Statistics</CardTitle>
               <CompetencyChart data={data.competency} />
             </StatsCard>
           </div>
 
           <StatsCard>
-            <p className="text-center text-xl font-medium">Quiz History</p>
+            <CardTitle>Quiz History</CardTitle>
             <QuizList quizzes={data.quizzes} />
           </StatsCard>
         </>
