@@ -22,6 +22,7 @@ import { Button } from "@repo/ui/components/ui/button";
 import { cn } from "@repo/ui/lib/utils";
 import React from "react";
 import { Avatar, AvatarFallback } from "@ui/components/ui/avatar.tsx";
+import { useUser } from "../context/user-context.tsx";
 
 interface NavItemLink {
   icon: React.ReactElement;
@@ -51,11 +52,11 @@ const navItems: NavItemLink[] = [
 
 const UserDropdown = () => {
   const navigate = useNavigate();
-  // const { user, setUser, refresh } = useUser();
+  const { user, setUser, refresh } = useUser();
   const logout = () => {
     removeToken();
-    // setUser(undefined);
-    // refresh();
+    setUser(undefined);
+    refresh();
     navigate("/login");
   };
 
@@ -64,7 +65,8 @@ const UserDropdown = () => {
       <DropdownMenuTrigger className="items-center whitespace-nowrap rounded-md text-sm text-muted-foreground font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-primary-foreground/20 hover:text-primary-foreground p-1">
         <Avatar className="size-8">
           <AvatarFallback className="bg-secondary text-secondary-foreground font-bold">
-            TS
+            {user?.firstName[0].toUpperCase()}
+            {user?.lastName ? user.lastName[0].toUpperCase() : ""}
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -115,6 +117,7 @@ export const SideBar = () => {
 };
 
 export const Navigation = () => {
+  const { user } = useUser();
   return (
     <header className="flex flex-row sticky top-0 bg-primary backdrop-blur justify-between lg:justify-end px-2 lg:px-6 py-2 z-20 items-center">
       <div className="lg:hidden">
@@ -133,7 +136,9 @@ export const Navigation = () => {
         </Sheet>
       </div>
       <div className="flex items-center gap-2">
-        <p className="text-primary-foreground">Taylor Swift</p>
+        <p className="text-primary-foreground">
+          {user?.firstName + " " + user?.lastName || "-"}
+        </p>
         <UserDropdown />
       </div>
     </header>

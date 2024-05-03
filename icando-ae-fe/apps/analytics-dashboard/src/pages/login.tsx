@@ -28,7 +28,7 @@ export const Login = () => {
           <div className="flex flex-col h-full bg-muted items-center justify-center -mt-2">
             <img src="/logo.png" className="w-1/3" alt="sekolah.mu logo" />
             <Badge className="bg-primary/20 text-primary text-md px-2 mb-2">
-              Assessment Engine
+              Analytics Dashboard
             </Badge>
             <LoginForm />
           </div>

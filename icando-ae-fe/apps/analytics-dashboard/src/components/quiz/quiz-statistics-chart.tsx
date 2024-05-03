@@ -2,8 +2,8 @@ import { PieChart } from "@mui/x-charts/PieChart";
 import React from "react";
 
 interface QuizStatisticsChartProps {
-  pass: number;
-  fail: number;
+  pass?: number;
+  fail?: number;
   isLoading: boolean;
 }
 export const QuizStatisticsChart: React.FC<QuizStatisticsChartProps> = ({
@@ -19,15 +19,15 @@ export const QuizStatisticsChart: React.FC<QuizStatisticsChartProps> = ({
           data: [
             {
               id: 0,
-              value: pass,
+              value: pass || 0,
               label: "Passed",
-              color: "#b7da89",
+              color: "#22c55e",
             },
             {
               id: 1,
-              value: fail,
+              value: fail || 0,
               label: "Failed",
-              color: "#c71f1d",
+              color: "#e11d48",
             },
           ],
         },

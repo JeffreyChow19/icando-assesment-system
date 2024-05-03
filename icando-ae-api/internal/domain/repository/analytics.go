@@ -1,13 +1,12 @@
 package repository
 
 import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"time"
-
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type AnalyticsRepository struct {
@@ -24,7 +23,7 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	query := r.db.Table("student_quizzes").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
 		Select(`
-		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
+		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed,
 		COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
 		`)
 
