@@ -22,12 +22,10 @@ func NewAnalyticsRepository(db *lib.Database) AnalyticsRepository {
 func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, error) {
 	query := r.db.Table("student_quizzes").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
-		Joins("NATURAL JOIN quiz_classes").
-		Joins("NATURAL JOIN class_teacher").
 		Select(`
-			COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
-			COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
-			`)
+		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed,
+		COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
+		`)
 
 	if filter.QuizID != nil {
 		query = query.Where("quiz_id = ?", filter.QuizID)
@@ -38,6 +36,9 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	}
 
 	if filter.TeacherID != nil {
+		// join teachers only if teacherId filter is active
+		// prevent COUNT on aggregating duplicate student_quiz for amount of teacher in class
+		query = query.Joins("NATURAL JOIN quiz_classes").Joins("NATURAL JOIN class_teacher")
 		query = query.Where("teacher_id = ?", filter.TeacherID)
 	}
 
@@ -94,7 +95,7 @@ func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]
 
 func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.GetStudentQuizzesDao, error) {
 	query := r.db.Table("student_quizzes sq").
-		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade").
+		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade, sq.id, sq.quiz_id").
 		Joins("INNER JOIN quizzes q ON sq.quiz_id = q.id").
 		Where("sq.student_id = ? AND total_score IS NOT NULL", studentID).
 		Order("sq.completed_at DESC")

@@ -82,9 +82,11 @@ func (h *AnalyticsHandlerImpl) GetLatestSubmissions(c *gin.Context) {
 
 	teacherID := teacher.ID.String()
 
-	latestSubmissions, err := h.analyticsService.GetLatestSubmissions(dto.GetLatestSubmissionsFilter{
-		TeacherID: &teacherID,
-	})
+	latestSubmissions, err := h.analyticsService.GetLatestSubmissions(
+		dto.GetLatestSubmissionsFilter{
+			TeacherID: &teacherID,
+		},
+	)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
 		return

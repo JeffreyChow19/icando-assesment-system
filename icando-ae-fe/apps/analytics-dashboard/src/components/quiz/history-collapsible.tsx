@@ -103,7 +103,7 @@ export const HistoryCollapsible = ({ quizId }: { quizId: string }) => {
                     </TableCell>
                     <TableCell>
                       <Button size={"sm"}>
-                        <Link to={`/quiz/${quizId}`}>View Details</Link>
+                        <Link to={`/quiz/${version.id}`}>View Details</Link>
                       </Button>
                     </TableCell>
                   </TableRow>

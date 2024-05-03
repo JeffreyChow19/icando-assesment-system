@@ -11,6 +11,8 @@ import "dayjs/locale/id";
 import { TooltipProvider } from "@repo/ui/components/ui/tooltip";
 import { Login } from "./pages/login.tsx";
 import { StudentQuizReview } from "./pages/quizzes/review/index.tsx";
+import { StudentStatistics } from "./pages/students/student";
+import { QuizDetail } from "./pages/quizzes/quiz-detail.tsx";
 import { Quizzes } from "./pages/quizzes/index.tsx";
 import { Students } from './pages/students';
 
@@ -40,6 +42,14 @@ function App() {
     {
       path: "/student",
       element: <Students />,
+    },
+    {
+      path: "/student/:studentId",
+      element: <StudentStatistics />,
+    },
+    {
+      path: "/quiz/:id",
+      element: <QuizDetail />,
     },
   ]);
   return (

@@ -1,4 +1,4 @@
-import { Student } from "./student";
+import { Student, Teacher } from "./user.ts";
 
 export interface Class {
   id: string;
@@ -6,4 +6,5 @@ export interface Class {
   grade: string;
   institutionId: string;
   students?: Student[];
+  teachers?: Teacher[];
 }

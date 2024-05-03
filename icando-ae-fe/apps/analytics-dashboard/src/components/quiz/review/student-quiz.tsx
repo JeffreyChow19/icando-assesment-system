@@ -1,19 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { getStudentQuizReview } from "../../../services/quiz";
 import { QuestionList } from "./question-list";
 import { useMemo } from "react";
 import { QuestionWithAnswer } from "../../../interfaces/quiz";
 import { QuizInfo } from "./quiz-info";
 import { PieChart } from "@mui/x-charts/PieChart";
 import CompetencyChart from "../competency-chart";
+import { StatsCard } from "../../ui/stats-card.tsx";
+import { CardTitle } from "@ui/components/ui/card.tsx";
+import { getStudentQuizReview } from "../../../services/student-quiz.ts";
 
 export const StudentQuiz = () => {
   const params = useParams<{ quizid: string; studentquizid: string }>();
 
   const { data, isLoading } = useQuery({
     queryKey: ["studentQuiz", params.studentquizid],
-    queryFn: () => getStudentQuizReview(params.quizid!, params.studentquizid!),
+    queryFn: () => getStudentQuizReview(params.studentquizid!),
     enabled: !!params.quizid && !!params.studentquizid,
   });
 
@@ -65,26 +67,22 @@ export const StudentQuiz = () => {
   }, [data, isLoading]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-10">
       {data && !isLoading && (
-        <>
+        <StatsCard className="items-start">
           <QuizInfo data={data} />
-        </>
+        </StatsCard>
       )}
-      <div className="flex gap-4 flex-wrap items-top my-4">
+      <div className="flex gap-10 flex-wrap items-top">
         {data && !isLoading && (
-          <div>
-            <p className="text-center text-xl font-medium">
-              Competency Statistics
-            </p>
+          <StatsCard className="w-fit">
+            <CardTitle>Competency Statistics</CardTitle>
             <CompetencyChart data={data.competency} />
-          </div>
+          </StatsCard>
         )}
         {questionCorrectStats && (
-          <div>
-            <p className="text-center text-xl font-medium">
-              Question Statistics
-            </p>
+          <StatsCard className="w-fit">
+            <CardTitle>Question Statistics</CardTitle>
             <PieChart
               series={[
                 {
@@ -107,13 +105,16 @@ export const StudentQuiz = () => {
                   ],
                 },
               ]}
-              width={600}
+              width={500}
               height={300}
             />
-          </div>
+          </StatsCard>
         )}
       </div>
-      <QuestionList questions={questionWithAnswer} />
+      <StatsCard className="w-full">
+        <CardTitle>Questions</CardTitle>
+        <QuestionList questions={questionWithAnswer} />{" "}
+      </StatsCard>
     </div>
   );
 };
