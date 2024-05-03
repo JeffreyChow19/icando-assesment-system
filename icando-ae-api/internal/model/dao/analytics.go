@@ -11,12 +11,12 @@ type QuizPerformanceDao struct {
 }
 
 type GetLatestSubmissionsDao struct {
-	ClassName   string    `json:"class_name"`
+	ClassName   string    `json:"className"`
 	Grade       string    `json:"grade"`
-	QuizName    string    `json:"quiz_name"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	CompletedAt time.Time `json:"completed_at"`
+	QuizName    string    `json:"quizName"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	CompletedAt time.Time `json:"completedAt"`
 }
 
 type GetStudentQuizCompetencyDao struct {
@@ -28,12 +28,12 @@ type GetStudentQuizCompetencyDao struct {
 
 type GetStudentQuizzesDao struct {
 	ID           uuid.UUID `json:"id"`
-	QuizID       uuid.UUID `json:"quiz_id"`
-	TotalScore   float32   `json:"total_score"`
-	CorrectCount int       `json:"correct_count"`
-	CompletedAt  time.Time `json:"completed_at"`
+	QuizID       uuid.UUID `json:"quizId"`
+	TotalScore   float32   `json:"totalScore"`
+	CorrectCount int       `json:"correctCount"`
+	CompletedAt  time.Time `json:"completedAt"`
 	Name         string    `json:"name"`
-	PassingGrade float64   `json:"passing_grade"`
+	PassingGrade float64   `json:"passingGrade"`
 }
 
 type StudentInfo struct {
@@ -42,7 +42,7 @@ type StudentInfo struct {
 }
 
 type GetStudentStatisticsDao struct {
-	StudentInfo StudentInfo                   `json:"student_info"`
+	StudentInfo StudentInfo                   `json:"studentInfo"`
 	Performance QuizPerformanceDao            `json:"performance"`
 	Competency  []GetStudentQuizCompetencyDao `json:"competency"`
 	Quizzes     []GetStudentQuizzesDao        `json:"quizzes"`
