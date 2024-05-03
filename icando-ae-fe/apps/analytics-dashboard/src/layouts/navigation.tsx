@@ -52,15 +52,13 @@ const navItems: NavItemLink[] = [
 
 const UserDropdown = () => {
   const navigate = useNavigate();
-  // const { user, setUser, refresh } = useUser();
+  const { user, setUser, refresh } = useUser();
   const logout = () => {
     removeToken();
-    // setUser(undefined);
-    // refresh();
+    setUser(undefined);
+    refresh();
     navigate("/login");
   };
-
-  const { user } = useUser();
 
   return (
     <DropdownMenu>
