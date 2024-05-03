@@ -93,7 +93,7 @@ func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]
 
 func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.GetStudentQuizzesDao, error) {
 	query := r.db.Table("student_quizzes sq").
-		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade").
+		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade, sq.id, sq.quiz_id").
 		Joins("INNER JOIN quizzes q ON sq.quiz_id = q.id").
 		Where("sq.student_id = ? AND total_score IS NOT NULL", studentID).
 		Order("sq.completed_at DESC")
