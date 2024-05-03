@@ -8,6 +8,7 @@ type GetAllStudentsFilter struct {
 	Name               *string `form:"name"`
 	InstitutionID      *string `form:"institutionId"`
 	ClassID            *string `form:"classId"`
+	TeacherID          *string `form:"teacherId"`
 	Page               int     `form:"page"`
 	Limit              int     `form:"limit"`
 	IncludeInstitution bool
