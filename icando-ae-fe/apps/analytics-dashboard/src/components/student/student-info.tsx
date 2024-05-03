@@ -6,7 +6,7 @@ interface StudentInfoProps {
 
 export const StudentInfo = ({ data }: StudentInfoProps) => {
   return (
-    <div className="grid grid-cols-3 gap-y-2 gap-x-4 max-w-[400px] bg-gray-100 p-2 divide-y">
+    <div className="grid grid-cols-3 gap-y-2 gap-x-4 max-w-[400px] p-2 divide-y">
       <div className="text-right font-semibold">NISN</div>
       <div className="col-span-2">{data.student.nisn}</div>
 
