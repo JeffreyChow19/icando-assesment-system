@@ -18,15 +18,19 @@ func NewAnalyticsRepository(db *lib.Database) AnalyticsRepository {
 	}
 }
 
-func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, error) {
+func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceFilter) (
+	*dao.QuizPerformanceDao, error,
+) {
 	query := r.db.Table("student_quizzes").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
 		Joins("NATURAL JOIN quiz_classes").
 		Joins("NATURAL JOIN class_teacher").
-		Select(`
+		Select(
+			`
 			COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
 			COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
-			`)
+			`,
+		)
 
 	if filter.QuizID != nil {
 		query = query.Where("quiz_id = ?", filter.QuizID)
@@ -49,7 +53,9 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	return &result, nil
 }
 
-func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, error) {
+func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissionsFilter) (
+	*[]dao.GetLatestSubmissionsDao, error,
+) {
 	query := r.db.Table("student_quizzes").
 		Select("classes.name as class_name, classes.grade, quizzes.name as quiz_name, students.first_name, students.last_name, student_quizzes.completed_at").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
@@ -74,7 +80,9 @@ func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissi
 	return &results, nil
 }
 
-func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]dao.GetStudentQuizCompetencyDao, error) {
+func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (
+	*[]dao.GetStudentQuizCompetencyDao, error,
+) {
 	query := r.db.Table("student_quizzes sq").
 		Select("c.numbering, c.name, SUM(sqc.correct_count) AS correct_sum, SUM(sqc.total_count) AS total_sum").
 		Joins("INNER JOIN student_quiz_competencies sqc ON sq.id = sqc.student_quiz_id").
