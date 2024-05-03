@@ -10,7 +10,6 @@ export interface StudentQuizReviewResponseData {
   competency: StudentCompetency[];
 }
 
-// todo: change endpoint for getallquiz
 export interface GetAllQuizFilter {
   name?: string;
   subject?: string;
@@ -24,8 +23,7 @@ interface GetAllQuiz {
 }
 
 export const getAllQuiz = async (filter: GetAllQuizFilter) => {
-  return (await api.get("/designer/quiz", { params: filter }))
-    .data as GetAllQuiz;
+  return (await api.get(path, { params: filter })).data as GetAllQuiz;
 };
 // todo: endpoint for quiz history
 
