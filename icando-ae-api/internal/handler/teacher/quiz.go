@@ -187,7 +187,7 @@ func (h *QuizHandlerImpl) GetQuiz(c *gin.Context) {
 	quiz, httperr := h.quizService.GetQuiz(
 		dto.GetQuizFilter{
 			ID: parsedId, WithCreator: true, WithUpdater: true,
-			WithQuestions: false, WithClasses: true,
+			WithQuestions: true, WithClasses: true,
 		},
 	)
 

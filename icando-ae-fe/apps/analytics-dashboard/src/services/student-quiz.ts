@@ -12,7 +12,16 @@ export interface StudentQuizReviewResponseData {
 
 export interface GetStudentQuizzesResponse {
   meta: Meta;
-  data: StudentQuiz[];
+  data: {
+    id: string;
+    name: string;
+    className: string;
+    classGrade: string;
+    completedAt?: string;
+    totalScore: number;
+    correctCount: string;
+    status: string;
+  }[];
 }
 
 export interface GetStudentQuizzesFilter {
@@ -21,6 +30,7 @@ export interface GetStudentQuizzesFilter {
   classId?: string;
   studentName?: string;
   quizStatus?: string;
+  quizId?: string;
 }
 
 export const getStudentQuizReview = async (studentQuizId: string) => {
@@ -29,6 +39,5 @@ export const getStudentQuizReview = async (studentQuizId: string) => {
 };
 
 export const getStudentQuizzes = async (params: GetStudentQuizzesFilter) => {
-  return (await api.get(path, { params })).data
-    .data as GetStudentQuizzesResponse;
+  return (await api.get(path, { params })).data as GetStudentQuizzesResponse;
 };

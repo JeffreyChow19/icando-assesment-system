@@ -1,5 +1,6 @@
 import { Question } from "./question";
 import { Student, Teacher } from "./user";
+import { Class } from "./class.ts";
 
 export interface Quiz {
   id: string;
@@ -17,6 +18,7 @@ export interface Quiz {
   updater?: Teacher;
   questions?: Question[];
   hasNewerVersion?: boolean;
+  classes?: Class[];
 }
 
 export interface StudentQuiz {

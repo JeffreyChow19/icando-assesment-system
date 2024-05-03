@@ -1,8 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { QuizDetailCard } from "../../components/quiz/quiz-detail-card.tsx";
 import { Layout } from "../../layouts/layout.tsx";
 import { getQuiz } from "../../services/quiz.ts";
+import { StudentQuizTable } from "../../components/quiz/student-quiz-table.tsx";
 
 export const QuizDetail = () => {
   const breadcrumbs = [
@@ -14,7 +15,7 @@ export const QuizDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
 
-  const { data, loading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["quiz", id],
     queryFn: () => getQuiz(id || ""),
   });
@@ -30,7 +31,10 @@ export const QuizDetail = () => {
       showTitle={false}
       breadcrumbs={breadcrumbs}
     >
-      {data && <QuizDetailCard quiz={data.quiz} />}
+      <div className="flex flex-col gap-6">
+        <QuizDetailCard quiz={data?.quiz} isLoading={isLoading} />
+        {data && <StudentQuizTable quiz={data.quiz} />}
+      </div>
     </Layout>
   );
 };
