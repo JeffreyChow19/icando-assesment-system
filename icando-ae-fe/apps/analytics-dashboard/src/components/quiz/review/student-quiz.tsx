@@ -7,6 +7,7 @@ import { QuestionWithAnswer } from "../../../interfaces/quiz";
 import { QuizInfo } from "./quiz-info";
 import { PieChart } from "@mui/x-charts/PieChart";
 import CompetencyChart from "../competency-chart";
+import { StatsCard } from "../../ui/stats-card.tsx";
 
 export const StudentQuiz = () => {
   const params = useParams<{ quizid: string; studentquizid: string }>();
@@ -65,23 +66,23 @@ export const StudentQuiz = () => {
   }, [data, isLoading]);
 
   return (
-    <div>
+    <div className="flex flex-col gap-10">
       {data && !isLoading && (
-        <>
+        <StatsCard className="w-fit">
           <QuizInfo data={data} />
-        </>
+        </StatsCard>
       )}
-      <div className="flex gap-4 flex-wrap items-top my-4">
+      <div className="flex gap-10 flex-wrap items-top">
         {data && !isLoading && (
-          <div>
+          <StatsCard className="w-fit">
             <p className="text-center text-xl font-medium">
               Competency Statistics
             </p>
             <CompetencyChart data={data.competency} />
-          </div>
+          </StatsCard>
         )}
         {questionCorrectStats && (
-          <div>
+          <StatsCard className="w-fit">
             <p className="text-center text-xl font-medium">
               Question Statistics
             </p>
@@ -107,13 +108,15 @@ export const StudentQuiz = () => {
                   ],
                 },
               ]}
-              width={600}
+              width={500}
               height={300}
             />
-          </div>
+          </StatsCard>
         )}
       </div>
-      <QuestionList questions={questionWithAnswer} />
+      <StatsCard className="w-full">
+        <QuestionList questions={questionWithAnswer} />{" "}
+      </StatsCard>
     </div>
   );
 };
