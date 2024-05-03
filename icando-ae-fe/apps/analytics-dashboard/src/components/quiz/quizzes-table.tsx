@@ -36,8 +36,8 @@ export const QuizzesTable = () => {
 
   const subjectOptions = SUBJECTS;
   const subjectQuery = searchParams.get("subject");
-  const [subjectFilter, setSubjectFilter] = useState<string | undefined>(
-    subjectQuery ?? undefined,
+  const [subjectFilter, setSubjectFilter] = useState<string>(
+    subjectQuery ?? "all",
   );
   const [query] = useDebounce([quizNameFilter, subjectFilter], 300);
 
@@ -47,15 +47,10 @@ export const QuizzesTable = () => {
     } else {
       searchParams.delete("name");
     }
-    if (subjectFilter && subjectFilter !== "") {
-      if (subjectFilter === "all") {
-        setSubjectFilter(undefined);
-        searchParams.delete("subject");
-      } else {
-        searchParams.set("subject", subjectFilter);
-      }
-    } else {
+    if (subjectFilter === "all") {
       searchParams.delete("subject");
+    } else {
+      searchParams.set("subject", subjectFilter);
     }
     setSearchParams(searchParams);
   }, [quizNameFilter, subjectFilter, searchParams, setSearchParams]);
@@ -67,7 +62,7 @@ export const QuizzesTable = () => {
         page: page,
         limit: 10,
         name: quizNameFilter,
-        subject: subjectFilter,
+        subject: subjectFilter === "all" ? undefined : subjectFilter,
       }),
     queryKey: ["quizzes", page, ...query],
   });
