@@ -7,6 +7,7 @@ export interface Quiz {
   subject: string[];
   passingGrade: number;
   publishedAt: Date;
+  lastPublishedAt?: Date;
   duration: number;
   startAt: string;
   endAt: string;

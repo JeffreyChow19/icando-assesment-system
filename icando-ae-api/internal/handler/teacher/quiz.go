@@ -16,6 +16,8 @@ import (
 )
 
 type QuizHandler interface {
+	GetAllQuizDetail(c *gin.Context)
+	GetQuizHistory(c *gin.Context)
 	GetStudentQuiz(c *gin.Context)
 	GetStudentQuizzes(c *gin.Context)
 	GetQuiz(c *gin.Context)
@@ -37,6 +39,65 @@ func NewQuizHandlerImpl(
 		competencyRepository: competencyRepository,
 		quizService:          quizService,
 	}
+}
+
+func (h *QuizHandlerImpl) GetAllQuizDetail(c *gin.Context) {
+	institutionID, _ := c.Get(enum.INSTITUTION_ID_CONTEXT_KEY)
+	parsedInstutionID := institutionID.(uuid.UUID).String()
+
+	filter := dto.GetAllQuizzesFilter{
+		InstitutionID: &parsedInstutionID,
+		Page:          1,
+		Limit:         10,
+	}
+
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid query"})
+		return
+	}
+
+	quizzes, meta, err := h.quizService.GetAllQuizzes(filter)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizzes, meta))
+}
+
+func (h *QuizHandlerImpl) GetQuizHistory(c *gin.Context) {
+	quizID := c.Param("id")
+	parsedQuizID, err := uuid.Parse(quizID)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors.New("invalid class ID").Error()})
+		return
+	}
+	filter := dto.GetQuizVersionFilter{
+		ID:    parsedQuizID,
+		Page:  1,
+		Limit: 10,
+	}
+
+	quizHistory, meta, httpErr := h.quizService.GetQuizHistory(filter)
+
+	if httpErr != nil {
+		c.AbortWithStatusJSON(httpErr.StatusCode, gin.H{"errors": httpErr.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponseWithMeta(&createdMsg, quizHistory, meta))
+
 }
 
 func (h *QuizHandlerImpl) GetStudentQuiz(c *gin.Context) {
