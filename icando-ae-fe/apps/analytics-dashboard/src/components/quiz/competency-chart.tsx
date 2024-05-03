@@ -26,7 +26,7 @@ export default function CompetencyChart({ data }: CompetencyChartProps) {
         { dataKey: "incorrectCount", label: "Total Incorrect", stack: "A" },
       ]}
       layout="horizontal"
-      width={600}
+      width={500}
       height={400}
     />
   );

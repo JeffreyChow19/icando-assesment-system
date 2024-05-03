@@ -1,6 +1,9 @@
 package dao
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type QuizPerformanceDao struct {
 	QuizzesPassed int `json:"quizzesPassed"`
@@ -8,31 +11,38 @@ type QuizPerformanceDao struct {
 }
 
 type GetLatestSubmissionsDao struct {
-	ClassName   string    `json:"class_name"`
+	ClassName   string    `json:"className"`
 	Grade       string    `json:"grade"`
-	QuizName    string    `json:"quiz_name"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	CompletedAt time.Time `json:"completed_at"`
+	QuizName    string    `json:"quizName"`
+	FirstName   string    `json:"firstName"`
+	LastName    string    `json:"lastName"`
+	CompletedAt time.Time `json:"completedAt"`
 }
 
 type GetStudentQuizCompetencyDao struct {
-	Numbering  string `json:"numbering"`
-	Name       string `json:"name"`
-	CorrectSum int    `json:"correct_sum"`
-	TotalSum   int    `json:"total_sum"`
+	Numbering  string `json:"competencyId"`
+	Name       string `json:"competencyName"`
+	CorrectSum int    `json:"correctCount"`
+	TotalSum   int    `json:"totalCount"`
 }
 
 type GetStudentQuizzesDao struct {
-	TotalScore   float32   `json:"total_score"`
-	CorrectCount int       `json:"correct_count"`
-	CompletedAt  time.Time `json:"completed_at"`
+	ID           uuid.UUID `json:"id"`
+	QuizID       uuid.UUID `json:"quizId"`
+	TotalScore   float32   `json:"totalScore"`
+	CorrectCount int       `json:"correctCount"`
+	CompletedAt  time.Time `json:"completedAt"`
 	Name         string    `json:"name"`
-	PassingGrade float64   `json:"passing_grade"`
+	PassingGrade float64   `json:"passingGrade"`
+}
+
+type StudentInfo struct {
+	Student StudentDao `json:"student"`
+	Class   ClassDao   `json:"class"`
 }
 
 type GetStudentStatisticsDao struct {
-	Student     StudentDao                    `json:"student"`
+	StudentInfo StudentInfo                   `json:"studentInfo"`
 	Performance QuizPerformanceDao            `json:"performance"`
 	Competency  []GetStudentQuizCompetencyDao `json:"competency"`
 	Quizzes     []GetStudentQuizzesDao        `json:"quizzes"`

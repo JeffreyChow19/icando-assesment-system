@@ -70,7 +70,7 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 	studentIDStr := studentID.String()
 
 	// Student Information
-	student, errStudent := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &studentIDStr})
+	student, errStudent := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &studentIDStr, IncludeClass: true})
 	if errStudent != nil {
 		if errors.Is(errStudent, gorm.ErrRecordNotFound) {
 			return nil, ErrStudentNotFound
@@ -79,6 +79,7 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 	}
 
 	studentDao := student.ToDao()
+	classDao := student.Class.ToDao(dto.GetClassFilter{})
 
 	// Performance
 	quizPerformance, errQuizPerformance := s.analyticsRepository.GetQuizPerformance(&dto.GetQuizPerformanceFilter{
@@ -101,7 +102,10 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 	}
 
 	return &dao.GetStudentStatisticsDao{
-		Student:     studentDao,
+		StudentInfo: dao.StudentInfo{
+			Student: studentDao,
+			Class:   classDao,
+		},
 		Performance: *quizPerformance,
 		Competency:  *competencyStats,
 		Quizzes:     *quizzes,
