@@ -1,11 +1,11 @@
 package repository
 
 import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
-
-	"gorm.io/gorm"
 )
 
 type AnalyticsRepository struct {
@@ -66,6 +66,39 @@ func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissi
 	query = query.Order("student_quizzes.completed_at desc").Limit(10)
 
 	var results []dao.GetLatestSubmissionsDao
+	err := query.Find(&results).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &results, nil
+}
+
+func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]dao.GetStudentQuizCompetencyDao, error) {
+	query := r.db.Table("student_quizzes sq").
+		Select("c.numbering, c.name, SUM(sqc.correct_count) AS correct_sum, SUM(sqc.total_count) AS total_sum").
+		Joins("INNER JOIN student_quiz_competencies sqc ON sq.id = sqc.student_quiz_id").
+		Joins("INNER JOIN competencies c ON sqc.competency_id = c.id").
+		Where("sq.student_id = ?", studentID).
+		Group("c.numbering, c.name, sqc.competency_id")
+
+	var results []dao.GetStudentQuizCompetencyDao
+	err := query.Find(&results).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &results, nil
+}
+
+func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.GetStudentQuizzesDao, error) {
+	query := r.db.Table("student_quizzes sq").
+		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade").
+		Joins("INNER JOIN quizzes q ON sq.quiz_id = q.id").
+		Where("sq.student_id = ? AND total_score IS NOT NULL", studentID).
+		Order("sq.completed_at DESC")
+
+	var results []dao.GetStudentQuizzesDao
 	err := query.Find(&results).Error
 	if err != nil {
 		return nil, err

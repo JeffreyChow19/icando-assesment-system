@@ -2,6 +2,7 @@ package teacher
 
 import (
 	"errors"
+	"github.com/google/uuid"
 	"icando/internal/domain/service"
 	"icando/internal/model"
 	"icando/internal/model/dto"
@@ -17,6 +18,7 @@ import (
 type AnalyticsHandler interface {
 	GetQuizPerformance(c *gin.Context)
 	GetLatestSubmissions(c *gin.Context)
+	GetStudentStatistics(c *gin.Context)
 }
 
 type AnalyticsHandlerImpl struct {
@@ -82,4 +84,24 @@ func (h *AnalyticsHandlerImpl) GetLatestSubmissions(c *gin.Context) {
 
 	createdMsg := "ok"
 	c.JSON(http.StatusOK, response.NewBaseResponse(&createdMsg, latestSubmissions))
+}
+
+func (h *AnalyticsHandlerImpl) GetStudentStatistics(c *gin.Context) {
+	studentID := c.Param("id")
+
+	// Convert string params to uuid.UUID
+	studentUUID, errStudentUUID := uuid.Parse(studentID)
+	if errStudentUUID != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": "Invalid id"})
+		return
+	}
+
+	studentStatistics, err := h.analyticsService.GetStudentStatistics(studentUUID)
+	if err != nil {
+		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
+		return
+	}
+
+	createdMsg := "ok"
+	c.JSON(http.StatusOK, response.NewBaseResponse(&createdMsg, studentStatistics))
 }
