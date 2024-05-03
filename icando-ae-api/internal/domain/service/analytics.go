@@ -29,14 +29,18 @@ var ErrGetQuizPerformance = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when fetching quiz performance"),
 }
 
-func NewAnalyticsServiceImpl(analyticsRepository repository.AnalyticsRepository, studentRepository repository.StudentRepository) *AnalyticsServiceImpl {
+func NewAnalyticsServiceImpl(
+	analyticsRepository repository.AnalyticsRepository, studentRepository repository.StudentRepository,
+) *AnalyticsServiceImpl {
 	return &AnalyticsServiceImpl{
 		analyticsRepository: analyticsRepository,
 		studentRepository:   studentRepository,
 	}
 }
 
-func (s *AnalyticsServiceImpl) GetQuizPerformance(filter dto.GetQuizPerformanceFilter) (*dao.QuizPerformanceDao, *httperror.HttpError) {
+func (s *AnalyticsServiceImpl) GetQuizPerformance(filter dto.GetQuizPerformanceFilter) (
+	*dao.QuizPerformanceDao, *httperror.HttpError,
+) {
 	quizPerformance, err := s.analyticsRepository.GetQuizPerformance(&filter)
 
 	if err != nil {
@@ -51,7 +55,9 @@ var ErrGetLatestSubmissions = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when fetching latest submissions"),
 }
 
-func (s *AnalyticsServiceImpl) GetLatestSubmissions(filter dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, *httperror.HttpError) {
+func (s *AnalyticsServiceImpl) GetLatestSubmissions(filter dto.GetLatestSubmissionsFilter) (
+	*[]dao.GetLatestSubmissionsDao, *httperror.HttpError,
+) {
 	latestSubmissions, err := s.analyticsRepository.GetLatestSubmissions(&filter)
 
 	if err != nil {
@@ -66,11 +72,13 @@ var ErrGetStudentStatistics = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when fetching student statistics"),
 }
 
-func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.GetStudentStatisticsDao, *httperror.HttpError) {
+func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (
+	*dao.GetStudentStatisticsDao, *httperror.HttpError,
+) {
 	studentIDStr := studentID.String()
 
 	// Student Information
-	student, errStudent := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &studentIDStr})
+	student, errStudent := s.studentRepository.GetOne(dto.GetStudentFilter{ID: &studentIDStr, IncludeClass: true})
 	if errStudent != nil {
 		if errors.Is(errStudent, gorm.ErrRecordNotFound) {
 			return nil, ErrStudentNotFound
@@ -79,11 +87,14 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 	}
 
 	studentDao := student.ToDao()
+	classDao := student.Class.ToDao(dto.GetClassFilter{})
 
 	// Performance
-	quizPerformance, errQuizPerformance := s.analyticsRepository.GetQuizPerformance(&dto.GetQuizPerformanceFilter{
-		StudentID: &studentIDStr,
-	})
+	quizPerformance, errQuizPerformance := s.analyticsRepository.GetQuizPerformance(
+		&dto.GetQuizPerformanceFilter{
+			StudentID: &studentIDStr,
+		},
+	)
 	if errQuizPerformance != nil {
 		return nil, ErrGetQuizPerformance
 	}
@@ -101,7 +112,10 @@ func (s *AnalyticsServiceImpl) GetStudentStatistics(studentID uuid.UUID) (*dao.G
 	}
 
 	return &dao.GetStudentStatisticsDao{
-		Student:     studentDao,
+		StudentInfo: dao.StudentInfo{
+			Student: studentDao,
+			Class:   classDao,
+		},
 		Performance: *quizPerformance,
 		Competency:  *competencyStats,
 		Quizzes:     *quizzes,

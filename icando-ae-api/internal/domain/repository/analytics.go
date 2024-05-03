@@ -1,13 +1,12 @@
 package repository
 
 import (
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"time"
-
-	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type AnalyticsRepository struct {
@@ -24,7 +23,7 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 	query := r.db.Table("student_quizzes").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
 		Select(`
-		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed, 
+		COUNT(CASE WHEN total_score >= passing_grade THEN 1 END) AS quizzes_passed,
 		COUNT(CASE WHEN total_score < passing_grade THEN 1 END) AS quizzes_failed
 		`)
 
@@ -96,7 +95,7 @@ func (r *AnalyticsRepository) GetStudentQuizCompetency(studentID uuid.UUID) (*[]
 
 func (r *AnalyticsRepository) GetStudentQuizzes(studentID uuid.UUID) (*[]dao.GetStudentQuizzesDao, error) {
 	query := r.db.Table("student_quizzes sq").
-		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade").
+		Select("sq.total_score, sq.correct_count, sq.completed_at, q.name, q.passing_grade, sq.id, sq.quiz_id").
 		Joins("INNER JOIN quizzes q ON sq.quiz_id = q.id").
 		Where("sq.student_id = ? AND total_score IS NOT NULL", studentID).
 		Order("sq.completed_at DESC")

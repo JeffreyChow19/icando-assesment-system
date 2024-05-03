@@ -16,13 +16,13 @@ import { useMutation } from "@tanstack/react-query";
 import { login } from "../../services/auth.ts";
 import { toast } from "@ui/components/ui/use-toast.ts";
 import { AxiosError } from "axios";
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { onErrorToast, serverErrorToast } from "../ui/error-toast.tsx";
+import { useUser } from "../../context/user-context.tsx";
 
 export const LoginForm = () => {
   const [authError, setAuthError] = useState<boolean>(false);
-
+  const { refresh } = useUser();
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -30,8 +30,6 @@ export const LoginForm = () => {
       password: "",
     },
   });
-
-  const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: async (payload: z.infer<typeof loginFormSchema>) => {
@@ -42,7 +40,7 @@ export const LoginForm = () => {
       toast({
         description: "Login successful",
       });
-      navigate("/");
+      refresh();
     },
     onError: (e: Error) => {
       if (e instanceof AxiosError) {

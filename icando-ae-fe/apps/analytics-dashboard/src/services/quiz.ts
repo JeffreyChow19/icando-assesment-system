@@ -5,6 +5,10 @@ import { Meta } from "../interfaces/meta";
 
 const path = "/teacher/quiz";
 
+export interface GetQuizResponse {
+  quiz: Quiz;
+}
+
 export interface StudentQuizReviewResponseData {
   quiz: StudentQuiz;
   competency: StudentCompetency[];
@@ -35,10 +39,6 @@ export const getQuizHistory = async (filter: GetQuizHistoryFilter) => {
     .data as GetAllQuiz;
 };
 
-export const getStudentQuizReview = async (
-  quizId: string,
-  studentQuizId: string,
-) => {
-  return (await api.get(`${path}/${quizId}/students/${studentQuizId}`)).data
-    .data as StudentQuizReviewResponseData;
+export const getQuiz = async (id: string) => {
+  return (await api.get(`${path}/${id}`)).data.data as GetQuizResponse;
 };
