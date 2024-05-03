@@ -23,6 +23,7 @@ export const Quiz = () => {
     studentAnswers,
     setQuestions,
     setStudentAnswers,
+    refresh
   } = useStudentQuiz();
   const quiz = studentQuiz?.quiz;
   const [time, setTime] = useState<Date>();
@@ -136,8 +137,11 @@ export const Quiz = () => {
 
   const submit = async () => {
     try {
-      await submitQuiz();
-      navigate("/submit");
+      submitQuiz().then(() => {
+        return refresh();
+      }).then(() => {
+        navigate("/submit");
+      })
     } catch (err) {
       toast({
         variant: "destructive",

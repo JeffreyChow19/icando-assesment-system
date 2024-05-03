@@ -10,10 +10,7 @@ export const Submit = () => {
   const { studentQuiz } = useStudentQuiz();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!studentQuiz) {
-      console.log("Waiting for studentQuiz data...");
-    } else if (studentQuiz?.status !== 'SUBMITTED') {
-      console.log("Quiz status:", studentQuiz?.status);
+    if (studentQuiz && studentQuiz.status !== 'SUBMITTED') {
       navigate('/quiz/1');
     }
   }, [studentQuiz, navigate]);
