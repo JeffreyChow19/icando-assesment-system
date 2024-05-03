@@ -24,7 +24,7 @@ import (
 
 type QuizService interface {
 	CreateQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
-	GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError)
+	GetQuiz(filter dto.GetQuizFilter) (*dao.QuizDao, *httperror.HttpError)
 	UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto) (*dao.QuizDao, *httperror.HttpError)
 	GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError)
 	PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError)
@@ -46,7 +46,8 @@ func NewQuizServiceImpl(
 	db *lib.Database,
 	config *lib.Config,
 	workerClient *client.WorkerClient,
-	authService AuthService) *QuizServiceImpl {
+	authService AuthService,
+) *QuizServiceImpl {
 	return &QuizServiceImpl{
 		quizRepository:    quizRepository,
 		db:                db.DB,
@@ -93,8 +94,8 @@ var ErrUpdateQuiz = &httperror.HttpError{
 	Err:        errors.New("Unexpected error happened when updating quiz"),
 }
 
-func (s *QuizServiceImpl) GetQuiz(id uuid.UUID) (*dao.QuizDao, *httperror.HttpError) {
-	quiz, err := s.quizRepository.GetQuiz(dto.GetQuizFilter{ID: id, WithCreator: true, WithUpdater: true, WithQuestions: true, WithClasses: true})
+func (s *QuizServiceImpl) GetQuiz(filter dto.GetQuizFilter) (*dao.QuizDao, *httperror.HttpError) {
+	quiz, err := s.quizRepository.GetQuiz(filter)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, ErrQuizNotFound
@@ -137,7 +138,9 @@ func (s *QuizServiceImpl) UpdateQuiz(userID uuid.UUID, quizDto dto.UpdateQuizDto
 	return &quizDao, nil
 }
 
-func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError) {
+func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) (
+	[]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError,
+) {
 	quizzes, meta, err := s.quizRepository.GetAllQuiz(filter)
 	if err != nil {
 		log.Print(err)
@@ -147,7 +150,9 @@ func (s *QuizServiceImpl) GetAllQuizzes(filter dto.GetAllQuizzesFilter) ([]dao.P
 	return quizzes, meta, nil
 }
 
-func (s *QuizServiceImpl) GetQuizHistory(filter dto.GetQuizVersionFilter) ([]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError) {
+func (s *QuizServiceImpl) GetQuizHistory(filter dto.GetQuizVersionFilter) (
+	[]dao.ParentQuizDao, *dao.MetaDao, *httperror.HttpError,
+) {
 	quizzes, meta, err := s.quizRepository.GetAllQuizHistory(filter)
 	if err != nil {
 		log.Print(err)
@@ -157,10 +162,14 @@ func (s *QuizServiceImpl) GetQuizHistory(filter dto.GetQuizVersionFilter) ([]dao
 	return quizzes, meta, nil
 }
 
-func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (*dao.QuizDao, *httperror.HttpError) {
-	teacher, err := s.teacherRepository.GetTeacher(dto.GetTeacherFilter{
-		ID: &teacherID,
-	})
+func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQuizDto) (
+	*dao.QuizDao, *httperror.HttpError,
+) {
+	teacher, err := s.teacherRepository.GetTeacher(
+		dto.GetTeacherFilter{
+			ID: &teacherID,
+		},
+	)
 
 	if err != nil {
 		return nil, &httperror.HttpError{
@@ -199,11 +208,13 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 	studentQuizzes := make([]model.StudentQuiz, 0)
 
 	for _, student := range students {
-		studentQuizzes = append(studentQuizzes, model.StudentQuiz{
-			Status:    enum.NOT_STARTED,
-			QuizID:    quiz.ID,
-			StudentID: student.ID,
-		})
+		studentQuizzes = append(
+			studentQuizzes, model.StudentQuiz{
+				Status:    enum.NOT_STARTED,
+				QuizID:    quiz.ID,
+				StudentID: student.ID,
+			},
+		)
 	}
 
 	if len(studentQuizzes) == 0 {
@@ -224,10 +235,12 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 
 	for i, studentQuiz := range studentQuizzes {
 		// token here
-		token, err := s.authService.GenerateQuizToken(dto.GenerateQuizTokenDto{
-			StudentQuizId: studentQuiz.ID,
-			ExpiredAt:     (*quiz.EndAt).Add(2 * time.Hour),
-		})
+		token, err := s.authService.GenerateQuizToken(
+			dto.GenerateQuizTokenDto{
+				StudentQuizId: studentQuiz.ID,
+				ExpiredAt:     (*quiz.EndAt).Add(2 * time.Hour),
+			},
+		)
 
 		if err != nil {
 			tx.Rollback()
@@ -272,9 +285,11 @@ func (s *QuizServiceImpl) PublishQuiz(teacherID uuid.UUID, quizDto dto.PublishQu
 			}
 		}
 
-		calculateTask, err := task.NewCalcualteStudentQuizTask(task.CalculateStudentQuizPayload{
-			StudentQuizID: studentQuiz.ID,
-		})
+		calculateTask, err := task.NewCalcualteStudentQuizTask(
+			task.CalculateStudentQuizPayload{
+				StudentQuizID: studentQuiz.ID,
+			},
+		)
 
 		if err != nil {
 			tx.Rollback()
