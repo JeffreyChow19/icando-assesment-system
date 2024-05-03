@@ -1,4 +1,4 @@
-import { useQueries, useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { QuizDetailCard } from "../../components/quiz/quiz-detail-card.tsx";
 import { Layout } from "../../layouts/layout.tsx";
@@ -6,7 +6,6 @@ import { getQuiz } from "../../services/quiz.ts";
 import { StudentQuizTable } from "../../components/quiz/student-quiz-table.tsx";
 import { getPerformance } from "../../services/analytics.ts";
 import { QuizStatisticsChart } from "../../components/quiz/quiz-statistics-chart.tsx";
-import { useEffect } from "react";
 import { Card, CardContent } from "@ui/components/ui/card.tsx";
 
 export const QuizDetail = () => {
@@ -40,7 +39,7 @@ export const QuizDetail = () => {
   return (
     <Layout
       pageTitle={quizQuery.data?.quiz.name || ""}
-      showTitle={false}
+      showTitle={true}
       breadcrumbs={breadcrumbs}
     >
       <div className="flex flex-col gap-6">

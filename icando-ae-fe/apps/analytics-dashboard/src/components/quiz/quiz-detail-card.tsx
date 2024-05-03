@@ -1,10 +1,5 @@
 import { Fragment } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@ui/components/ui/card.tsx";
+import { Card, CardContent } from "@ui/components/ui/card.tsx";
 import { formatDateHour } from "../../utils/format-date.ts";
 import { Quiz } from "../../interfaces/quiz.ts";
 import { Skeleton } from "@ui/components/ui/skeleton.tsx";
@@ -19,12 +14,7 @@ export const QuizDetailCard = ({
   return (
     <Fragment>
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle>
-            {quiz ? quiz.name : <Skeleton className="w-4/5 h-4" />}{" "}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-4 w-full">
+        <CardContent className="grid grid-cols-4 w-full mt-6">
           <div className="flex flex-col gap-2 col-span-1 font-medium text-sm">
             <p>Subjects</p>
             <p>Published at</p>
