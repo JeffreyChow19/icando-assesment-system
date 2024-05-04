@@ -1,9 +1,7 @@
 import { Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { deleteStudent, getAllStudent } from "../../services/student.ts";
-import { useConfirm } from "../../context/alert-dialog.tsx";
-import { Button } from "@ui/components/ui/button.tsx";
+import { getAllClasses, getAllStudent } from "../../services/student.ts";
 import {
   Table,
   TableBody,
@@ -25,8 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@ui/components/ui/select.tsx";
-import { getAllClasses } from "../../services/classes.ts";
-import { Class } from "../../interfaces/classes.ts";
+import { Class } from "../../interfaces/class.ts";
+import { Badge } from "@ui/components/ui/badge.tsx";
+import { Button } from "@ui/components/ui/button.tsx";
+
+interface ClassMap {
+  [id: string]: string;
+}
 
 export function StudentsTable() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,6 +41,7 @@ export function StudentsTable() {
   const [name, setName] = useState(nameParams ? nameParams : "");
   const [classId, setClassId] = useState(classIdParams ? classIdParams : "");
   const [query] = useDebounce([name, classId], 300);
+  const [classMap] = useState<ClassMap>({});
 
   useEffect(() => {
     setPage(1);
@@ -55,9 +59,9 @@ export function StudentsTable() {
       searchParams.delete("classId");
     }
     setSearchParams(searchParams);
-  }, [name, classId]);
+  }, [name, classId, setSearchParams, searchParams]);
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["students", page, ...query],
     queryFn: () =>
       getAllStudent({
@@ -76,14 +80,20 @@ export function StudentsTable() {
   });
 
   useEffect(() => {
+    if (classes) {
+      classes.forEach((cls) => {
+        classMap[cls.id] = `${cls.name} - ${cls.grade}`;
+      });
+    }
+  }, [classes, classMap]);
+
+  useEffect(() => {
     if (data) {
       if (data.meta.page != page) {
         setPage(data.meta.page);
       }
     }
   }, [data, page]);
-
-  const confirm = useConfirm();
 
   return (
     <div className="w-full mb-2">
@@ -101,21 +111,16 @@ export function StudentsTable() {
             </SelectTrigger>
             <SelectContent>
               {classes &&
-                classes.data.map((e: Class) => (
+                classes.map((e: Class) => (
                   <SelectItem value={e.id} key={e.id}>
                     {e.name} - {e.grade}
                   </SelectItem>
                 ))}
-              {classes && classes.data.length === 0 && (
+              {classes && classes.length === 0 && (
                 <SelectLabel>No class yet</SelectLabel>
               )}
             </SelectContent>
           </Select>
-        </div>
-        <div>
-          <Button size={"sm"}>
-            <Link to={"/students/new"}>New Student</Link>
-          </Button>
         </div>
       </div>
       <Table>
@@ -145,6 +150,7 @@ export function StudentsTable() {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>NISN</TableHead>
+            <TableHead>Class - Grade</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -160,31 +166,16 @@ export function StudentsTable() {
                   <TableCell>{student.email}</TableCell>
                   <TableCell>{student.nisn}</TableCell>
                   <TableCell>
-                    <div className="flex space-x-2">
-                      <>
-                        <Button size={"sm"}>
-                          <Link to={`/students/edit/${student.id}`}>Edit</Link>
-                        </Button>
-                        <Button
-                          size={"sm"}
-                          variant={"destructive"}
-                          onClick={() => {
-                            confirm({
-                              title: "Are you sure?",
-                              body: "Are you sure want to delete this student?",
-                            }).then((result) => {
-                              if (result) {
-                                deleteStudent(student.id).then(() => {
-                                  refetch();
-                                });
-                              }
-                            });
-                          }}
-                        >
-                          Delete
-                        </Button>
-                      </>
-                    </div>
+                    <Badge className="bg-primary/20 text-primary text-md px-2 mb-2">
+                      {classes && student.classId
+                        ? classMap[student.classId]
+                        : ""}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Link to={`/student/${student.id}`}>
+                      <Button>View Statistics</Button>
+                    </Link>
                   </TableCell>
                 </TableRow>
               );

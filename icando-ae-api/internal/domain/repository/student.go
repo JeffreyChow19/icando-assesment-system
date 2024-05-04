@@ -2,14 +2,14 @@ package repository
 
 import (
 	"fmt"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"icando/internal/model"
 	"icando/internal/model/dao"
 	"icando/internal/model/dto"
 	"icando/lib"
 	"math"
-
-	"github.com/google/uuid"
-	"gorm.io/gorm"
+	"strings"
 )
 
 type StudentRepository struct {
@@ -34,10 +34,13 @@ func (r *StudentRepository) GetAllStudent(filter dto.GetAllStudentsFilter) ([]mo
 		query.Where("institution_id = ?", filter.InstitutionID)
 	}
 	if filter.Name != nil {
-		query.Where("concat(first_name, ' ', last_name) ilike ?", fmt.Sprintf("%s%%", *filter.Name))
+		query.Where("LOWER(concat(first_name, ' ', last_name)) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Name)))
 	}
 	if filter.ClassID != nil && *filter.ClassID != "" {
 		query.Where("class_id = ?", *filter.ClassID)
+	}
+	if filter.TeacherID != nil && *filter.TeacherID != "" {
+		query.Where("class_id IN (SELECT class_id FROM class_teacher WHERE teacher_id = ?)", *filter.TeacherID)
 	}
 
 	var totalItem int64
