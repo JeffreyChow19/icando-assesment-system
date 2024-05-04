@@ -108,9 +108,19 @@ func (r *QuizRepository) GetAllQuiz(filter dto.GetAllQuizzesFilter) ([]dao.Paren
 	query := r.db.Table("quizzes").Select(
 		`quizzes.id, quizzes.name, quizzes.subject, quizzes.passing_grade, MAX(c.published_at) as last_published_at, t1.first_name || ' ' || t1.last_name as created_by, t2.first_name || ' ' || t2.last_name as updated_by`).
 		Joins("INNER JOIN teachers t1 ON quizzes.created_by=t1.id").
-		Joins("INNER JOIN teachers t2 ON quizzes.updated_by=t2.id").
-		Joins("LEFT JOIN quizzes c ON quizzes.id=c.parent_quiz").
-		Where("quizzes.parent_quiz IS NULL")
+		Joins("INNER JOIN teachers t2 ON quizzes.updated_by=t2.id")
+
+	
+	if filter.TeacherID != nil {
+		// select where child quiz (published quiz) has filter teacherID related to it
+		query.Joins("JOIN quizzes c ON quizzes.id=c.parent_quiz").
+			Joins("JOIN quiz_classes qc ON c.id=qc.quiz_id").
+			Joins("JOIN class_teacher ct ON qc.class_id=ct.class_id").
+			Where("ct.teacher_id = ?", filter.TeacherID)
+	} else {
+		query.Joins("LEFT JOIN quizzes c ON quizzes.id=c.parent_quiz").
+			Where("quizzes.parent_quiz IS NULL")
+	}
 
 	if filter.Query != nil {
 		query.Where("LOWER(quizzes.name) LIKE ?", strings.ToLower(fmt.Sprintf("%%%s%%", *filter.Query)))
@@ -151,6 +161,12 @@ func (r *QuizRepository) GetAllQuizHistory(filter dto.GetQuizVersionFilter) ([]d
 
 	if filter.ID != uuid.Nil {
 		query.Where("quizzes.parent_quiz = ?", filter.ID)
+	}
+
+	if filter.TeacherID != nil {
+		query.Joins("JOIN quiz_classes qc ON quizzes.id=qc.quiz_id").
+			Joins("JOIN class_teacher ct ON qc.class_id=ct.class_id").
+			Where("ct.teacher_id = ?", filter.TeacherID)
 	}
 
 	query.Group("quizzes.id, t1.first_name, t1.last_name, t2.first_name, t2.last_name")

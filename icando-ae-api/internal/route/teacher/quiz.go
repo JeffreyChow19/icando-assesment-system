@@ -11,8 +11,8 @@ type QuizRoute struct {
 
 func (r QuizRoute) Setup(group *gin.RouterGroup) {
 	group = group.Group("/quiz")
+	group.GET("", r.quizHandler.GetAllTeacherQuiz)
 	group.GET("/:quizId", r.quizHandler.GetQuiz)
-	group.GET("", r.quizHandler.GetAllQuizDetail)
 	group.GET("/history/:id", r.quizHandler.GetQuizHistory)
 }
 

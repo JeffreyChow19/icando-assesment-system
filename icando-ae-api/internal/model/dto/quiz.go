@@ -15,11 +15,13 @@ type GetQuizFilter struct {
 }
 
 type GetQuizVersionFilter struct {
-	ID    uuid.UUID
-	Page  int `form:"page"`
-	Limit int `form:"limit"`
+	ID        uuid.UUID
+	TeacherID *uuid.UUID
+	Page      int `form:"page"`
+	Limit     int `form:"limit"`
 }
 type GetAllQuizzesFilter struct {
+	TeacherID     *uuid.UUID
 	InstitutionID *string  `form:"institutionId"`
 	Query         *string  `form:"name"`
 	Subject       []string `form:"subject"`

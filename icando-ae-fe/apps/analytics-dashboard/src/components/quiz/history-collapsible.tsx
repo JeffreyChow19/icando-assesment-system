@@ -15,7 +15,6 @@ import { ChevronDown, ChevronRight, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getQuizHistory } from "../../services/quiz";
 import { formatDate, formatHour } from "../../utils/format-date";
-import { Badge } from "@ui/components/ui/badge";
 import { Link } from "react-router-dom";
 
 export const HistoryCollapsible = ({ quizId }: { quizId: string }) => {
@@ -73,35 +72,16 @@ export const HistoryCollapsible = ({ quizId }: { quizId: string }) => {
             </TableCaption>
             {data?.data &&
               data.data.length > 0 &&
-              data.data.map((version, index, array) => {
-                const idx = array.length - 1 - index;
+              data.data.map((version) => {
                 return (
-                  <TableRow>
+                  <TableRow className="bg-muted">
                     <TableCell>
-                      <strong>Version {idx + 1}</strong>
+                      <strong>
+                        Release {formatDate(new Date(version.lastPublishedAt!))}{" "}
+                        - {formatHour(new Date(version.lastPublishedAt!))}
+                      </strong>
                     </TableCell>
-                    <TableCell>
-                      {version.lastPublishedAt ? (
-                        <div className="flex flex-row">
-                          <Badge
-                            key={formatDate(new Date(version.lastPublishedAt))}
-                            className="mr-2"
-                            variant={"outline"}
-                          >
-                            {formatDate(new Date(version.lastPublishedAt))}
-                          </Badge>
-                          <Badge
-                            key={formatHour(new Date(version.lastPublishedAt))}
-                            variant={"outline"}
-                          >
-                            {formatHour(new Date(version.lastPublishedAt))}
-                          </Badge>
-                        </div>
-                      ) : (
-                        ""
-                      )}
-                    </TableCell>
-                    <TableCell>
+                    <TableCell className="text-right">
                       <Button size={"sm"}>
                         <Link to={`/quiz/${version.id}`}>View Details</Link>
                       </Button>
