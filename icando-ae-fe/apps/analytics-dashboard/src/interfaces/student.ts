@@ -33,3 +33,12 @@ export interface StudentQuiz {
   name: string;
   passingGrade: number;
 }
+
+export interface StudentSubmissions{
+  className: string;
+  grade: string;
+  quizName: string;
+  firstName: string;
+  lastName: string;
+  completedAt: Date;
+}
