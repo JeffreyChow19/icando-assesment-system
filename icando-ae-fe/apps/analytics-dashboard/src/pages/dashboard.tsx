@@ -61,7 +61,7 @@ export const Dashboard = () => {
       return { ...submission, quizName: `${baseName} - v${count}` };
     });
   
-    return processed.reverse().slice(5, 10);
+    return processed.reverse().slice(-5);
   };
 
   const processedData = processData(latestSubmissions.data || []);
