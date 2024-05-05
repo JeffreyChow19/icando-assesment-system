@@ -11,7 +11,7 @@ import { AlertTriangleIcon } from "lucide-react";
 
 export const Review = () => {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["studentQuiz"],
+    queryKey: ["review"],
     queryFn: () => getQuizReview(),
     retry: false,
     refetchOnWindowFocus: false,
@@ -75,7 +75,9 @@ export const Review = () => {
               <QuestionAnswerCard
                 key={index}
                 question={question}
-                answerId={orderedAnswers[index]? orderedAnswers[index].answerId:null}
+                answerId={
+                  orderedAnswers[index] ? orderedAnswers[index].answerId : null
+                }
                 questionNumber={index + 1}
               />
             ))}
