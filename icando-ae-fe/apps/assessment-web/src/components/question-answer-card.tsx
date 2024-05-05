@@ -8,16 +8,23 @@ export const QuestionAnswerCard = ({
   questionNumber,
 }: {
   question: Question;
-  answerId: number;
+  answerId: number | null;
   questionNumber: number;
 }) => {
   return (
     <div className="flex flex-col gap-3 mt-2 mb-2">
-      {questionNumber}. {question.text}
+      <div>
+        {questionNumber}. {question.text}{" "}
+        {!answerId && (
+          <span className="italic text-muted-foreground">(Tidak dijawab)</span>
+        )}
+      </div>
       {question.choices.map((choice) => {
-        const isCorrectAnswer = question.answerId == choice.id;
+        const isCorrectAnswer =
+          choice.id == answerId && question.answerId == choice.id;
         const isWrongAnswer =
           choice.id == answerId && question.answerId != choice.id;
+
         return (
           <div
             key={choice.id}
@@ -36,6 +43,15 @@ export const QuestionAnswerCard = ({
           </div>
         );
       })}
+      <div className="flex flex-col gap-2">
+        <p className="italic text-muted-foreground">Jawaban benar:</p>
+        <p>
+          {
+            question.choices.find((choice) => choice.id == question.answerId)
+              ?.text
+          }
+        </p>
+      </div>
     </div>
   );
 };
