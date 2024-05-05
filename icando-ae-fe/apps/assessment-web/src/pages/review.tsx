@@ -75,7 +75,7 @@ export const Review = () => {
               <QuestionAnswerCard
                 key={index}
                 question={question}
-                answerId={orderedAnswers[index].answerId}
+                answerId={orderedAnswers[index]? orderedAnswers[index].answerId:null}
                 questionNumber={index + 1}
               />
             ))}

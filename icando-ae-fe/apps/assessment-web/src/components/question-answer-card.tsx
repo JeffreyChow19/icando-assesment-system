@@ -8,16 +8,19 @@ export const QuestionAnswerCard = ({
   questionNumber,
 }: {
   question: Question;
-  answerId: number;
+  answerId: number|null;
   questionNumber: number;
 }) => {
   return (
     <div className="flex flex-col gap-3 mt-2 mb-2">
-      {questionNumber}. {question.text}
+      <div>
+        {questionNumber}. {question.text} {answerId === null ? <b>(TIDAK DIJAWAB)</b> : null}
+        </div>
       {question.choices.map((choice) => {
         const isCorrectAnswer = question.answerId == choice.id;
-        const isWrongAnswer =
-          choice.id == answerId && question.answerId != choice.id;
+        const isWrongAnswer = choice.id == answerId && question.answerId != choice.id;
+        const isUnanswered = answerId === null;
+
         return (
           <div
             key={choice.id}
@@ -27,7 +30,9 @@ export const QuestionAnswerCard = ({
                 ? "bg-green-200"
                 : isWrongAnswer
                   ? "bg-rose-200"
-                  : "bg-white",
+                  : isUnanswered
+                    ? "bg-gray-200"
+                    : "bg-white",
             )}
           >
             {choice.text}
