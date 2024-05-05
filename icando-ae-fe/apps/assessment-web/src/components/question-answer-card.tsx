@@ -8,18 +8,22 @@ export const QuestionAnswerCard = ({
   questionNumber,
 }: {
   question: Question;
-  answerId: number|null;
+  answerId: number | null;
   questionNumber: number;
 }) => {
   return (
     <div className="flex flex-col gap-3 mt-2 mb-2">
       <div>
-        {questionNumber}. {question.text} {answerId === null ? <b>(TIDAK DIJAWAB)</b> : null}
-        </div>
+        {questionNumber}. {question.text}{" "}
+        {!answerId && (
+          <span className="italic text-muted-foreground">(Tidak dijawab)</span>
+        )}
+      </div>
       {question.choices.map((choice) => {
-        const isCorrectAnswer = question.answerId == choice.id;
-        const isWrongAnswer = choice.id == answerId && question.answerId != choice.id;
-        const isUnanswered = answerId === null;
+        const isCorrectAnswer =
+          choice.id == answerId && question.answerId == choice.id;
+        const isWrongAnswer =
+          choice.id == answerId && question.answerId != choice.id;
 
         return (
           <div
@@ -30,9 +34,7 @@ export const QuestionAnswerCard = ({
                 ? "bg-green-200"
                 : isWrongAnswer
                   ? "bg-rose-200"
-                  : isUnanswered
-                    ? "bg-gray-200"
-                    : "bg-white",
+                  : "bg-white",
             )}
           >
             {choice.text}
@@ -41,6 +43,15 @@ export const QuestionAnswerCard = ({
           </div>
         );
       })}
+      <div className="flex flex-col gap-2">
+        <p className="italic text-muted-foreground">Jawaban benar:</p>
+        <p>
+          {
+            question.choices.find((choice) => choice.id == question.answerId)
+              ?.text
+          }
+        </p>
+      </div>
     </div>
   );
 };
