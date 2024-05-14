@@ -33,12 +33,14 @@ export default function CompetencyChart({ data }: CompetencyChartProps) {
           dataKey: "normalizedCorrectScore",
           label: "Passed Competencies",
           stack: "A",
+          color: "#22c55e",
           valueFormatter: (passed) => `${(passed! * 100).toFixed(1)}%`,
         },
         {
           dataKey: "normalizedIncorrectScore",
           label: "Failed Competencies",
           stack: "A",
+          color: "#e11d48",
           valueFormatter: (failed) => `${(failed! * 100).toFixed(1)}%`,
         },
       ]}

@@ -73,23 +73,35 @@ export const Dashboard = () => {
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Students</CardTitle>
-              <CardDescription>Current count of all students enrolled</CardDescription>
+              <CardDescription>
+                Current count of all students enrolled
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalStudent}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalStudent}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Classes</CardTitle>
-              <CardDescription>Number of active classes available</CardDescription>
+              <CardDescription>
+                Number of active classes available
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalClass}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalClass}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Ongoing Quizzes</CardTitle>
-              <CardDescription>Count of quizzes currently active</CardDescription>
+              <CardDescription>
+                Count of quizzes currently active
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalOngoingQuiz}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalOngoingQuiz}
+            </CardContent>
           </CustomCard>
         </div>
         <div className="grid grid-cols-2 gap-2 w-full">
@@ -104,12 +116,14 @@ export const Dashboard = () => {
                         id: 0,
                         value: performance.data.quizzesPassed,
                         label: "Passed",
+                        color: "#22c55e",
                       },
                       {
                         id: 1,
                         value: performance.data.quizzesFailed,
                         label: "Failed",
-                      }
+                        color: "#e11d48",
+                      },
                     ],
                   },
                 ]}
@@ -118,20 +132,18 @@ export const Dashboard = () => {
               />
             </StatsCard>
           )}
-          <StatsCard >
-              <CardTitle>Students Latest Submissions</CardTitle>
+          <StatsCard>
+            <CardTitle>Students Latest Submissions</CardTitle>
             <CardContent>
               <div className="flex flex-col gap-y-2">
                 <Table>
                   <TableCaption>
-                    {latestSubmissions.data ? (
-                      null
-                    ) :
+                    {latestSubmissions.data ? null : (
                       <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
                         <SearchIcon className="w-10 h-10" />
                         No submissions or quizzes yet.
                       </div>
-                    }
+                    )}
                   </TableCaption>
                   <TableHeader>
                     <TableRow>
@@ -156,12 +168,26 @@ export const Dashboard = () => {
                     })} */}
                     {processedData.map((submission) => {
                       return (
-                        <TableRow key={submission.quizName + submission.completedAt}>
-                          <TableCell>{submission.firstName}{" "}{submission.lastName}</TableCell>
-                          <TableCell className="text-center">{submission.className}</TableCell>
-                          <TableCell className="text-center">{submission.grade}</TableCell>
-                          <TableCell className="text-center">{submission.quizName}</TableCell>
-                          <TableCell>{formatDate(submission.completedAt)}{", "}{formatHour(submission.completedAt)}</TableCell>
+                        <TableRow
+                          key={submission.quizName + submission.completedAt}
+                        >
+                          <TableCell>
+                            {submission.firstName} {submission.lastName}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {submission.className}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {submission.grade}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {submission.quizName}
+                          </TableCell>
+                          <TableCell>
+                            {formatDate(submission.completedAt)}
+                            {", "}
+                            {formatHour(submission.completedAt)}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -171,7 +197,6 @@ export const Dashboard = () => {
             </CardContent>
           </StatsCard>
         </div>
-
       </div>
     </Layout>
   );
