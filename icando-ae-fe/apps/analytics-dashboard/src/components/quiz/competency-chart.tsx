@@ -12,8 +12,6 @@ export default function CompetencyChart({ data }: CompetencyChartProps) {
       return {
         ...each,
         normalizedCorrectScore: each.correctCount / each.totalCount,
-        normalizedIncorrectScore:
-          (each.totalCount - each.correctCount) / each.totalCount,
       };
     });
   }, [data]);
@@ -22,6 +20,7 @@ export default function CompetencyChart({ data }: CompetencyChartProps) {
     <BarChart
       margin={{ left: 100 }}
       dataset={dataset}
+      xAxis={[{ min: 0, max: 1 }]}
       yAxis={[
         {
           scaleType: "band",
@@ -35,13 +34,6 @@ export default function CompetencyChart({ data }: CompetencyChartProps) {
           stack: "A",
           color: "#22c55e",
           valueFormatter: (passed) => `${(passed! * 100).toFixed(1)}%`,
-        },
-        {
-          dataKey: "normalizedIncorrectScore",
-          label: "Failed Competencies",
-          stack: "A",
-          color: "#e11d48",
-          valueFormatter: (failed) => `${(failed! * 100).toFixed(1)}%`,
         },
       ]}
       layout="horizontal"
