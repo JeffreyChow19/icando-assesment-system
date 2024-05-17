@@ -14,33 +14,47 @@ export const QuizDetailCard = ({
   return (
     <Fragment>
       <Card className="w-full">
-        <CardContent className="grid grid-cols-4 w-full mt-6">
-          <div className="flex flex-col gap-2 col-span-1 font-semibold">
-            <p>Subjects</p>
-            <p>Published at</p>
-            <p>Start at</p>
-            <p>End at</p>
-            <p>Passing grade</p>
+        <CardContent className="flex flex-col gap-2 w-full mt-6">
+          <div className="grid grid-cols-4 ">
+            <p className="col-span-1 font-semibold">Subjects</p>
+            {!isLoading && quiz && (
+              <p className="col-span-3">{quiz.subject.join(", ")}</p>
+            )}
+            {isLoading && <Skeleton className="w-4/5 h-4" />}
           </div>
-          <div className="flex flex-col gap-2 col-span-3">
-            {isLoading && (
-              <>
-                <Skeleton className="w-4/5 h-4" />
-                <Skeleton className="w-4/5 h-4" />
-                <Skeleton className="w-4/5 h-4" />
-                <Skeleton className="w-4/5 h-4" />
-                <Skeleton className="w-4/5 h-4" />
-              </>
+          <div className="grid grid-cols-4 ">
+            <p className="col-span-1 font-semibold">Published at</p>
+            {!isLoading && quiz && (
+              <p className="col-span-3">
+                {formatDateHour(new Date(quiz.publishedAt))}
+              </p>
             )}
-            {quiz && (
-              <>
-                <p>{quiz.subject.join(", ")}</p>
-                <p>{formatDateHour(new Date(quiz.publishedAt))}</p>
-                <p>{formatDateHour(new Date(quiz.startAt))}</p>
-                <p>{formatDateHour(new Date(quiz.endAt))}</p>
-                <p>{quiz.passingGrade}</p>
-              </>
+            {isLoading && <Skeleton className="w-4/5 h-4" />}
+          </div>
+          <div className="grid grid-cols-4 ">
+            <p className="col-span-1 font-semibold">Start at</p>
+            {!isLoading && quiz && (
+              <p className="col-span-3">
+                {formatDateHour(new Date(quiz.startAt))}
+              </p>
             )}
+            {isLoading && <Skeleton className="w-4/5 h-4" />}
+          </div>
+          <div className="grid grid-cols-4 ">
+            <p className="col-span-1 font-semibold">End at</p>
+            {!isLoading && quiz && (
+              <p className="col-span-3">
+                {formatDateHour(new Date(quiz.endAt))}
+              </p>
+            )}
+            {isLoading && <Skeleton className="w-4/5 h-4" />}
+          </div>
+          <div className="grid grid-cols-4 ">
+            <p className="col-span-1 font-semibold">Passing Grade</p>
+            {!isLoading && quiz && (
+              <p className="col-span-3">{quiz.passingGrade}</p>
+            )}
+            {isLoading && <Skeleton className="w-4/5 h-4" />}
           </div>
         </CardContent>
       </Card>
