@@ -4,7 +4,7 @@ import { QuestionList } from "./question-list";
 import { useMemo } from "react";
 import { QuestionWithAnswer } from "../../../interfaces/quiz";
 import { QuizInfo } from "./quiz-info";
-import { PieChart } from "@mui/x-charts/PieChart";
+import { pieArcLabelClasses, PieChart } from "@mui/x-charts/PieChart";
 import CompetencyChart from "../competency-chart";
 import { StatsCard } from "../../ui/stats-card.tsx";
 import { CardTitle } from "@ui/components/ui/card.tsx";
@@ -84,8 +84,17 @@ export const StudentQuiz = () => {
           <StatsCard className="w-fit">
             <CardTitle>Question Statistics</CardTitle>
             <PieChart
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fill: "white",
+                  fontWeight: "bold",
+                },
+              }}
               series={[
                 {
+                  arcLabel: (item) =>
+                    `${(100 * item.value) / (questionCorrectStats.totalCorrect + questionCorrectStats.totalIncorrect + questionCorrectStats.totalUnanswered)}%`,
+                  arcLabelMinAngle: 45,
                   data: [
                     {
                       id: 0,

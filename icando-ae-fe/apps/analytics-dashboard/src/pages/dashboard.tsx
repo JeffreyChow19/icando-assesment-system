@@ -72,23 +72,35 @@ export const Dashboard = () => {
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Students</CardTitle>
-              <CardDescription>Current count of all students enrolled</CardDescription>
+              <CardDescription>
+                Current count of all students enrolled
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalStudent}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalStudent}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Classes</CardTitle>
-              <CardDescription>Number of active classes available</CardDescription>
+              <CardDescription>
+                Number of active classes available
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalClass}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalClass}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Ongoing Quizzes</CardTitle>
-              <CardDescription>Count of quizzes currently active</CardDescription>
+              <CardDescription>
+                Count of quizzes currently active
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalOngoingQuiz}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalOngoingQuiz}
+            </CardContent>
           </CustomCard>
         </div>
         <div className="grid grid-cols-2 gap-2 w-full">
