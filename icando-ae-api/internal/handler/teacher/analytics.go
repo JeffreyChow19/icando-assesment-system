@@ -82,11 +82,27 @@ func (h *AnalyticsHandlerImpl) GetLatestSubmissions(c *gin.Context) {
 
 	teacherID := teacher.ID.String()
 
-	latestSubmissions, err := h.analyticsService.GetLatestSubmissions(
-		dto.GetLatestSubmissionsFilter{
-			TeacherID: &teacherID,
-		},
-	)
+	filter := dto.GetLatestSubmissionsFilter{
+		TeacherID: &teacherID,
+		Page:      1,
+		Limit:     5,
+	}
+
+	if err := c.ShouldBindQuery(&filter); err != nil {
+		var ve validator.ValidationErrors
+		if errors.As(err, &ve) {
+			out := make([]httperror.FieldError, len(ve))
+			for i, fe := range ve {
+				out[i] = httperror.FieldError{Field: fe.Field(), Message: httperror.MsgForTag(fe.Tag()), Tag: fe.Tag()}
+			}
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": out})
+			return
+		}
+		c.AbortWithStatusJSON(http.StatusUnprocessableEntity, gin.H{"errors": "Invalid query"})
+		return
+	}
+
+	latestSubmissions, err := h.analyticsService.GetLatestSubmissions(filter)
 	if err != nil {
 		c.AbortWithStatusJSON(err.StatusCode, gin.H{"errors": err.Err.Error()})
 		return
