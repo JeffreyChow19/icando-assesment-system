@@ -8,7 +8,6 @@ import {
 import { CustomCard } from "../components/ui/custom-card.tsx";
 import { useQueries } from "@tanstack/react-query";
 import { getLatestSubmissions, getOverview, getPerformance } from "../services/analytics.ts";
-import { StatsCard } from "../components/ui/stats-card.tsx";
 import { PieChart } from "@mui/x-charts/PieChart";
 import {
   Table,
@@ -50,9 +49,9 @@ export const Dashboard = () => {
     ],
   });
 
-  const processData = (submissions:StudentSubmissions[]) => {
+  const processData = (submissions: StudentSubmissions[]) => {
     const reversedData = [...submissions].reverse();
-  
+
     const quizCount = new Map();
     const processed = reversedData.map(submission => {
       const baseName = submission.quizName;
@@ -60,7 +59,7 @@ export const Dashboard = () => {
       quizCount.set(baseName, count + 1);
       return { ...submission, quizName: `${baseName} - v${count}` };
     });
-  
+
     return processed.reverse().slice(-5);
   };
 
@@ -73,105 +72,113 @@ export const Dashboard = () => {
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Students</CardTitle>
-              <CardDescription>Current count of all students enrolled</CardDescription>
+              <CardDescription>
+                Current count of all students enrolled
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalStudent}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalStudent}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Total Classes</CardTitle>
-              <CardDescription>Number of active classes available</CardDescription>
+              <CardDescription>
+                Number of active classes available
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalClass}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalClass}
+            </CardContent>
           </CustomCard>
           <CustomCard>
             <CardHeader>
               <CardTitle>Ongoing Quizzes</CardTitle>
-              <CardDescription>Count of quizzes currently active</CardDescription>
+              <CardDescription>
+                Count of quizzes currently active
+              </CardDescription>
             </CardHeader>
-            <CardContent className="text-primary text-2xl font-bold">{overview.data?.totalOngoingQuiz}</CardContent>
+            <CardContent className="text-primary text-2xl font-bold">
+              {overview.data?.totalOngoingQuiz}
+            </CardContent>
           </CustomCard>
         </div>
         <div className="grid grid-cols-2 gap-2 w-full">
           {performance.data && (
-            <StatsCard className="w-fit">
-              <CardTitle>Quizzes Performance</CardTitle>
-              <PieChart
-                series={[
-                  {
-                    data: [
+            <CustomCard >
+                <CardHeader className="items-center">
+                  <CardTitle>Quizzes Performance</CardTitle>
+                </CardHeader>
+                <div className="flex justify-center items-center h-auto">
+                  <PieChart
+                    series={[
                       {
-                        id: 0,
-                        value: performance.data.quizzesPassed,
-                        label: "Passed",
+                        data: [
+                          {
+                            id: 0,
+                            value: performance.data.quizzesPassed,
+                            label: "Passed",
+                          },
+                          {
+                            id: 1,
+                            value: performance.data.quizzesFailed,
+                            label: "Failed",
+                          }
+                        ],
                       },
-                      {
-                        id: 1,
-                        value: performance.data.quizzesFailed,
-                        label: "Failed",
-                      }
-                    ],
-                  },
-                ]}
-                width={500}
-                height={300}
-              />
-            </StatsCard>
+                    ]}
+                    width={500}
+                    height={300}
+                  />
+                </div>
+            </CustomCard>
           )}
-          <StatsCard >
-              <CardTitle>Students Latest Submissions</CardTitle>
-            <CardContent>
-              <div className="flex flex-col gap-y-2">
-                <Table>
-                  <TableCaption>
-                    {latestSubmissions.data ? (
-                      null
-                    ) :
-                      <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
-                        <SearchIcon className="w-10 h-10" />
-                        No submissions or quizzes yet.
-                      </div>
-                    }
-                  </TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead className="text-center">Class</TableHead>
-                      <TableHead className="text-center">Grade</TableHead>
-                      <TableHead className="text-center">Quiz Name</TableHead>
-                      <TableHead>Completed At</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {/* {latestSubmissions.data && latestSubmissions.data?.map((submission) => {
-                      return (
-                        <TableRow key={submission.quizName}>
-                          <TableCell>{submission.firstName}{" "}{submission.lastName}</TableCell>
-                          <TableCell className="text-center">{submission.className}</TableCell>
-                          <TableCell className="text-center">{submission.grade}</TableCell>
-                          <TableCell className="text-center">{submission.quizName}</TableCell>
-                          <TableCell>{formatDate(submission.completedAt)}{", "}{formatHour(submission.completedAt)}</TableCell>
-                        </TableRow>
-                      );
-                    })} */}
-                    {processedData.map((submission) => {
-                      return (
-                        <TableRow key={submission.quizName + submission.completedAt}>
-                          <TableCell>{submission.firstName}{" "}{submission.lastName}</TableCell>
-                          <TableCell className="text-center">{submission.className}</TableCell>
-                          <TableCell className="text-center">{submission.grade}</TableCell>
-                          <TableCell className="text-center">{submission.quizName}</TableCell>
-                          <TableCell>{formatDate(submission.completedAt)}{", "}{formatHour(submission.completedAt)}</TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </StatsCard>
+          {latestSubmissions.data && (
+            <CustomCard >
+              <CardHeader className="items-center">
+                <CardTitle>Students Latest Submissions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-y-2 items-center">
+                  <Table>
+                    <TableCaption>
+                      {latestSubmissions.data ? (
+                        null
+                      ) :
+                        <div className="flex flex-col w-full items-center justify-center gap-2 text-muted-foreground text-md">
+                          <SearchIcon className="w-10 h-10" />
+                          No submissions or quizzes yet.
+                        </div>
+                      }
+                    </TableCaption>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead className="text-center">Class</TableHead>
+                        <TableHead className="text-center">Grade</TableHead>
+                        <TableHead className="text-center">Quiz Name</TableHead>
+                        <TableHead>Completed At</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {latestSubmissions.data && processedData.map((submission) => {
+                        return (
+                          <TableRow key={submission.quizName + submission.completedAt}>
+                            <TableCell>{submission.firstName}{" "}{submission.lastName}</TableCell>
+                            <TableCell className="text-center">{submission.className}</TableCell>
+                            <TableCell className="text-center">{submission.grade}</TableCell>
+                            <TableCell className="text-center">{submission.quizName}</TableCell>
+                            <TableCell>{formatDate(submission.completedAt)}{", "}{formatHour(submission.completedAt)}</TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </CustomCard>
+          )}
         </div>
-
       </div>
     </Layout>
   );

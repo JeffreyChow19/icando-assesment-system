@@ -48,15 +48,17 @@ export const QuizDetail = () => {
             quiz={quizQuery.data?.quiz}
             isLoading={quizQuery.isLoading}
           />
-          <Card>
-            <CardContent className="flex justify-center mt-4">
-              <QuizStatisticsChart
-                pass={statisticsQuery?.data?.quizzesPassed}
-                fail={statisticsQuery?.data?.quizzesFailed}
-                isLoading={statisticsQuery.isLoading}
-              />
-            </CardContent>
-          </Card>
+          {statisticsQuery.data && statisticsQuery.data.quizzesPassed > 0 && statisticsQuery.data.quizzesFailed > 0 ?
+            <Card>
+              <CardContent className="flex justify-center mt-4">
+                <QuizStatisticsChart
+                  pass={statisticsQuery.data.quizzesPassed}
+                  fail={statisticsQuery.data.quizzesFailed}
+                  isLoading={statisticsQuery.isLoading}
+                />
+              </CardContent>
+            </Card>
+            : null}
         </div>
         {quizQuery.data && <StudentQuizTable quiz={quizQuery.data.quiz} />}
       </div>
