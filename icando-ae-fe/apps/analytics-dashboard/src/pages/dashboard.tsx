@@ -22,7 +22,6 @@ import {
   SearchIcon,
 } from "lucide-react";
 import { formatDate, formatHour } from "../utils/format-date.ts";
-import { StudentSubmissions } from "src/interfaces/student.ts";
 
 export const Dashboard = () => {
   const breadcrumbs = [
@@ -48,22 +47,6 @@ export const Dashboard = () => {
       },
     ],
   });
-
-  const processData = (submissions: StudentSubmissions[]) => {
-    const reversedData = [...submissions].reverse();
-
-    const quizCount = new Map();
-    const processed = reversedData.map(submission => {
-      const baseName = submission.quizName;
-      const count = quizCount.get(baseName) || 0;
-      quizCount.set(baseName, count + 1);
-      return { ...submission, quizName: `${baseName} - v${count}` };
-    });
-
-    return processed.reverse().slice(-5);
-  };
-
-  const processedData = processData(latestSubmissions.data || []);
 
   return (
     <Layout pageTitle="Dashboard" showTitle={true} breadcrumbs={breadcrumbs}>
@@ -157,17 +140,19 @@ export const Dashboard = () => {
                         <TableHead className="text-center">Class</TableHead>
                         <TableHead className="text-center">Grade</TableHead>
                         <TableHead className="text-center">Quiz Name</TableHead>
+                        <TableHead>Published At</TableHead>
                         <TableHead>Completed At</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {latestSubmissions.data && processedData.map((submission) => {
+                      {latestSubmissions.data && latestSubmissions.data.map((submission) => {
                         return (
                           <TableRow key={submission.quizName + submission.completedAt}>
                             <TableCell>{submission.firstName}{" "}{submission.lastName}</TableCell>
                             <TableCell className="text-center">{submission.className}</TableCell>
                             <TableCell className="text-center">{submission.grade}</TableCell>
                             <TableCell className="text-center">{submission.quizName}</TableCell>
+                            <TableCell>{formatDate(submission.publishedAt)}{", "}{formatHour(submission.publishedAt)}</TableCell>
                             <TableCell>{formatDate(submission.completedAt)}{", "}{formatHour(submission.completedAt)}</TableCell>
                           </TableRow>
                         );
