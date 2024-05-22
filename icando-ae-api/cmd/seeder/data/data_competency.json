@@ -1,0 +1,102 @@
+[
+  {
+    "id": "C01",
+    "name": "Pemecahan Masalah",
+    "description": "Kemampuan untuk memecahkan masalah secara efektif dan efisien"
+  },
+  {
+    "id": "C02",
+    "name": "Berpikir Kritis",
+    "description": "Kemampuan untuk menganalisis informasi secara objektif dan membuat penilaian yang beralasan"
+  },
+  {
+    "id": "C03",
+    "name": "Komunikasi Efektif",
+    "description": "Kemampuan untuk menyampaikan informasi secara jelas dan efektif"
+  },
+  {
+    "id": "C04",
+    "name": "Kerja Sama Tim",
+    "description": "Kemampuan untuk bekerja secara efektif dalam tim"
+  },
+  {
+    "id": "C05",
+    "name": "Kepemimpinan",
+    "description": "Kemampuan untuk memimpin dan menginspirasi orang lain"
+  },
+  {
+    "id": "C06",
+    "name": "Manajemen Waktu",
+    "description": "Kemampuan untuk mengatur waktu secara efisien"
+  },
+  {
+    "id": "C07",
+    "name": "Adaptabilitas",
+    "description": "Kemampuan untuk beradaptasi dengan perubahan"
+  },
+  {
+    "id": "C08",
+    "name": "Kreativitas",
+    "description": "Kemampuan untuk berpikir secara inovatif dan kreatif"
+  },
+  {
+    "id": "C09",
+    "name": "Inisiatif",
+    "description": "Kemampuan untuk bertindak proaktif"
+  },
+  {
+    "id": "C10",
+    "name": "Pengambilan Keputusan",
+    "description": "Kemampuan untuk membuat keputusan yang baik dan tepat waktu"
+  },
+  {
+    "id": "C11",
+    "name": "Analisis Data",
+    "description": "Kemampuan untuk menganalisis dan menginterpretasikan data"
+  },
+  {
+    "id": "C12",
+    "name": "Teknologi Informasi",
+    "description": "Kemampuan untuk menggunakan teknologi informasi secara efektif"
+  },
+  {
+    "id": "C13",
+    "name": "Pelayanan Pelanggan",
+    "description": "Kemampuan untuk melayani pelanggan dengan baik"
+  },
+  {
+    "id": "C14",
+    "name": "Penjualan",
+    "description": "Kemampuan untuk menjual produk atau layanan"
+  },
+  {
+    "id": "C15",
+    "name": "Manajemen Proyek",
+    "description": "Kemampuan untuk mengelola proyek secara efektif"
+  },
+  {
+    "id": "C16",
+    "name": "Negosiasi",
+    "description": "Kemampuan untuk melakukan negosiasi secara efektif"
+  },
+  {
+    "id": "C17",
+    "name": "Manajemen Konflik",
+    "description": "Kemampuan untuk mengelola dan menyelesaikan konflik"
+  },
+  {
+    "id": "C18",
+    "name": "Etika Kerja",
+    "description": "Pemahaman dan penerapan etika kerja yang baik"
+  },
+  {
+    "id": "C19",
+    "name": "Pemahaman Bisnis",
+    "description": "Pemahaman tentang operasi dan strategi bisnis"
+  },
+  {
+    "id": "C20",
+    "name": "Pemrograman",
+    "description": "Kemampuan untuk menulis dan memahami kode program"
+  }
+]
