@@ -1,0 +1,27 @@
+[
+  {
+    "name": "SMAN 1 Jakarta",
+    "nis": "12345678",
+    "slug": "sman-1-jakarta"
+  },
+  {
+    "name": "SMAN 2 Jakarta",
+    "nis": "23456789",
+    "slug": "sman-2-jakarta"
+  },
+  {
+    "name": "SMAN 3 Bandung",
+    "nis": "34567890",
+    "slug": "sman-3-bandung"
+  },
+  {
+    "name": "SMAN 1 Surabaya",
+    "nis": "45678901",
+    "slug": "sman-1-surabaya"
+  },
+  {
+    "name": "SMAN 2 Medan",
+    "nis": "56789012",
+    "slug": "sman-2-medan"
+  }
+]

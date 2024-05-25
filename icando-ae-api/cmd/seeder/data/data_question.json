@@ -1,0 +1,554 @@
+[
+  {
+    "text": "Apa nama planet terdekat dengan matahari?",
+    "choices": [
+      {"id": 0, "text": "Merkurius"},
+      {"id": 1, "text": "Venus"},
+      {"id": 2, "text": "Bumi"},
+      {"id": 3, "text": "Mars"}
+    ],
+    "answer_id": 0,
+    "subject": "Ilmu Pengetahuan Alam"
+  },
+  {
+    "text": "Apa nama gas yang paling banyak terdapat di atmosfer bumi?",
+    "choices": [
+      {"id": 0, "text": "Oksigen"},
+      {"id": 1, "text": "Hidrogen"},
+      {"id": 2, "text": "Nitrogen"},
+      {"id": 3, "text": "Karbon dioksida"}
+    ],
+    "answer_id": 2,
+    "subject": "Ilmu Pengetahuan Alam"
+  },
+  {
+    "text": "Apa nama proses perubahan wujud air dari cair menjadi gas?",
+    "choices": [
+      {"id": 0, "text": "Pembekuan"},
+      {"id": 1, "text": "Penguapan"},
+      {"id": 2, "text": "Pencairan"},
+      {"id": 3, "text": "Sublimasi"}
+    ],
+    "answer_id": 1,
+    "subject": "Ilmu Pengetahuan Alam"
+  },
+  {
+    "text": "Siapa penulis novel 'Laskar Pelangi' yang sangat terkenal di Indonesia dan telah menginspirasi banyak orang dengan ceritanya tentang pendidikan di daerah Belitung?",
+    "choices": [
+      {"id": 0, "text": "Andrea Hirata"},
+      {"id": 1, "text": "Pramoedya Ananta Toer"},
+      {"id": 2, "text": "Tere Liye"},
+      {"id": 3, "text": "Ahmad Fuadi"}
+    ],
+    "answer_id": 0,
+    "subject": "Sastra"
+  },
+  {
+    "text": "Siapa nama Presiden Indonesia pertama?",
+    "choices": [
+      {"id": 0, "text": "Sukarno"},
+      {"id": 1, "text": "Suharto"},
+      {"id": 2, "text": "BJ Habibie"},
+      {"id": 3, "text": "Megawati Sukarnoputri"}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Ibukota Jepang adalah?",
+    "choices": [
+      {"id": 0, "text": "Tokyo"},
+      {"id": 1, "text": "Kyoto"},
+      {"id": 2, "text": "Osaka"},
+      {"id": 3, "text": "Nagoya"}
+    ],
+    "answer_id": 0,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Siapakah tokoh yang dikenal dengan teori relativitas?",
+    "choices": [
+      {"id": 0, "text": "Isaac Newton"},
+      {"id": 1, "text": "Albert Einstein"},
+      {"id": 2, "text": "Galileo Galilei"},
+      {"id": 3, "text": "Niels Bohr"}
+    ],
+    "answer_id": 1,
+    "subject": "Fisika"
+  },
+  {
+    "text": "Apa ibukota negara Australia?",
+    "choices": [
+      {"id": 0, "text": "Sydney"},
+      {"id": 1, "text": "Melbourne"},
+      {"id": 2, "text": "Canberra"},
+      {"id": 3, "text": "Perth"}
+    ],
+    "answer_id": 2,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Apa nama zat yang digunakan tumbuhan untuk melakukan fotosintesis?",
+    "choices": [
+      {"id": 0, "text": "Klorofil"},
+      {"id": 1, "text": "Hemoglobin"},
+      {"id": 2, "text": "Melanin"},
+      {"id": 3, "text": "Keratin"}
+    ],
+    "answer_id": 0,
+    "subject": "Biologi"
+  },
+  {
+    "text": "Apa nama alat musik tradisional Indonesia yang berasal dari Jawa Barat dan terbuat dari bambu?",
+    "choices": [
+      {"id": 0, "text": "Gamelan"},
+      {"id": 1, "text": "Angklung"},
+      {"id": 2, "text": "Sasando"},
+      {"id": 3, "text": "Kolintang"}
+    ],
+    "answer_id": 1,
+    "subject": "Seni Budaya"
+  },
+  {
+    "text": "Apa nama monumen nasional yang menjadi simbol kemerdekaan Indonesia dan terletak di Jakarta?",
+    "choices": [
+      {"id": 0, "text": "Monas"},
+      {"id": 1, "text": "Borobudur"},
+      {"id": 2, "text": "Prambanan"},
+      {"id": 3, "text": "Patung Garuda Wisnu Kencana"}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Siapa penemu bola lampu pijar?",
+    "choices": [
+      {"id": 0, "text": "Thomas Edison"},
+      {"id": 1, "text": "Nikola Tesla"},
+      {"id": 2, "text": "Alexander Graham Bell"},
+      {"id": 3, "text": "James Watt"}
+    ],
+    "answer_id": 0,
+    "subject": "Teknologi"
+  },
+  {
+    "text": "Apa ibu kota dari provinsi Bali?",
+    "choices": [
+      {"id": 0, "text": "Kuta"},
+      {"id": 1, "text": "Ubud"},
+      {"id": 2, "text": "Denpasar"},
+      {"id": 3, "text": "Gianyar"}
+    ],
+    "answer_id": 2,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Siapa nama tokoh yang dikenal sebagai Bapak Proklamator Indonesia?",
+    "choices": [
+      {"id": 0, "text": "Sukarno"},
+      {"id": 1, "text": "Suharto"},
+      {"id": 2, "text": "Mohammad Hatta"},
+      {"id": 3, "text": "Bung Tomo"}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Sebutkan tiga warna primer dalam teori warna?",
+    "choices": [
+      {"id": 0, "text": "Merah, Kuning, Biru"},
+      {"id": 1, "text": "Merah, Hijau, Biru"},
+      {"id": 2, "text": "Merah, Kuning, Hijau"},
+      {"id": 3, "text": "Kuning, Hijau, Biru"}
+    ],
+    "answer_id": 0,
+    "subject": "Seni"
+  },
+  {
+    "text": "Dalam matematika, apa istilah untuk hasil kali dari sebuah bilangan dengan dirinya sendiri?",
+    "choices": [
+      {"id": 0, "text": "Kuadrat"},
+      {"id": 1, "text": "Kubik"},
+      {"id": 2, "text": "Akar"},
+      {"id": 3, "text": "Logaritma"}
+    ],
+    "answer_id": 0,
+    "subject": "Matematika"
+  },
+  {
+    "text": "Siapa nama menteri luar negeri pertama Indonesia?",
+    "choices": [
+      {"id": 0, "text": "Ahmad Soebardjo"},
+      {"id": 1, "text": "Sutan Sjahrir"},
+      {"id": 2, "text": "Agus Salim"},
+      {"id": 3, "text": "Mohammad Hatta"}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Apa nama candi Budha terbesar di Indonesia?",
+    "choices": [
+      {"id": 0, "text": "Prambanan"},
+      {"id": 1, "text": "Borobudur"},
+      {"id": 2, "text": "Sewu"},
+      {"id": 3, "text": "Ratu Boko"}
+    ],
+    "answer_id": 1,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Apa nama zat kimia yang digunakan untuk memutihkan pakaian?",
+    "choices": [
+      {"id": 0, "text": "Detergen"},
+      {"id": 1, "text": "Pelarut"},
+      {"id": 2, "text": "Aseton"},
+      {"id": 3, "text": "Pemutih"}
+    ],
+    "answer_id": 3,
+    "subject": "Kimia"
+  },
+  {
+    "text": "Siapa presiden Amerika Serikat pada masa Perang Dunia II?",
+    "choices": [
+      {"id": 0, "text": "Franklin D. Roosevelt"},
+      {"id": 1, "text": "Harry S. Truman"},
+      {"id": 2, "text": "Dwight D. Eisenhower"},
+      {"id": 3, "text": "Woodrow Wilson"}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Apa nama senyawa kimia dengan rumus H2O?",
+    "choices": [
+      {"id": 0, "text": "Hidrogen peroksida"},
+      {"id": 1, "text": "Asam sulfat"},
+      {"id": 2, "text": "Air"},
+      {"id": 3, "text": "Amonia"}
+    ],
+    "answer_id": 2,
+    "subject": "Kimia"
+  },
+  {
+    "text": "Apa nama bahasa pemrograman yang paling umum digunakan untuk pengembangan web?",
+    "choices": [
+      {"id": 0, "text": "Java"},
+      {"id": 1, "text": "Python"},
+      {"id": 2, "text": "JavaScript"},
+      {"id": 3, "text": "C++"}
+    ],
+    "answer_id": 2,
+    "subject": "Teknologi"
+  },
+  {
+    "text": "Siapakah penyanyi yang dijuluki 'King of Pop'?",
+    "choices": [
+      {"id": 0, "text": "Elvis Presley"},
+      {"id": 1, "text": "Michael Jackson"},
+      {"id": 2, "text": "Prince"},
+      {"id": 3, "text": "Madonna"}
+    ],
+    "answer_id": 1,
+    "subject": "Musik"
+  },
+  {
+    "text": "Apa nama teori yang menyatakan bahwa alam semesta terus mengembang?",
+    "choices": [
+      {"id": 0, "text": "Teori Relativitas"},
+      {"id": 1, "text": "Teori Big Bang"},
+      {"id": 2, "text": "Teori Evolusi"},
+      {"id": 3, "text": "Teori Kuantum"}
+    ],
+    "answer_id": 1,
+    "subject": "Astronomi"
+  },
+  {
+    "text": "Apa ibu kota provinsi Sumatra Barat?",
+    "choices": [
+      {"id": 0, "text": "Pekanbaru"},
+      {"id": 1, "text": "Padang"},
+      {"id": 2, "text": "Bukittinggi"},
+      {"id": 3, "text": "Jambi"}
+    ],
+    "answer_id": 1,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Dalam sistem bilangan biner, angka 1 dan 0 disebut apa?",
+    "choices": [
+      {"id": 0, "text": "Digit"},
+      {"id": 1, "text": "Bit"},
+      {"id": 2, "text": "Byte"},
+      {"id": 3, "text": "Nibble"}
+    ],
+    "answer_id": 1,
+    "subject": "Teknologi"
+  },
+  {
+    "text": "Apa nama negara terkecil di dunia?",
+    "choices": [
+      {"id": 0, "text": "Monaco"},
+      {"id": 1, "text": "San Marino"},
+      {"id": 2, "text": "Vatican City"},
+      {"id": 3, "text": "Liechtenstein"}
+    ],
+    "answer_id": 2,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Siapa penemu teori gravitasi?",
+    "choices": [
+      {"id": 0, "text": "Isaac Newton"},
+      {"id": 1, "text": "Albert Einstein"},
+      {"id": 2, "text": "Galileo Galilei"},
+      {"id": 3, "text": "Niels Bohr"}
+    ],
+    "answer_id": 0,
+    "subject": "Fisika"
+  },
+  {
+    "text": "Apa nama ibu kota dari negara Yunani?",
+    "choices": [
+      {"id": 0, "text": "Athena"},
+      {"id": 1, "text": "Sparta"},
+      {"id": 2, "text": "Santorini"},
+      {"id": 3, "text": "Mykonos"}
+    ],
+    "answer_id": 0,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Apa nama gunung tertinggi di dunia?",
+    "choices": [
+      {"id": 0, "text": "Gunung Kilimanjaro"},
+      {"id": 1, "text": "Gunung Everest"},
+      {"id": 2, "text": "Gunung Elbrus"},
+      {"id": 3, "text": "Gunung Aconcagua"}
+    ],
+    "answer_id": 1,
+    "subject": "Geografi"
+  },
+
+  {
+    "text": "Apa nama planet yang sering disebut sebagai planet merah di tata surya kita?",
+    "choices": [
+      {"id": 0, "text": "Venus"},
+      {"id": 1, "text": "Mars"},
+      {"id": 2, "text": "Jupiter"},
+      {"id": 3, "text": "Saturnus"}
+    ],
+    "answer_id": 1,
+    "subject": "Ilmu Pengetahuan Alam"
+  },
+  {
+    "text": "Siapa penulis yang terkenal dengan karya fiksi detektif Sherlock Holmes?",
+    "choices": [
+      {"id": 0, "text": "Agatha Christie"},
+      {"id": 1, "text": "Arthur Conan Doyle"},
+      {"id": 2, "text": "Edgar Allan Poe"},
+      {"id": 3, "text": "Robert Louis Stevenson"}
+    ],
+    "answer_id": 1,
+    "subject": "Sastra"
+  },
+  {
+    "text": "Apa nama proses kimia di mana tumbuhan membuat makanan sendiri?",
+    "choices": [
+      {"id": 0, "text": "Fotosintesis"},
+      {"id": 1, "text": "Respirasi"},
+      {"id": 2, "text": "Fermentasi"},
+      {"id": 3, "text": "Metabolisme"}
+    ],
+    "answer_id": 0,
+    "subject": "Biologi"
+  },
+  {
+    "text": "Apa nama sungai terpanjang di dunia yang terletak di Afrika?",
+    "choices": [
+      {"id": 0, "text": "Amazon"},
+      {"id": 1, "text": "Nil"},
+      {"id": 2, "text": "Mississippi"},
+      {"id": 3, "text": "Yangtze"}
+    ],
+    "answer_id": 1,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Siapa tokoh yang dikenal sebagai pencetus teori relativitas di fisika?",
+    "choices": [
+      {"id": 0, "text": "Niels Bohr"},
+      {"id": 1, "text": "Albert Einstein"},
+      {"id": 2, "text": "Isaac Newton"},
+      {"id": 3, "text": "Galileo Galilei"}
+    ],
+    "answer_id": 1,
+    "subject": "Fisika"
+  },
+  {
+    "text": "Apa nama benua yang memiliki jumlah negara terbanyak di dunia?",
+    "choices": [
+      {"id": 0, "text": "Asia"},
+      {"id": 1, "text": "Afrika"},
+      {"id": 2, "text": "Eropa"},
+      {"id": 3, "text": "Amerika Selatan"}
+    ],
+    "answer_id": 1,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Siapa presiden Amerika Serikat yang mengumumkan Proklamasi Emansipasi pada tahun 1863?",
+    "choices": [
+      {"id": 0, "text": "George Washington"},
+      {"id": 1, "text": "Abraham Lincoln"},
+      {"id": 2, "text": "Thomas Jefferson"},
+      {"id": 3, "text": "Franklin D. Roosevelt"}
+    ],
+    "answer_id": 1,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Apa nama gerakan seni yang menekankan spontanitas dan emosi di Eropa abad ke-20?",
+    "choices": [
+      {"id": 0, "text": "Impresionisme"},
+      {"id": 1, "text": "Ekspresionisme"},
+      {"id": 2, "text": "Kubisme"},
+      {"id": 3, "text": "Surrealisme"}
+    ],
+    "answer_id": 1,
+    "subject": "Seni"
+  },
+  {
+    "text": "Apa nama alat musik tradisional Bali yang terdiri dari bilah logam?",
+    "choices": [
+      {"id": 0, "text": "Gamelan"},
+      {"id": 1, "text": "Angklung"},
+      {"id": 2, "text": "Sasando"},
+      {"id": 3, "text": "Kolintang"}
+    ],
+    "answer_id": 0,
+    "subject": "Seni Budaya"
+  },
+  {
+    "text": "Apa nama partikel dasar dalam atom yang memiliki muatan negatif?",
+    "choices": [
+      {"id": 0, "text": "Proton"},
+      {"id": 1, "text": "Elektron"},
+      {"id": 2, "text": "Neutron"},
+      {"id": 3, "text": "Positron"}
+    ],
+    "answer_id": 1,
+    "subject": "Fisika"
+  },
+  {
+    "text": "Apa yang dimaksud dengan fotosintesis dan bagaimana proses ini terjadi pada tumbuhan hijau?",
+    "choices": [
+      {"id": 0, "text": "Fotosintesis adalah proses di mana tumbuhan hijau mengubah cahaya matahari menjadi energi kimia dengan bantuan klorofil."},
+      {"id": 1, "text": "Fotosintesis adalah proses di mana tumbuhan menghasilkan oksigen dengan menyerap air dari tanah."},
+      {"id": 2, "text": "Fotosintesis adalah proses penguapan air dari daun tumbuhan."},
+      {"id": 3, "text": "Fotosintesis adalah proses di mana tumbuhan menyerap nitrogen dari udara."}
+    ],
+    "answer_id": 0,
+    "subject": "Biologi"
+  },
+  {
+    "text": "Jelaskan apa yang dimaksud dengan revolusi industri dan dampaknya terhadap masyarakat di Eropa?",
+    "choices": [
+      {"id": 0, "text": "Revolusi industri adalah periode perubahan besar dalam pembuatan barang dari tenaga manusia ke mesin, yang membawa dampak signifikan pada ekonomi dan kehidupan sosial di Eropa."},
+      {"id": 1, "text": "Revolusi industri adalah periode di mana banyak perang terjadi di Eropa."},
+      {"id": 2, "text": "Revolusi industri adalah perubahan cara bercocok tanam menjadi lebih modern."},
+      {"id": 3, "text": "Revolusi industri adalah masa di mana seni dan budaya berkembang pesat di Eropa."}
+    ],
+    "answer_id": 0,
+    "subject": "Sejarah"
+  },
+  {
+    "text": "Apa yang dimaksud dengan perubahan iklim dan bagaimana aktivitas manusia berkontribusi terhadap fenomena ini?",
+    "choices": [
+      {"id": 0, "text": "Perubahan iklim adalah perubahan jangka panjang dalam pola cuaca global atau regional yang sebagian besar disebabkan oleh aktivitas manusia seperti pembakaran bahan bakar fosil dan deforestasi."},
+      {"id": 1, "text": "Perubahan iklim adalah perubahan cuaca harian yang biasa terjadi setiap musim."},
+      {"id": 2, "text": "Perubahan iklim adalah fenomena alam yang tidak dipengaruhi oleh aktivitas manusia."},
+      {"id": 3, "text": "Perubahan iklim adalah istilah lain untuk bencana alam seperti gempa bumi dan tsunami."}
+    ],
+    "answer_id": 0,
+    "subject": "Geografi"
+  },
+  {
+    "text": "Jelaskan bagaimana cara kerja komputer dalam memproses data digital dan mengubahnya menjadi informasi yang bisa digunakan.",
+    "choices": [
+      {"id": 0, "text": "Komputer memproses data digital dengan menggunakan unit pemrosesan pusat (CPU) yang menjalankan instruksi program dan mengubah data mentah menjadi informasi yang dapat dimengerti oleh pengguna."},
+      {"id": 1, "text": "Komputer memproses data digital dengan mengirimkan data ke internet dan menerima informasi kembali."},
+      {"id": 2, "text": "Komputer memproses data digital dengan mencetak semua informasi ke kertas."},
+      {"id": 3, "text": "Komputer memproses data digital dengan memindai informasi dari buku."}
+    ],
+    "answer_id": 0,
+    "subject": "Teknologi"
+  },
+  {
+    "text": "Apa yang dimaksud dengan gravitasi dan bagaimana hukum gravitasi universal Newton menjelaskan fenomena ini?",
+    "choices": [
+      {"id": 0, "text": "Gravitasi adalah gaya tarik yang terjadi antara dua massa, dan hukum gravitasi universal Newton menyatakan bahwa setiap partikel di alam semesta menarik setiap partikel lainnya dengan gaya yang berbanding lurus dengan produk massa mereka dan berbanding terbalik dengan kuadrat jarak antara pusat-pusat massa mereka."},
+      {"id": 1, "text": "Gravitasi adalah gaya yang membuat objek mengambang di udara."},
+      {"id": 2, "text": "Gravitasi adalah fenomena yang hanya terjadi di luar angkasa."},
+      {"id": 3, "text": "Gravitasi adalah gaya yang membuat benda bergerak lebih cepat di air."}
+    ],
+    "answer_id": 0,
+    "subject": "Fisika"
+  },
+  {
+    "text": "Apa yang dimaksud dengan ekosistem dan bagaimana interaksi antara komponen biotik dan abiotik mempengaruhi keseimbangan ekosistem?",
+    "choices": [
+      {"id": 0, "text": "Ekosistem adalah komunitas organisme hidup yang berinteraksi dengan lingkungan fisik mereka, dan keseimbangan ekosistem dipengaruhi oleh interaksi antara komponen biotik (makhluk hidup) dan abiotik (faktor non-hidup) seperti air, udara, dan tanah."},
+      {"id": 1, "text": "Ekosistem adalah kumpulan makhluk hidup yang tidak bergantung pada lingkungan sekitarnya."},
+      {"id": 2, "text": "Ekosistem adalah wilayah geografis yang hanya terdiri dari faktor abiotik."},
+      {"id": 3, "text": "Ekosistem adalah tempat di mana hanya satu jenis organisme hidup."}
+    ],
+    "answer_id": 0,
+    "subject": "Biologi"
+  },
+  {
+    "text": "Jelaskan apa yang dimaksud dengan demokrasi dan bagaimana prinsip-prinsip demokrasi diterapkan dalam sistem pemerintahan modern.",
+    "choices": [
+      {"id": 0, "text": "Demokrasi adalah sistem pemerintahan di mana kekuasaan dipegang oleh rakyat melalui pemilihan umum, dan prinsip-prinsip demokrasi seperti kebebasan berpendapat, persamaan hak, dan keterbukaan diterapkan untuk memastikan partisipasi aktif warga negara dalam pemerintahan."},
+      {"id": 1, "text": "Demokrasi adalah sistem di mana kekuasaan dipegang oleh satu orang secara turun-temurun."},
+      {"id": 2, "text": "Demokrasi adalah sistem pemerintahan di mana keputusan dibuat oleh sekelompok elit."},
+      {"id": 3, "text": "Demokrasi adalah bentuk pemerintahan di mana semua keputusan dibuat oleh pemerintah tanpa melibatkan rakyat."}
+    ],
+    "answer_id": 0,
+    "subject": "Politik"
+  },
+  {
+    "text": "Apa yang dimaksud dengan ekonomi pasar dan bagaimana mekanisme pasar menentukan harga barang dan jasa?",
+    "choices": [
+      {"id": 0, "text": "Ekonomi pasar adalah sistem ekonomi di mana keputusan tentang produksi, distribusi, dan harga barang serta jasa ditentukan oleh mekanisme pasar berdasarkan permintaan dan penawaran."},
+      {"id": 1, "text": "Ekonomi pasar adalah sistem di mana harga barang ditentukan oleh pemerintah."},
+      {"id": 2, "text": "Ekonomi pasar adalah sistem di mana semua barang dan jasa dibagikan secara gratis."},
+      {"id": 3, "text": "Ekonomi pasar adalah sistem yang tidak memperhitungkan permintaan dan penawaran dalam penentuan harga."}
+    ],
+    "answer_id": 0,
+    "subject": "Ekonomi"
+  },
+  {
+    "text": "Apa yang dimaksud dengan hak asasi manusia dan bagaimana organisasi internasional seperti PBB melindungi hak-hak ini?",
+    "choices": [
+      {"id": 0, "text": "Hak asasi manusia adalah hak-hak dasar yang dimiliki setiap individu tanpa diskriminasi, dan organisasi internasional seperti PBB melindungi hak-hak ini melalui berbagai instrumen hukum dan pemantauan pelaksanaan hak asasi di seluruh dunia."},
+      {"id": 1, "text": "Hak asasi manusia adalah hak-hak yang hanya diberikan kepada warga negara tertentu."},
+      {"id": 2, "text": "Hak asasi manusia adalah hak-hak yang bisa dicabut kapan saja oleh pemerintah."},
+      {"id": 3, "text": "Hak asasi manusia adalah hak-hak yang hanya berlaku di negara-negara maju."}
+    ],
+    "answer_id": 0,
+    "subject": "Sosial"
+  },
+  {
+    "text": "Jelaskan apa yang dimaksud dengan perubahan sosial dan faktor-faktor apa saja yang dapat mendorong terjadinya perubahan sosial dalam masyarakat.",
+    "choices": [
+      {"id": 0, "text": "Perubahan sosial adalah perubahan dalam struktur dan pola kehidupan masyarakat yang bisa dipengaruhi oleh faktor-faktor seperti teknologi, ekonomi, politik, dan budaya."},
+      {"id": 1, "text": "Perubahan sosial adalah perubahan dalam kebiasaan individu tanpa mempengaruhi masyarakat."},
+      {"id": 2, "text": "Perubahan sosial adalah perubahan yang hanya terjadi di kalangan elite."},
+      {"id": 3, "text": "Perubahan sosial adalah perubahan yang tidak dipengaruhi oleh faktor ekonomi atau politik."}
+    ],
+    "answer_id": 0,
+    "subject": "Sosiologi"
+  }
+]
+
