@@ -40,5 +40,6 @@ export interface StudentSubmissions{
   quizName: string;
   firstName: string;
   lastName: string;
+  publishedAt: Date;
   completedAt: Date;
 }

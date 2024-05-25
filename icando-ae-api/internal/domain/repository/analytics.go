@@ -53,7 +53,7 @@ func (r *AnalyticsRepository) GetQuizPerformance(filter *dto.GetQuizPerformanceF
 
 func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissionsFilter) (*[]dao.GetLatestSubmissionsDao, error) {
 	query := r.db.Table("student_quizzes").
-		Select("classes.name as class_name, classes.grade, quizzes.name as quiz_name, students.first_name, students.last_name, student_quizzes.completed_at").
+		Select("classes.name as class_name, classes.grade, quizzes.name as quiz_name, quizzes.published_at, students.first_name, students.last_name, student_quizzes.completed_at").
 		Joins("JOIN quizzes ON student_quizzes.quiz_id = quizzes.id").
 		Joins("JOIN quiz_classes ON student_quizzes.quiz_id = quiz_classes.quiz_id").
 		Joins("JOIN classes ON quiz_classes.class_id = classes.id").
@@ -65,7 +65,8 @@ func (r *AnalyticsRepository) GetLatestSubmissions(filter *dto.GetLatestSubmissi
 		query = query.Where("class_teacher.teacher_id = ?", filter.TeacherID)
 	}
 
-	query = query.Order("student_quizzes.completed_at desc").Limit(10)
+	Sort(query, false, "student_quizzes.completed_at")
+	Paginate(query, filter.Page, filter.Limit)
 
 	var results []dao.GetLatestSubmissionsDao
 	err := query.Find(&results).Error
