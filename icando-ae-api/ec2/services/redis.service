@@ -1,0 +1,10 @@
+[Unit]
+Description=Redis Server
+After=network.target
+
+[Service]
+ExecStart=/home/ec2-user/redis-stable/src/redis-server
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

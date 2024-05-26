@@ -1,0 +1,12 @@
+[Unit]
+Description=Worker Server
+After=network.target
+
+[Service]
+ExecStart=/home/ec2-user/worker
+Restart=always
+User=ec2-user
+WorkingDirectory=/home/ec2-user/
+
+[Install]
+WantedBy=multi-user.target
