@@ -37,3 +37,6 @@ test: run-test-database run-test
 
 seed:
 	go run cmd/seeder/seeder.go
+
+build-worker:
+	go build -o ./worker ./cmd/worker/worker.go
