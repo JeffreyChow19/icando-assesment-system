@@ -58,7 +58,7 @@ export const Quiz = () => {
       setQuestions(data.quiz.questions);
       setStudentAnswers(data.studentAnswers);
     }
-  }, [isLoading, data, error, setQuestions, setStudentAnswers]);
+  }, [isLoading, data, error, setQuestions, setStudentAnswers, navigate]);
 
   const getRemainingTime = (
     startAt: string,
@@ -180,7 +180,7 @@ export const Quiz = () => {
                       )?.answerId
                       ? "bg-blue border-blue-foreground border-2 hover:bg-blue"
                       : "hover:bg-blue bg-background ",
-                    "w-full shadow-md py-3 rounded-lg text-foreground justify-start",
+                    "w-full shadow-md py-3 rounded-lg text-foreground justify-start whitespace-normal h-fit",
                   )}
                   onClick={() => onChooseAnswer(choice.id)}
                 >
