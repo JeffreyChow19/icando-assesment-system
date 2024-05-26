@@ -6,3 +6,5 @@
 /.idea
 
 db-data/
+
+*.pem
