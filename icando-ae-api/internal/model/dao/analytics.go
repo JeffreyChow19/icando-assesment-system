@@ -15,6 +15,7 @@ type GetLatestSubmissionsDao struct {
 	ClassName   string    `json:"className"`
 	Grade       string    `json:"grade"`
 	QuizName    string    `json:"quizName"`
+	PublishedAt time.Time `json:"publishedAt"`
 	FirstName   string    `json:"firstName"`
 	LastName    string    `json:"lastName"`
 	CompletedAt time.Time `json:"completedAt"`

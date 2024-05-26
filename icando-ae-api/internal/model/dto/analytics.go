@@ -10,6 +10,8 @@ type GetQuizPerformanceFilter struct {
 
 type GetLatestSubmissionsFilter struct {
 	TeacherID *string `form:"teacher_id"`
+	Page      int     `form:"page"`
+	Limit     int     `form:"limit"`
 }
 
 type GetStudentQuizzesFilter struct {
