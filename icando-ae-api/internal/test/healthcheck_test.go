@@ -2,7 +2,7 @@ package test
 
 import (
 	"github.com/stretchr/testify/require"
-	"icando/lib"
+	"gorm.io/gorm"
 	"icando/server"
 	"net/http"
 	"net/http/httptest"
@@ -11,7 +11,7 @@ import (
 
 func TestHealthcheck_BestCase(t *testing.T) {
 	TestRunner(
-		t, func(server *server.Server, db *lib.Database) {
+		t, func(server *server.Server, db *gorm.DB, _ Fixture) {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest(
 				"GET",
